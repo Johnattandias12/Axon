@@ -134,20 +134,37 @@ export default function HomePage() {
               </span>
             </div>
 
+            {/* Decorative SVG Line */}
+            <svg
+              className="absolute top-20 -left-10 h-32 w-32 animate-pulse text-[var(--pulse)] opacity-20"
+              viewBox="0 0 100 100"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 50 Q 25 25, 50 50 T 100 50"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+            </svg>
+
             {/* Headline */}
-            <h1 className="mb-6 max-w-[820px] text-[clamp(44px,8vw,106px)] leading-[0.93] font-black tracking-[-0.055em] text-white">
-              Dizem que:{" "}
-              <span className="relative inline-block">
-                <span className="relative z-10">"Só se vive uma vez..." </span>
-                <span
-                  className="absolute bottom-1 left-0 z-0 h-[0.18em] w-full rounded"
-                  style={{ backgroundColor: "var(--pulse)", opacity: 0.85 }}
-                />
+            <h1 className="relative z-10 mb-6 max-w-[820px] text-[clamp(44px,8vw,106px)] leading-[0.95] font-black tracking-[-0.055em] text-white">
+              <span className="mb-2 block text-[clamp(28px,5vw,60px)] font-bold tracking-tight text-white/70">
+                Dizem que
+              </span>
+              <span className="block">
+                só se vive uma{" "}
+                <span style={{ color: "var(--pulse)", textShadow: "0 0 40px var(--pulse)" }}>
+                  vez...
+                </span>
               </span>
             </h1>
 
-            <p className="mb-10 max-w-[520px] text-[clamp(15px,1.8vw,19px)] leading-[1.65] text-white/50">
-              Eu não costumo duvidar disso. O impulso é o que te move.
+            <p className="relative z-10 mb-10 max-w-[520px] text-[clamp(15px,1.8vw,19px)] leading-[1.8] text-white/60">
+              Eu não costumo duvidar disso.
+              <br />O impulso é o que te move.
             </p>
 
             <div className="animate-in fade-in slide-in-from-bottom-8 fill-mode-both flex flex-wrap gap-4 delay-300 duration-1000">
@@ -179,9 +196,11 @@ export default function HomePage() {
                 { v: "D+1", d: "Repasse ao organizador" },
                 { v: "Offline", d: "Validação sem internet" },
               ].map(({ v, d }) => (
-                <div key={v}>
-                  <p className="mb-0.5 text-sm font-bold text-white">{v}</p>
-                  <p className="text-[13px] text-white/40">{d}</p>
+                <div key={v} className="group flex flex-col items-start gap-1">
+                  <p className="text-xl font-black text-white transition-colors group-hover:text-[var(--pulse)]">
+                    {v}
+                  </p>
+                  <p className="text-[13px] text-white/50">{d}</p>
                 </div>
               ))}
             </div>
@@ -263,24 +282,22 @@ export default function HomePage() {
               ].map(({ n, title, desc, accent }) => (
                 <div
                   key={n}
-                  className="group -ml-4 flex gap-5 rounded-2xl p-4 transition-colors hover:bg-white/5"
+                  className="group -ml-4 flex gap-5 rounded-2xl border border-transparent p-6 transition-all hover:border-white/10 hover:bg-zinc-900/80 hover:shadow-xl"
                 >
                   <span
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[13px] font-bold tracking-[0.12em] transition-transform group-hover:scale-110"
-                    style={{ backgroundColor: `${accent}20`, color: accent }}
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[15px] font-black tracking-[0.12em] shadow-lg transition-transform group-hover:scale-110"
+                    style={{ backgroundColor: accent, color: "#0A0A0B" }}
                   >
                     {n}
                   </span>
                   <div>
                     <p
-                      className="mb-2 text-lg font-bold transition-colors group-hover:text-[var(--pulse)]"
+                      className="mb-3 text-xl font-bold transition-colors group-hover:text-white"
                       style={{ color: "var(--ink)" }}
                     >
                       {title}
                     </p>
-                    <p className="text-[15px] leading-relaxed" style={{ color: "var(--mute)" }}>
-                      {desc}
-                    </p>
+                    <p className="text-[15px] leading-relaxed text-zinc-400">{desc}</p>
                   </div>
                 </div>
               ))}
@@ -328,19 +345,32 @@ export default function HomePage() {
                 <Link
                   key={label}
                   href={href}
-                  className="group flex flex-col justify-between rounded-2xl border p-5 transition-all hover:shadow-md"
-                  style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-6 transition-all hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)]"
+                  style={{
+                    borderColor: "rgba(255,255,255,0.08)",
+                    backgroundColor: "rgba(255,255,255,0.02)",
+                  }}
                 >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                   <div
-                    className="mb-10 h-1 w-8 rounded-full transition-all group-hover:w-12"
-                    style={{ backgroundColor: accent }}
+                    className="mb-12 h-1.5 w-10 rounded-full shadow-[0_0_10px_currentColor] transition-all group-hover:w-16"
+                    style={{ backgroundColor: accent, color: accent }}
                   />
                   <p
-                    className="text-[15px] leading-tight font-semibold"
+                    className="relative z-10 text-[17px] leading-tight font-bold"
                     style={{ color: "var(--ink)" }}
                   >
                     {label}
                   </p>
+                  <svg
+                    className="absolute right-5 bottom-5 h-6 w-6 -translate-x-4 text-white opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </Link>
               ))}
             </div>
