@@ -126,32 +126,41 @@
   --pulse-soft: #2a3500;
   --pulse-ink: #0a0a0b;
 
+  --success-soft: #0a2e1a;
+  --warning-soft: #2e2000;
+  --danger-soft: #2e0a08;
+  --info-soft: #0a1a2e;
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.7);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #fafaf7;
-    --ink-2: #e5e5e0;
-    --ink-3: #c9c9c0;
-    --ink-4: #9c9ca3;
+/* ─────────────── THEME TRANSITIONS ─────────────── */
+html {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
 
-    --paper: #0a0a0b;
-    --paper-pure: #0a0a0b;
-    --paper-soft: #16161a;
-
-    --mute: #9c9ca3;
-    --mute-2: #6b6b70;
-    --rule: #2a2a2f;
-    --rule-strong: #4a4a52;
-
-    --pulse-soft: #2a3500;
-    --pulse-ink: #0a0a0b;
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.7);
+/* ─────────────── MOBILE / iOS OPTIMIZATIONS ─────────────── */
+@supports (-webkit-touch-callout: none) {
+  /* Safe area insets for iPhone notch */
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
+}
+
+/* Prevent iOS tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth momentum scrolling on iOS */
+.overflow-x-auto,
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
 }

@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { AxonLogo } from "@/components/shared/AxonLogo"
 import { EventsCarousel } from "@/components/shared/EventsCarousel"
+import { ThemeToggle } from "@/components/shared/ThemeToggle"
+import { MobileMenu } from "@/components/shared/MobileMenu"
 
 export default function HomePage() {
   return (
@@ -18,9 +20,9 @@ export default function HomePage() {
           WebkitBackdropFilter: "blur(20px)",
         }}
       >
-        <div className="mx-auto flex h-[58px] max-w-[1200px] items-center justify-between gap-6 px-5 md:px-8">
+        <div className="mx-auto flex h-[58px] max-w-[1200px] items-center justify-between gap-4 px-5 md:gap-6 md:px-8">
           <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="AXON">
-            <AxonLogo size={24} className="text-white" />
+            <AxonLogo size={24} className="text-[var(--ink)]" />
             <span className="text-xl font-black tracking-tight" style={{ color: "var(--ink)" }}>
               AXON
             </span>
@@ -29,14 +31,14 @@ export default function HomePage() {
           <nav className="hidden items-center gap-7 md:flex">
             <Link
               href="/eventos"
-              className="text-sm font-medium transition-colors"
+              className="text-sm font-medium transition-colors hover:opacity-70"
               style={{ color: "var(--mute)" }}
             >
               Eventos
             </Link>
             <a
               href="#organizadores"
-              className="text-sm font-medium transition-colors"
+              className="text-sm font-medium transition-colors hover:opacity-70"
               style={{ color: "var(--mute)" }}
             >
               Organizadores
@@ -45,7 +47,7 @@ export default function HomePage() {
               href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda com a AXON.")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium transition-colors"
+              className="text-sm font-medium transition-colors hover:opacity-70"
               style={{ color: "var(--mute)" }}
             >
               Suporte
@@ -53,6 +55,7 @@ export default function HomePage() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
+            <ThemeToggle />
             <Link
               href="/entrar"
               className="hidden px-3 py-2 text-sm font-medium transition-colors sm:inline-flex"
@@ -62,11 +65,12 @@ export default function HomePage() {
             </Link>
             <Link
               href="/entrar"
-              className="inline-flex rounded-xl px-4 py-2 text-sm font-bold transition-colors"
+              className="hidden rounded-xl px-4 py-2 text-sm font-bold transition-colors sm:inline-flex"
               style={{ backgroundColor: "var(--ink)", color: "var(--paper)" }}
             >
               Criar conta
             </Link>
+            <MobileMenu />
           </div>
         </div>
       </header>
