@@ -20,16 +20,8 @@ export default function HomePage() {
       >
         <div className="mx-auto flex h-[58px] max-w-[1200px] items-center justify-between gap-6 px-5 md:px-8">
           <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="AXON">
-            <div
-              className="flex h-8 w-8 items-center justify-center rounded-lg"
-              style={{ backgroundColor: "var(--ink)" }}
-            >
-              <AxonLogo size={17} className="text-[var(--pulse)]" />
-            </div>
-            <span
-              className="text-[17px] font-black tracking-[-0.045em]"
-              style={{ color: "var(--ink)" }}
-            >
+            <AxonLogo size={24} className="text-white" />
+            <span className="text-xl font-black tracking-tight" style={{ color: "var(--ink)" }}>
               AXON
             </span>
           </Link>
@@ -144,19 +136,18 @@ export default function HomePage() {
 
             {/* Headline */}
             <h1 className="mb-6 max-w-[820px] text-[clamp(44px,8vw,106px)] leading-[0.93] font-black tracking-[-0.055em] text-white">
-              Antes de entrar,{" "}
+              dizem que só se vive{" "}
               <span className="relative inline-block">
-                <span className="relative z-10">o pulso </span>
+                <span className="relative z-10">uma vez... </span>
                 <span
                   className="absolute bottom-1 left-0 z-0 h-[0.18em] w-full rounded"
                   style={{ backgroundColor: "var(--pulse)", opacity: 0.85 }}
                 />
               </span>
-              <span className="text-white/30">já acelera.</span>
             </h1>
 
             <p className="mb-10 max-w-[520px] text-[clamp(15px,1.8vw,19px)] leading-[1.65] text-white/50">
-              AXON converte esse impulso em acesso. Do clique ao QR Code em segundos, sem atrito.
+              eu não costumo duvidar disso. o impulso é o que te move.
             </p>
 
             <div className="flex flex-wrap gap-3">
@@ -441,14 +432,9 @@ export default function HomePage() {
           <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="mb-4 flex items-center gap-2.5">
-                <div
-                  className="flex h-7 w-7 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: "var(--ink)" }}
-                >
-                  <AxonLogo size={14} className="text-[var(--pulse)]" />
-                </div>
+                <AxonLogo size={20} className="text-white" />
                 <span
-                  className="text-[15px] font-black tracking-[-0.04em]"
+                  className="text-[17px] font-black tracking-tight"
                   style={{ color: "var(--ink)" }}
                 >
                   AXON
@@ -506,19 +492,14 @@ export default function HomePage() {
               </h3>
               <ul className="space-y-2.5">
                 <li>
-                  <p className="text-[13px]" style={{ color: "var(--mute)" }}>
-                    CEO: Johnattan Dias
-                  </p>
-                </li>
-                <li>
                   <a
-                    href="https://wa.me/5584981235396"
+                    href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda com a AXON.")}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[13px] transition-colors hover:opacity-100"
                     style={{ color: "var(--mute)" }}
                   >
-                    +55 84 9 8123-5396
+                    Suporte pelo WhatsApp
                   </a>
                 </li>
               </ul>
@@ -559,7 +540,7 @@ export default function HomePage() {
               © 2026 AXON. Todos os direitos reservados.
             </p>
             <p className="text-[12px]" style={{ color: "var(--mute-2)" }}>
-              Desenvolvido pela Beyonder © 2026
+              desenvolvido por beyonder 2026 johnattan dias.
             </p>
           </div>
         </div>
