@@ -64,7 +64,7 @@ export async function SiteHeader() {
           >
             Eventos
           </Link>
-          {profile?.role === "organizer" || profile?.role === "admin" ? (
+          {(profile?.role === "organizer" || profile?.role === "admin") && (
             <Link
               href="/organizador"
               className="text-sm transition-colors"
@@ -72,7 +72,16 @@ export async function SiteHeader() {
             >
               Painel
             </Link>
-          ) : null}
+          )}
+          {profile?.role === "admin" && (
+            <Link
+              href="/admin"
+              className="text-sm font-semibold transition-colors"
+              style={{ color: "var(--danger)" }}
+            >
+              Admin
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -96,6 +105,14 @@ export async function SiteHeader() {
                 {(profile?.role === "organizer" || profile?.role === "admin") && (
                   <DropdownMenuItem render={<Link href="/organizador" />}>
                     Painel do organizador
+                  </DropdownMenuItem>
+                )}
+                {profile?.role === "admin" && (
+                  <DropdownMenuItem
+                    render={<Link href="/admin" />}
+                    style={{ color: "var(--danger)" }}
+                  >
+                    Painel admin
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />

@@ -1,8 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 interface MockEvent {
   id: string
   title: string
@@ -13,161 +11,143 @@ interface MockEvent {
   badge: string
   badgeType: "available" | "limited" | "sold-out" | "free"
   gradient: string
-  accentColor: string
 }
-
-// ─── Mock data ─────────────────────────────────────────────────────────────────
 
 const featuredEvents: MockEvent[] = [
   {
     id: "carnaxelita-2026",
     title: "Carnaxelita 2026",
     category: "Micareta",
-    date: "12–15 Out 2026",
-    location: "Currais Novos · RN",
-    price: "R$ 120 – R$ 450",
+    date: "12 a 15 Out 2026",
+    location: "Currais Novos, RN",
+    price: "R$ 120 a R$ 450",
     badge: "Lote 2 · 23 restantes",
     badgeType: "limited",
     gradient: "from-[#3d1c02] via-[#1a0a00] to-[#0A0A0B]",
-    accentColor: "#E89400",
   },
   {
-    id: "gospel-rn-2026",
-    title: "Festival Gospel RN",
-    category: "Gospel",
-    date: "28–29 Jun 2026",
-    location: "Natal · RN",
-    price: "Gratuito · VIP R$ 80",
+    id: "festa-santana-caico-2026",
+    title: "Festa de Santana 2026",
+    category: "Tradicional",
+    date: "25 a 30 Jul 2026",
+    location: "Caicó, RN",
+    price: "R$ 0 a R$ 180",
     badge: "Inscrições abertas",
-    badgeType: "free",
+    badgeType: "available",
     gradient: "from-[#1c0a3d] via-[#0e0520] to-[#0A0A0B]",
-    accentColor: "#7C3AED",
   },
   {
-    id: "futsal-final-rn",
-    title: "Final Campeonato Futsal RN",
-    category: "Esportes",
-    date: "15 Jun 2026",
-    location: "Arena Natal · RN",
-    price: "—",
-    badge: "Esgotado",
-    badgeType: "sold-out",
+    id: "carnatal-2026",
+    title: "Carnatal 2026",
+    category: "Carnaval",
+    date: "Dez 2026",
+    location: "Natal, RN",
+    price: "A partir de R$ 200",
+    badge: "Em breve",
+    badgeType: "free",
     gradient: "from-[#021a3d] via-[#000e20] to-[#0A0A0B]",
-    accentColor: "#2D7AF6",
   },
 ]
 
 const weekEvents: MockEvent[] = [
   {
-    id: "vaquejada-2026",
-    title: "Vaquejada 2026",
-    category: "Tradição",
-    date: "04–07 Ago",
-    location: "Currais Novos · RN",
-    price: "R$ 80 – R$ 300",
+    id: "vaquejada-currais-novos-2026",
+    title: "Vaquejada de Currais Novos",
+    category: "Vaquejada",
+    date: "04 a 07 Ago 2026",
+    location: "Currais Novos, RN",
+    price: "R$ 80 a R$ 300",
     badge: "Lote 1 disponível",
     badgeType: "available",
     gradient: "from-[#2a1800] via-[#150c00] to-[#0A0A0B]",
-    accentColor: "#E89400",
   },
   {
-    id: "forro-natal",
-    title: "Show de Forró",
-    category: "Música",
+    id: "forro-natal-2026",
+    title: "Noite de Forró em Natal",
+    category: "Show",
     date: "Sáb, 20 Jun",
-    location: "Natal · RN",
+    location: "Natal, RN",
     price: "R$ 60",
     badge: "Disponível",
     badgeType: "available",
     gradient: "from-[#2a0014] via-[#150009] to-[#0A0A0B]",
-    accentColor: "#E5342B",
   },
   {
-    id: "standup-mossoro",
-    title: "Stand-up Comedy Night",
-    category: "Humor",
-    date: "Sex, 19 Jun",
-    location: "Mossoró · RN",
-    price: "R$ 45",
-    badge: "Disponível",
-    badgeType: "available",
+    id: "gospel-rn-2026",
+    title: "Festival Gospel RN",
+    category: "Gospel",
+    date: "28 e 29 Jun 2026",
+    location: "Natal, RN",
+    price: "Gratuito e VIP R$ 80",
+    badge: "Inscrições abertas",
+    badgeType: "free",
     gradient: "from-[#002a1a] via-[#00150d] to-[#0A0A0B]",
-    accentColor: "#00B96B",
   },
   {
-    id: "workshop-foto-natal",
-    title: "Workshop de Fotografia",
-    category: "Educação",
-    date: "Dom, 21 Jun",
-    location: "Natal · RN",
-    price: "R$ 120",
-    badge: "Últimas vagas",
-    badgeType: "limited",
+    id: "vaquejada-mossoro-2026",
+    title: "Vaquejada de Mossoró",
+    category: "Vaquejada",
+    date: "Set 2026",
+    location: "Mossoró, RN",
+    price: "R$ 90 a R$ 250",
+    badge: "Em breve",
+    badgeType: "available",
     gradient: "from-[#001a2a] via-[#000d15] to-[#0A0A0B]",
-    accentColor: "#2D7AF6",
   },
 ]
 
-// ─── Badge helper ──────────────────────────────────────────────────────────────
-
-function BadgeTypeStyles(type: MockEvent["badgeType"]) {
+function BadgeStyle(type: MockEvent["badgeType"]) {
   switch (type) {
     case "limited":
-      return "bg-[var(--warning-soft)] text-[var(--warning)] border-[var(--warning)]/30"
+      return "bg-amber-50 text-amber-700 border-amber-200"
     case "sold-out":
-      return "bg-[var(--ink-3)]/30 text-[var(--mute-2)] border-[var(--mute-2)]/20"
+      return "bg-neutral-100 text-neutral-400 border-neutral-200"
     case "free":
-      return "bg-[var(--pulse-soft)] text-[var(--pulse-ink)] border-[var(--pulse)]/30"
+      return "bg-emerald-50 text-emerald-700 border-emerald-200"
     default:
-      return "bg-[var(--success-soft)] text-[var(--success)] border-[var(--success)]/30"
+      return "bg-green-50 text-green-700 border-green-200"
   }
 }
-
-// ─── EventCard ─────────────────────────────────────────────────────────────────
 
 function EventCard({ event, size = "md" }: { event: MockEvent; size?: "lg" | "md" }) {
   const isSoldOut = event.badgeType === "sold-out"
   const aspectRatio = size === "lg" ? "aspect-[4/3]" : "aspect-[3/2]"
 
   return (
-    <article className="group flex cursor-pointer flex-col" aria-label={event.title}>
-      {/* Imagem / placeholder */}
+    <Link
+      href={`/eventos/${event.id}`}
+      className="group flex cursor-pointer flex-col"
+      aria-label={event.title}
+    >
       <div
-        className={`relative overflow-hidden rounded-[var(--radius-lg)] ${aspectRatio} mb-4 bg-gradient-to-br ${event.gradient}`}
+        className={`relative overflow-hidden rounded-2xl ${aspectRatio} mb-4 bg-gradient-to-br ${event.gradient}`}
       >
-        {/* Categoria */}
         <div className="absolute top-3 left-3 z-10">
-          <span className="rounded-[var(--radius-sm)] border border-[var(--rule)]/30 bg-[var(--ink)]/70 px-2 py-1 font-mono text-[10px] tracking-[0.12em] text-[var(--mute-2)] uppercase backdrop-blur-sm">
+          <span className="rounded-lg border border-white/20 bg-black/60 px-2 py-1 text-[10px] font-medium tracking-wide text-white/70 uppercase backdrop-blur-sm">
             {event.category}
           </span>
         </div>
 
-        {/* Sold-out overlay */}
         {isSoldOut && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-[var(--ink)]/60">
-            <span className="font-mono text-[11px] tracking-[0.15em] text-[var(--mute-2)] uppercase">
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/60">
+            <span className="text-[11px] font-semibold tracking-widest text-white/60 uppercase">
               Esgotado
             </span>
           </div>
         )}
 
-        {/* Hover scale */}
-        <div
-          className="absolute inset-0 bg-gradient-to-t from-[var(--ink)]/40 to-transparent opacity-0 transition-opacity duration-[var(--duration-normal)] group-hover:opacity-100"
-          aria-hidden="true"
-        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
 
-      {/* Info */}
       <div className="flex flex-1 flex-col">
         <div className="mb-1 flex items-start justify-between gap-2">
           <h3
-            className={`leading-snug font-semibold tracking-[-0.02em] ${size === "lg" ? "text-[18px]" : "text-[16px]"} text-[var(--ink)] transition-colors group-hover:text-[var(--ink-3)]`}
+            className={`leading-snug font-semibold ${size === "lg" ? "text-[17px]" : "text-[15px]"} text-[var(--ink)] transition-colors group-hover:text-[var(--ink-3)]`}
           >
             {event.title}
           </h3>
           <span
-            className={`shrink-0 rounded-[var(--radius-full)] border px-2 py-0.5 font-mono text-[10px] ${BadgeTypeStyles(event.badgeType)}`}
+            className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${BadgeStyle(event.badgeType)}`}
           >
             {event.badge}
           </span>
@@ -178,216 +158,173 @@ function EventCard({ event, size = "md" }: { event: MockEvent; size?: "lg" | "md
         </p>
 
         <div className="mt-auto flex items-center justify-between">
-          <span className="font-mono text-[13px] font-medium text-[var(--ink)]">{event.price}</span>
+          <span className="text-[13px] font-semibold text-[var(--ink)]">{event.price}</span>
           {!isSoldOut && (
-            <button
-              className="font-mono text-[11px] tracking-[0.1em] text-[var(--pulse)] uppercase transition-colors hover:text-[var(--pulse-deep)]"
-              aria-label={`Garantir ingresso para ${event.title}`}
-            >
-              Garantir Ingresso →
-            </button>
+            <span className="text-[11px] font-semibold tracking-wide text-[var(--pulse)] uppercase transition-colors group-hover:text-[var(--pulse-deep)]">
+              Ver ingresso
+            </span>
           )}
         </div>
       </div>
-    </article>
+    </Link>
   )
 }
-
-// ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
   return (
     <div className="min-h-screen w-full bg-[var(--paper)] text-[var(--ink)]">
-      {/* ── Header ──────────────────────────────────────────────────────── */}
       <header
-        className="sticky top-0 z-50 border-b border-[var(--rule)] bg-[var(--paper)]/90 backdrop-blur-md"
+        className="sticky top-0 z-50 border-b border-[var(--rule)] bg-[var(--paper)]/95 backdrop-blur-md"
         role="banner"
       >
         <div className="mx-auto flex h-[60px] max-w-[1200px] items-center justify-between gap-6 px-6 md:px-8">
-          {/* Logo */}
-          <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="AXON — início">
-            <Image src="/brand/symbol-axon.svg" alt="" width={24} height={24} aria-hidden="true" />
-            <span className="text-[17px] font-extrabold tracking-[-0.03em]">AXON</span>
+          <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="AXON">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--ink)]">
+              <Image
+                src="/brand/symbol-axon.svg"
+                alt=""
+                width={18}
+                height={18}
+                aria-hidden="true"
+                className="brightness-0 invert"
+              />
+            </div>
+            <span className="text-[18px] font-black tracking-[-0.04em]">AXON</span>
           </Link>
 
-          {/* Nav */}
-          <nav className="hidden md:block" aria-label="Navegação principal">
-            <ul className="flex gap-7">
-              <li>
-                <Link
-                  href="#eventos"
-                  className="font-mono text-[12px] tracking-[0.1em] text-[var(--mute)] uppercase transition-colors hover:text-[var(--ink)]"
-                >
-                  Eventos
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#organizadores"
-                  className="font-mono text-[12px] tracking-[0.1em] text-[var(--mute)] uppercase transition-colors hover:text-[var(--ink)]"
-                >
-                  Para Organizadores
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/sobre"
-                  className="font-mono text-[12px] tracking-[0.1em] text-[var(--mute)] uppercase transition-colors hover:text-[var(--ink)]"
-                >
-                  Sobre
-                </Link>
-              </li>
-            </ul>
+          <nav className="hidden items-center gap-8 md:flex" aria-label="Navegação principal">
+            <Link
+              href="/eventos"
+              className="text-sm font-medium text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+            >
+              Eventos
+            </Link>
+            <Link
+              href="#organizadores"
+              className="text-sm font-medium text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+            >
+              Para quem organiza
+            </Link>
+            <Link
+              href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda com a AXON.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+            >
+              Suporte
+            </Link>
           </nav>
 
-          {/* Auth CTAs */}
-          <div className="flex shrink-0 items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2">
             <Link
               href="/entrar"
-              className="hidden px-3 py-1.5 font-mono text-[12px] tracking-[0.08em] text-[var(--mute)] uppercase transition-colors hover:text-[var(--ink)] sm:inline-flex"
+              className="hidden px-3 py-2 text-sm font-medium text-[var(--mute)] transition-colors hover:text-[var(--ink)] sm:inline-flex"
             >
               Entrar
             </Link>
             <Link
-              href="/cadastro"
-              className="inline-flex rounded-[var(--radius-md)] bg-[var(--ink)] px-4 py-2 font-mono text-[12px] tracking-[0.08em] text-[var(--paper)] uppercase transition-colors hover:bg-[var(--ink-2)]"
+              href="/entrar"
+              className="inline-flex rounded-xl bg-[var(--ink)] px-4 py-2 text-sm font-bold text-[var(--paper)] transition-colors hover:bg-[var(--ink-2)]"
             >
-              Criar Conta
+              Criar conta
             </Link>
           </div>
         </div>
       </header>
 
       <main>
-        {/* ── Hero ────────────────────────────────────────────────────────── */}
-        <section
-          className="relative overflow-hidden border-b border-[var(--rule)] pt-[96px] pb-[80px]"
-          aria-label="Início"
-        >
-          {/* ECG ambient line */}
+        {/* Hero */}
+        <section className="relative overflow-hidden border-b border-[var(--rule)] pt-[88px] pb-[72px]">
           <div
             className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
             aria-hidden="true"
           >
             <svg
-              className="absolute bottom-[8%] -left-[5%] h-auto w-[110%] opacity-20"
+              className="absolute bottom-0 -left-[5%] h-auto w-[110%] opacity-10"
               viewBox="0 0 1400 200"
               preserveAspectRatio="none"
               fill="none"
               stroke="var(--pulse)"
               strokeWidth="1.5"
-              strokeDasharray="4 6"
             >
               <path d="M0 100 L280 100 L300 100 L320 55 L345 145 L370 100 L620 100 L645 100 L665 35 L690 165 L715 100 L960 100 L980 100 L1000 70 L1025 130 L1050 100 L1400 100" />
             </svg>
           </div>
 
           <div className="mx-auto max-w-[1200px] px-6 md:px-8">
-            {/* Eyebrow */}
-            <div className="mb-8 flex items-center gap-2.5">
-              <span
-                className="inline-block h-2 w-2 rounded-full bg-[var(--pulse)]"
-                aria-hidden="true"
-              />
-              <span className="font-mono text-[11px] tracking-[0.14em] text-[var(--mute)] uppercase">
-                AXON · Marketplace de Ingressos
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--rule)] bg-[var(--paper-pure)] px-4 py-1.5">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--pulse)]" />
+              <span className="text-[12px] font-medium text-[var(--mute)]">
+                Rio Grande do Norte
               </span>
             </div>
 
-            {/* Headline */}
-            <h1 className="mb-6 max-w-[900px] text-[clamp(52px,9vw,120px)] leading-[0.95] font-black tracking-[-0.055em]">
-              O{" "}
-              <em className="bg-[linear-gradient(180deg,transparent_58%,var(--pulse)_58%)] not-italic">
-                impulso
-              </em>{" "}
-              do ingresso.
+            <h1 className="mb-5 max-w-[820px] text-[clamp(42px,8vw,96px)] leading-[0.95] font-black tracking-[-0.05em]">
+              O RN sabe{" "}
+              <span className="relative inline-block">
+                <span className="relative z-10">fazer festa.</span>
+                <span
+                  className="absolute bottom-1 left-0 -z-0 h-3 w-full rounded"
+                  style={{ backgroundColor: "var(--pulse)", opacity: 0.35 }}
+                />
+              </span>
             </h1>
 
-            <p className="mb-10 max-w-[580px] text-[clamp(17px,2vw,22px)] leading-[1.5] text-[var(--ink-3)]">
-              Compra em segundos. QR assinado digitalmente. Acesso verificado — mesmo offline.
+            <p className="mb-10 max-w-[540px] text-[clamp(16px,2vw,20px)] leading-[1.6] text-[var(--ink-3)]">
+              Carnaxelita, Vaquejada, Carnatal e muito mais. Compre seu ingresso agora, pague pelo
+              Pix e chegue tranquilo.
             </p>
 
-            {/* Search */}
-            <div
-              className="mb-14 flex max-w-[640px] items-center gap-3 rounded-[var(--radius-lg)] border border-[var(--rule-strong)] bg-[var(--paper-pure)] px-4 py-3 shadow-[var(--shadow-md)]"
-              role="search"
-            >
-              <svg
-                className="shrink-0 text-[var(--mute-2)]"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
+            <div className="mb-12 flex flex-wrap gap-3">
+              <Link
+                href="/eventos"
+                className="inline-flex items-center gap-2 rounded-xl bg-[var(--ink)] px-6 py-3 text-[15px] font-bold text-[var(--paper)] transition-colors hover:bg-[var(--ink-2)]"
               >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-              <input
-                type="search"
-                placeholder="Buscar evento, artista ou local..."
-                className="flex-1 bg-transparent font-sans text-[15px] text-[var(--ink)] outline-none placeholder:text-[var(--mute-2)]"
-                aria-label="Buscar eventos"
-              />
-              <button
-                className="shrink-0 rounded-[var(--radius-md)] bg-[var(--ink)] px-4 py-2 font-mono text-[12px] tracking-[0.08em] text-[var(--paper)] uppercase transition-colors hover:bg-[var(--ink-2)]"
-                aria-label="Buscar"
+                Ver todos os eventos
+              </Link>
+              <Link
+                href={`https://wa.me/5584981235396?text=${encodeURIComponent("Oi! Quero saber mais sobre a AXON.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--rule)] bg-[var(--paper-pure)] px-6 py-3 text-[15px] font-semibold text-[var(--ink)] transition-colors hover:bg-[var(--paper-soft)]"
               >
-                Buscar
-              </button>
+                Falar no WhatsApp
+              </Link>
             </div>
 
-            {/* Stats */}
-            <dl className="grid grid-cols-2 gap-x-8 gap-y-6 border-t border-[var(--rule)] pt-10 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-x-8 gap-y-5 border-t border-[var(--rule)] pt-8 md:grid-cols-4">
               {[
-                { term: "Checkout", detail: "Pix Instantâneo" },
-                { term: "Autenticação", detail: "QR HMAC Server-side" },
-                { term: "Portaria", detail: "Validação Offline" },
-                { term: "Repasse", detail: "D+1 Garantido" },
-              ].map(({ term, detail }) => (
-                <div key={term}>
-                  <dt className="mb-1.5 font-mono text-[10px] tracking-[0.14em] text-[var(--mute)] uppercase">
-                    {term}
-                  </dt>
-                  <dd className="text-[15px] font-medium text-[var(--ink)]">{detail}</dd>
+                { label: "Pix na hora", desc: "Aprovação instantânea" },
+                { label: "QR Code", desc: "Ingresso digital seguro" },
+                { label: "Sem fila", desc: "Tudo pelo celular" },
+                { label: "Suporte", desc: "A gente te ajuda" },
+              ].map(({ label, desc }) => (
+                <div key={label}>
+                  <p className="mb-0.5 text-[14px] font-bold text-[var(--ink)]">{label}</p>
+                  <p className="text-[13px] text-[var(--mute)]">{desc}</p>
                 </div>
               ))}
-            </dl>
+            </div>
           </div>
         </section>
 
-        {/* ── Em Destaque ─────────────────────────────────────────────────── */}
-        <section
-          id="eventos"
-          className="border-b border-[var(--rule)] py-[72px]"
-          aria-label="Em Destaque"
-        >
+        {/* Em destaque */}
+        <section id="eventos" className="border-b border-[var(--rule)] py-[64px]">
           <div className="mx-auto max-w-[1200px] px-6 md:px-8">
             <div className="mb-10 flex items-end justify-between">
               <div>
-                <div className="mb-2 flex items-center gap-2">
-                  <span
-                    className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--pulse)]"
-                    aria-hidden="true"
-                  />
-                  <span className="font-mono text-[10px] tracking-[0.14em] text-[var(--mute)] uppercase">
-                    Em Destaque
-                  </span>
-                </div>
-                <h2 className="text-[clamp(24px,3vw,36px)] font-bold tracking-[-0.03em]">
-                  Os eventos do momento.
+                <p className="mb-1.5 text-[11px] font-semibold tracking-widest text-[var(--mute)] uppercase">
+                  Em destaque
+                </p>
+                <h2 className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight">
+                  Os eventos mais esperados do estado
                 </h2>
               </div>
               <Link
                 href="/eventos"
-                className="hidden font-mono text-[12px] tracking-[0.08em] text-[var(--mute)] uppercase transition-colors hover:text-[var(--ink)] md:inline-flex"
-                aria-label="Ver todos os eventos em destaque"
+                className="hidden text-sm font-semibold text-[var(--mute)] transition-colors hover:text-[var(--ink)] md:inline-flex"
               >
-                Ver todos →
+                Ver todos
               </Link>
             </div>
 
@@ -399,33 +336,23 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── Esta Semana ──────────────────────────────────────────────────── */}
-        <section
-          className="border-b border-[var(--rule)] bg-[var(--paper-soft)] py-[72px]"
-          aria-label="Esta Semana"
-        >
+        {/* Mais eventos */}
+        <section className="border-b border-[var(--rule)] bg-[var(--paper-soft)] py-[64px]">
           <div className="mx-auto max-w-[1200px] px-6 md:px-8">
             <div className="mb-10 flex items-end justify-between">
               <div>
-                <div className="mb-2 flex items-center gap-2">
-                  <span
-                    className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--pulse)]"
-                    aria-hidden="true"
-                  />
-                  <span className="font-mono text-[10px] tracking-[0.14em] text-[var(--mute)] uppercase">
-                    Esta Semana
-                  </span>
-                </div>
-                <h2 className="text-[clamp(24px,3vw,36px)] font-bold tracking-[-0.03em]">
-                  O que está acontecendo.
+                <p className="mb-1.5 text-[11px] font-semibold tracking-widest text-[var(--mute)] uppercase">
+                  Outros eventos
+                </p>
+                <h2 className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight">
+                  Tem coisa boa por toda parte
                 </h2>
               </div>
               <Link
-                href="/eventos?periodo=semana"
-                className="hidden font-mono text-[12px] tracking-[0.08em] text-[var(--mute)] uppercase transition-colors hover:text-[var(--ink)] md:inline-flex"
-                aria-label="Ver todos os eventos desta semana"
+                href="/eventos"
+                className="hidden text-sm font-semibold text-[var(--mute)] transition-colors hover:text-[var(--ink)] md:inline-flex"
               >
-                Ver todos →
+                Ver todos
               </Link>
             </div>
 
@@ -437,156 +364,137 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── Perto de Você ────────────────────────────────────────────────── */}
-        <section className="border-b border-[var(--rule)] py-[72px]" aria-label="Perto de Você">
-          <div className="mx-auto max-w-[1200px] px-6 md:px-8">
-            <div className="mb-10 flex items-end justify-between">
-              <div>
-                <div className="mb-2 flex items-center gap-2">
-                  <span
-                    className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--pulse)]"
-                    aria-hidden="true"
-                  />
-                  <span className="font-mono text-[10px] tracking-[0.14em] text-[var(--mute)] uppercase">
-                    Perto de Você
-                  </span>
-                  <span className="rounded-[var(--radius-full)] border border-[var(--rule)] bg-[var(--paper-soft)] px-2 py-0.5 font-mono text-[10px] text-[var(--mute)]">
-                    Rio Grande do Norte
-                  </span>
-                </div>
-                <h2 className="text-[clamp(24px,3vw,36px)] font-bold tracking-[-0.03em]">
-                  Sua cidade. Sua agenda.
-                </h2>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
-              {[...featuredEvents.slice(0, 2), ...weekEvents.slice(0, 2)].map((event) => (
-                <EventCard key={`nearby-${event.id}`} event={event} />
-              ))}
-            </div>
-
-            <p className="mt-6 font-mono text-[13px] text-[var(--mute)]">
-              Localização baseada em preferências. Ative para resultados personalizados.
-            </p>
-          </div>
-        </section>
-
-        {/* ── Categorias ──────────────────────────────────────────────────── */}
-        <section
-          className="border-b border-[var(--rule)] bg-[var(--paper-soft)] py-[72px]"
-          aria-label="Categorias"
-        >
+        {/* Categorias */}
+        <section className="border-b border-[var(--rule)] py-[64px]">
           <div className="mx-auto max-w-[1200px] px-6 md:px-8">
             <div className="mb-10">
-              <div className="mb-2 flex items-center gap-2">
-                <span
-                  className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--pulse)]"
-                  aria-hidden="true"
-                />
-                <span className="font-mono text-[10px] tracking-[0.14em] text-[var(--mute)] uppercase">
-                  Categorias
-                </span>
-              </div>
-              <h2 className="text-[clamp(24px,3vw,36px)] font-bold tracking-[-0.03em]">
-                Qualquer tipo de evento.
+              <p className="mb-1.5 text-[11px] font-semibold tracking-widest text-[var(--mute)] uppercase">
+                Categorias
+              </p>
+              <h2 className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight">
+                Cada tipo de rolê tem seu lugar
               </h2>
             </div>
 
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               {[
-                { label: "Shows & Música", icon: "♪", color: "var(--danger)" },
-                { label: "Esportes", icon: "◎", color: "var(--info)" },
-                { label: "Gospel & Religioso", icon: "✦", color: "#7C3AED" },
-                { label: "Festas & Micareta", icon: "◈", color: "var(--warning)" },
-              ].map(({ label, icon, color }) => (
-                <button
+                { label: "Shows e Música", emoji: "🎵", href: "/eventos?categoria=show" },
+                { label: "Esportes", emoji: "🏆", href: "/eventos?categoria=esporte" },
+                { label: "Gospel e Religioso", emoji: "✨", href: "/eventos?categoria=religioso" },
+                { label: "Festas e Micareta", emoji: "🎉", href: "/eventos?categoria=outro" },
+              ].map(({ label, emoji, href }) => (
+                <Link
                   key={label}
-                  className="group flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--rule)] bg-[var(--paper-pure)] p-5 text-left transition-all duration-[var(--duration-normal)] hover:border-[var(--rule-strong)] hover:shadow-[var(--shadow-md)]"
-                  aria-label={`Explorar eventos de ${label}`}
+                  href={href}
+                  className="group flex flex-col gap-3 rounded-2xl border border-[var(--rule)] bg-[var(--paper-pure)] p-5 text-left transition-all hover:border-[var(--rule-strong)] hover:shadow-md"
                 >
-                  <span className="text-[22px] leading-none" style={{ color }} aria-hidden="true">
-                    {icon}
-                  </span>
-                  <span className="text-[15px] leading-tight font-medium text-[var(--ink)] transition-colors group-hover:text-[var(--ink-3)]">
+                  <span className="text-[26px] leading-none">{emoji}</span>
+                  <span className="text-[15px] leading-tight font-semibold text-[var(--ink)] transition-colors group-hover:text-[var(--ink-3)]">
                     {label}
                   </span>
-                </button>
+                </Link>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── Para Organizadores ──────────────────────────────────────────── */}
-        <section
-          id="organizadores"
-          className="bg-[var(--ink)] py-[96px] text-[var(--paper)]"
-          aria-label="Para Organizadores"
-        >
+        {/* Como funciona */}
+        <section className="border-b border-[var(--rule)] bg-[var(--paper-soft)] py-[64px]">
           <div className="mx-auto max-w-[1200px] px-6 md:px-8">
-            <div className="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
-              <div>
-                <div className="mb-6 flex items-center gap-2">
-                  <span
-                    className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--pulse)]"
-                    aria-hidden="true"
-                  />
-                  <span className="font-mono text-[10px] tracking-[0.14em] text-[var(--mute-2)] uppercase">
-                    Para Organizadores
+            <div className="mb-10">
+              <p className="mb-1.5 text-[11px] font-semibold tracking-widest text-[var(--mute)] uppercase">
+                Como funciona
+              </p>
+              <h2 className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight">
+                Simples assim
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {[
+                {
+                  n: "1",
+                  title: "Escolha o evento",
+                  desc: "Explore os shows, vaquejadas e festas mais esperados do RN.",
+                },
+                {
+                  n: "2",
+                  title: "Compre pelo Pix",
+                  desc: "Pagamento rápido e seguro. Em menos de um minuto o ingresso é seu.",
+                },
+                {
+                  n: "3",
+                  title: "Chega na frente",
+                  desc: "Mostre o QR Code na entrada e aproveite. Sem papel, sem fila, sem dor de cabeça.",
+                },
+              ].map(({ n, title, desc }) => (
+                <div key={n} className="flex gap-4">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--ink)] text-sm font-black text-[var(--paper)]">
+                    {n}
                   </span>
+                  <div>
+                    <p className="mb-1 font-bold text-[var(--ink)]">{title}</p>
+                    <p className="text-[14px] leading-relaxed text-[var(--mute)]">{desc}</p>
+                  </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-                <h2 className="mb-6 text-[clamp(28px,3.5vw,44px)] leading-[1.1] font-bold tracking-[-0.03em]">
-                  Organize com <em className="text-[var(--pulse)] not-italic">precisão.</em>
+        {/* Para organizadores */}
+        <section id="organizadores" className="bg-[var(--ink)] py-[88px] text-[var(--paper)]">
+          <div className="mx-auto max-w-[1200px] px-6 md:px-8">
+            <div className="grid grid-cols-1 items-center gap-14 md:grid-cols-2">
+              <div>
+                <p className="mb-4 text-[11px] font-semibold tracking-widest text-[var(--mute-2)] uppercase">
+                  Para quem organiza eventos
+                </p>
+                <h2 className="mb-5 text-[clamp(26px,3.5vw,42px)] leading-[1.1] font-bold tracking-tight">
+                  Você cuida do evento. A gente cuida do ingresso.
                 </h2>
-
-                <p className="mb-8 text-[17px] leading-[1.65] text-[var(--mute-2)]">
-                  Painel completo para criar eventos, gerenciar lotes, acompanhar vendas em tempo
-                  real e receber o repasse no dia seguinte. Sem taxa de setup. Sem contrato de
-                  fidelidade.
+                <p className="mb-8 text-[16px] leading-relaxed text-[var(--mute-2)]">
+                  Crie seu evento em minutos, acompanhe as vendas em tempo real e receba o dinheiro
+                  no dia seguinte via Pix. Sem burocracia e sem taxa de adesão.
                 </p>
 
-                <ul className="mb-10 space-y-3" aria-label="Funcionalidades para organizadores">
+                <ul className="mb-10 space-y-3">
                   {[
-                    "Dashboard com métricas em tempo real",
-                    "Gestão de lotes e meia-entrada automática",
-                    "Split de pagamento nativo (Pagar.me)",
-                    "PWA de portaria para validação de QR",
-                    "Repasse D+1 via Pix",
+                    "Criação de evento em minutos",
+                    "Venda de ingressos com lotes e meia-entrada",
+                    "Repasse D+1 direto na sua conta",
+                    "App de validação de QR Code na portaria",
+                    "Dashboard com vendas em tempo real",
                   ].map((item) => (
                     <li
                       key={item}
-                      className="flex items-start gap-3 text-[15px] text-[var(--mute-2)]"
+                      className="flex items-center gap-3 text-[14px] text-[var(--mute-2)]"
                     >
-                      <span className="mt-0.5 shrink-0 font-mono text-[12px] text-[var(--pulse)]">
-                        ✓
-                      </span>
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--pulse)]" />
                       {item}
                     </li>
                   ))}
                 </ul>
 
                 <Link
-                  href="/cadastro?tipo=organizador"
-                  className="inline-flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--pulse)] px-6 py-3 font-mono text-[13px] font-bold tracking-[0.1em] text-[var(--pulse-ink)] uppercase transition-colors hover:bg-[var(--pulse-deep)]"
+                  href="/organizador/comecar"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[var(--pulse)] px-6 py-3 text-[15px] font-bold text-[var(--pulse-ink)] transition-colors hover:bg-[var(--pulse-deep)]"
                 >
-                  Criar conta gratuita →
+                  Quero vender ingressos
                 </Link>
               </div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-2 gap-4">
                 {[
-                  { value: "0%", label: "Taxa de setup" },
+                  { value: "0%", label: "Sem taxa de adesão" },
                   { value: "D+1", label: "Repasse garantido" },
-                  { value: "40%", label: "Meia-entrada automática" },
-                  { value: "QR HMAC", label: "Autenticação server-side" },
+                  { value: "Pix", label: "Pagamento instantâneo" },
+                  { value: "QR", label: "Validação segura" },
                 ].map(({ value, label }) => (
                   <div
                     key={label}
-                    className="flex flex-col gap-2 rounded-[var(--radius-xl)] border border-[var(--ink-3)] p-6"
+                    className="flex flex-col gap-2 rounded-2xl border border-white/10 p-6"
                   >
-                    <span className="font-mono text-[28px] font-bold tracking-[-0.03em] text-[var(--pulse)]">
+                    <span className="text-[28px] font-black tracking-tight text-[var(--pulse)]">
                       {value}
                     </span>
                     <span className="text-[13px] leading-snug text-[var(--mute-2)]">{label}</span>
@@ -598,37 +506,47 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* ── Footer ──────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-[var(--rule)] py-14" role="contentinfo">
+      <footer className="border-t border-[var(--rule)] py-14">
         <div className="mx-auto max-w-[1200px] px-6 md:px-8">
           <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
-            {/* Brand */}
             <div className="col-span-2 md:col-span-1">
-              <Link href="/" className="mb-3 flex items-center gap-2" aria-label="AXON — início">
-                <Image
-                  src="/brand/symbol-axon.svg"
-                  alt=""
-                  width={20}
-                  height={20}
-                  aria-hidden="true"
-                />
-                <span className="text-[16px] font-extrabold tracking-[-0.03em]">AXON</span>
+              <Link href="/" className="mb-4 flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--ink)]">
+                  <Image
+                    src="/brand/symbol-axon.svg"
+                    alt=""
+                    width={14}
+                    height={14}
+                    className="brightness-0 invert"
+                  />
+                </div>
+                <span className="text-[15px] font-black tracking-[-0.04em]">AXON</span>
               </Link>
-              <p className="text-[13px] leading-[1.6] text-[var(--mute)]">
-                Marketplace brasileiro de ingressos. Do clique à catraca.
+              <p className="mb-4 text-[13px] leading-relaxed text-[var(--mute)]">
+                Ingressos online para os melhores eventos do Rio Grande do Norte.
               </p>
+              <a
+                href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                </svg>
+                Falar com suporte
+              </a>
             </div>
 
-            {/* Plataforma */}
-            <nav aria-label="Links da plataforma">
-              <h3 className="mb-4 font-mono text-[10px] tracking-[0.14em] text-[var(--mute)] uppercase">
+            <nav>
+              <h3 className="mb-4 text-[11px] font-bold tracking-widest text-[var(--mute)] uppercase">
                 Plataforma
               </h3>
               <ul className="space-y-2.5">
                 {[
-                  { label: "Explorar Eventos", href: "/eventos" },
-                  { label: "Para Organizadores", href: "/organizador" },
-                  { label: "PWA de Portaria", href: "/scan" },
+                  { label: "Ver eventos", href: "/eventos" },
+                  { label: "Para organizadores", href: "/organizador/comecar" },
+                  { label: "Minha conta", href: "/minha-conta" },
                 ].map(({ label, href }) => (
                   <li key={href}>
                     <Link
@@ -642,38 +560,46 @@ export default function HomePage() {
               </ul>
             </nav>
 
-            {/* Empresa */}
-            <nav aria-label="Links da empresa">
-              <h3 className="mb-4 font-mono text-[10px] tracking-[0.14em] text-[var(--mute)] uppercase">
-                Empresa
+            <nav>
+              <h3 className="mb-4 text-[11px] font-bold tracking-widest text-[var(--mute)] uppercase">
+                Contato
               </h3>
               <ul className="space-y-2.5">
-                {[
-                  { label: "Sobre", href: "/sobre" },
-                  { label: "Contato", href: "/contato" },
-                ].map(({ label, href }) => (
-                  <li key={href}>
-                    <Link
-                      href={href}
-                      className="text-[13px] text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                ))}
+                <li>
+                  <a
+                    href={`https://wa.me/5584981235396`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[13px] text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+                  >
+                    +55 84 9 8123-5396
+                  </a>
+                </li>
+                <li>
+                  <p className="text-[13px] text-[var(--mute)]">CEO: Johnattan Dias</p>
+                </li>
+                <li>
+                  <a
+                    href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda.")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[13px] text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+                  >
+                    Suporte no WhatsApp
+                  </a>
+                </li>
               </ul>
             </nav>
 
-            {/* Legal */}
-            <nav aria-label="Links legais">
-              <h3 className="mb-4 font-mono text-[10px] tracking-[0.14em] text-[var(--mute)] uppercase">
+            <nav>
+              <h3 className="mb-4 text-[11px] font-bold tracking-widest text-[var(--mute)] uppercase">
                 Legal
               </h3>
               <ul className="space-y-2.5">
                 {[
                   { label: "Privacidade", href: "/privacidade" },
-                  { label: "Termos de Uso", href: "/termos" },
-                  { label: "Política de Reembolso", href: "/reembolso" },
+                  { label: "Termos de uso", href: "/termos" },
+                  { label: "Reembolso", href: "/reembolso" },
                 ].map(({ label, href }) => (
                   <li key={href}>
                     <Link
@@ -688,17 +614,27 @@ export default function HomePage() {
             </nav>
           </div>
 
-          {/* Bottom bar */}
           <div className="flex flex-col items-center justify-between gap-4 border-t border-[var(--rule)] pt-8 sm:flex-row">
-            <p className="font-mono text-[11px] tracking-[0.04em] text-[var(--mute)]">
-              © 2026 AXON. O sinal chega antes do som.
+            <p className="text-[12px] text-[var(--mute)]">
+              © 2026 AXON. Todos os direitos reservados.
             </p>
-            <p className="font-mono text-[11px] text-[var(--mute-2)]">
-              Feito no Rio Grande do Norte.
-            </p>
+            <p className="text-[12px] text-[var(--mute-2)]">Desenvolvido pela Beyonder © 2026</p>
           </div>
         </div>
       </footer>
+
+      {/* Botão flutuante de WhatsApp */}
+      <a
+        href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda com a AXON.")}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Falar no WhatsApp"
+        className="fixed right-6 bottom-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+      >
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+        </svg>
+      </a>
     </div>
   )
 }
