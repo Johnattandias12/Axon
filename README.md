@@ -1,6 +1,6 @@
 # 🎟️ AXON
 
-> Marketplace brasileiro de ingressos online — Pix, cartão, antifraude em camadas, repasse rápido.
+> Marketplace de ingressos online — Pix, cartão, antifraude em camadas, repasse rápido.
 
 ## Status
 
