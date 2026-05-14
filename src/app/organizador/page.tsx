@@ -70,13 +70,11 @@ export default async function OrganizadorDashboard() {
           )}
         </div>
         <Button
-          asChild
+          render={<Link href="/organizador/eventos/novo" />}
           style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)", fontWeight: 600 }}
         >
-          <Link href="/organizador/eventos/novo">
-            <Plus size={16} className="mr-1.5" />
-            Novo evento
-          </Link>
+          <Plus size={16} className="mr-1.5" />
+          Novo evento
         </Button>
       </div>
 
@@ -115,12 +113,12 @@ export default async function OrganizadorDashboard() {
               Nenhum evento criado ainda.
             </p>
             <Button
-              asChild
+              render={<Link href="/organizador/eventos/novo" />}
               size="sm"
               className="mt-4"
               style={{ backgroundColor: "var(--ink)", color: "var(--paper)" }}
             >
-              <Link href="/organizador/eventos/novo">Criar primeiro evento</Link>
+              Criar primeiro evento
             </Button>
           </div>
         ) : (

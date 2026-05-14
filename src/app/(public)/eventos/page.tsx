@@ -39,7 +39,10 @@ export default async function EventosPage({
     query = query.ilike("title", `%${params.busca}%`)
   }
   if (params.categoria) {
-    query = query.eq("category", params.categoria)
+    query = query.eq(
+      "category",
+      params.categoria as "show" | "esporte" | "religioso" | "curso" | "outro"
+    )
   }
   if (params.cidade) {
     query = query.ilike("city", `%${params.cidade}%`)

@@ -89,18 +89,22 @@ export default async function EventoDetailPage({ params }: Props) {
         </div>
         <div className="flex flex-wrap gap-2">
           {event.status === "published" && (
-            <Button asChild variant="outline" size="sm">
-              <Link href={`/eventos/${event.slug}`} target="_blank">
-                <Globe size={14} className="mr-1.5" />
-                Ver página
-              </Link>
+            <Button
+              render={<Link href={`/eventos/${event.slug}`} target="_blank" />}
+              variant="outline"
+              size="sm"
+            >
+              <Globe size={14} className="mr-1.5" />
+              Ver página
             </Button>
           )}
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/organizador/eventos/${id}/editar`}>
-              <Pencil size={14} className="mr-1.5" />
-              Editar
-            </Link>
+          <Button
+            render={<Link href={`/organizador/eventos/${id}/editar`} />}
+            variant="outline"
+            size="sm"
+          >
+            <Pencil size={14} className="mr-1.5" />
+            Editar
           </Button>
         </div>
       </div>

@@ -78,45 +78,40 @@ export async function SiteHeader() {
         <div className="flex items-center gap-2">
           {user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 rounded-full p-1 transition-colors hover:bg-black/5">
-                  <Avatar className="h-7 w-7">
-                    <AvatarFallback
-                      className="text-xs font-semibold"
-                      style={{ backgroundColor: "var(--ink)", color: "var(--pulse)" }}
-                    >
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <ChevronDown size={14} style={{ color: "var(--mute)" }} />
-                </button>
+              <DropdownMenuTrigger className="flex items-center gap-2 rounded-full p-1 transition-colors hover:bg-black/5">
+                <Avatar className="h-7 w-7">
+                  <AvatarFallback
+                    className="text-xs font-semibold"
+                    style={{ backgroundColor: "var(--ink)", color: "var(--pulse)" }}
+                  >
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <ChevronDown size={14} style={{ color: "var(--mute)" }} />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link href="/minha-conta">Minha conta</Link>
+                <DropdownMenuItem render={<Link href="/minha-conta" />}>
+                  Minha conta
                 </DropdownMenuItem>
                 {(profile?.role === "organizer" || profile?.role === "admin") && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/organizador">Painel do organizador</Link>
+                  <DropdownMenuItem render={<Link href="/organizador" />}>
+                    Painel do organizador
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <form action="/api/auth/logout" method="POST">
-                    <button
-                      type="submit"
-                      className="w-full text-left"
-                      style={{ color: "var(--danger)" }}
-                    >
-                      Sair
-                    </button>
-                  </form>
-                </DropdownMenuItem>
+                <form action="/api/auth/logout" method="POST">
+                  <DropdownMenuItem
+                    render={<button type="submit" className="w-full text-left" />}
+                    style={{ color: "var(--danger)" }}
+                  >
+                    Sair
+                  </DropdownMenuItem>
+                </form>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Button
-              asChild
+              render={<Link href="/entrar" />}
               size="sm"
               style={{
                 backgroundColor: "var(--ink)",
@@ -125,7 +120,7 @@ export async function SiteHeader() {
                 fontSize: "0.8125rem",
               }}
             >
-              <Link href="/entrar">Entrar</Link>
+              Entrar
             </Button>
           )}
         </div>
