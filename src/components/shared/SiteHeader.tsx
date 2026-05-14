@@ -51,7 +51,7 @@ export async function SiteHeader() {
             className="flex h-7 w-7 items-center justify-center rounded-lg"
             style={{ backgroundColor: "var(--ink)" }}
           >
-            <AxonLogo size={14} className="text-[var(--paper)]" />
+            <AxonLogo size={14} className="text-[var(--pulse)]" />
           </div>
           <span
             className="hidden text-[15px] font-black tracking-[-0.045em] sm:block"

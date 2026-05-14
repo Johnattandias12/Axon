@@ -1,9 +1,9 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { LayoutDashboard, Users, Calendar, Building2, LogOut, Shield } from "lucide-react"
+import { AxonLogo } from "@/components/shared/AxonLogo"
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
@@ -31,14 +31,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           style={{ borderColor: "var(--rule)" }}
         >
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--ink)]">
-              <Image
-                src="/brand/symbol-axon.svg"
-                alt="AXON"
-                width={13}
-                height={13}
-                className="brightness-0 invert"
-              />
+            <div
+              className="flex h-6 w-6 items-center justify-center rounded-md"
+              style={{ backgroundColor: "var(--ink)" }}
+            >
+              <AxonLogo size={12} className="text-[var(--pulse)]" />
             </div>
             <span className="text-sm font-black tracking-[-0.04em]" style={{ color: "var(--ink)" }}>
               AXON
@@ -89,7 +86,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
         >
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/brand/symbol-axon.svg" alt="AXON" width={22} height={22} />
+            <div
+              className="flex h-6 w-6 items-center justify-center rounded-md"
+              style={{ backgroundColor: "var(--ink)" }}
+            >
+              <AxonLogo size={12} className="text-[var(--pulse)]" />
+            </div>
           </Link>
           <span className="ml-3 text-sm font-bold" style={{ color: "var(--ink)" }}>
             Admin

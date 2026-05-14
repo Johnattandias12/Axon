@@ -14,8 +14,8 @@ const events = [
     price: "A partir de R$ 120",
     badge: "Lote 2 restrito",
     urgent: true,
-    gradient: "linear-gradient(135deg, #3d1c02 0%, #1a0a00 50%, #0A0A0B 100%)",
-    accent: "#E89400",
+    gradient: "linear-gradient(135deg, #0d1a00 0%, #081000 50%, #050B00 100%)",
+    accent: "#c8ff00",
   },
   {
     id: "festa-santana-caico-2026",
@@ -50,8 +50,8 @@ const events = [
     price: "R$ 80 a R$ 300",
     badge: "Lote 1 disponível",
     urgent: false,
-    gradient: "linear-gradient(135deg, #2a1800 0%, #150c00 50%, #0A0A0B 100%)",
-    accent: "#E89400",
+    gradient: "linear-gradient(135deg, #0d1a00 0%, #081000 50%, #050B00 100%)",
+    accent: "#c8ff00",
   },
   {
     id: "gospel-rn-2026",
@@ -100,35 +100,37 @@ export function EventsCarousel() {
 
   return (
     <div className="relative">
-      {/* Navigation */}
-      <div className="absolute -top-14 right-0 flex gap-2">
-        <button
-          onClick={() => scroll("left")}
-          disabled={!canScrollLeft}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border transition-all disabled:opacity-30"
-          style={{
-            borderColor: "var(--rule)",
-            backgroundColor: "var(--paper-pure)",
-            color: "var(--ink)",
-          }}
-          aria-label="Anterior"
-        >
-          <ChevronLeft size={15} />
-        </button>
-        <button
-          onClick={() => scroll("right")}
-          disabled={!canScrollRight}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border transition-all disabled:opacity-30"
-          style={{
-            borderColor: "var(--rule)",
-            backgroundColor: "var(--paper-pure)",
-            color: "var(--ink)",
-          }}
-          aria-label="Próximo"
-        >
-          <ChevronRight size={15} />
-        </button>
-      </div>
+      {/* Left arrow */}
+      <button
+        onClick={() => scroll("left")}
+        disabled={!canScrollLeft}
+        className="absolute top-1/2 left-0 z-10 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border shadow-lg transition-all disabled:pointer-events-none disabled:opacity-0"
+        style={{
+          backgroundColor: "var(--paper-pure)",
+          borderColor: "var(--rule)",
+          color: "var(--ink)",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.14)",
+        }}
+        aria-label="Anterior"
+      >
+        <ChevronLeft size={17} />
+      </button>
+
+      {/* Right arrow */}
+      <button
+        onClick={() => scroll("right")}
+        disabled={!canScrollRight}
+        className="absolute top-1/2 right-0 z-10 flex h-10 w-10 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border shadow-lg transition-all disabled:pointer-events-none disabled:opacity-0"
+        style={{
+          backgroundColor: "var(--paper-pure)",
+          borderColor: "var(--rule)",
+          color: "var(--ink)",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.14)",
+        }}
+        aria-label="Próximo"
+      >
+        <ChevronRight size={17} />
+      </button>
 
       {/* Scroll container */}
       <div
@@ -157,9 +159,9 @@ export function EventsCarousel() {
             <div className="relative p-5 pb-0" style={{ height: "180px" }}>
               {/* Accent glow */}
               <div
-                className="pointer-events-none absolute inset-0 opacity-30"
+                className="pointer-events-none absolute inset-0 opacity-25"
                 style={{
-                  background: `radial-gradient(circle at 20% 30%, ${event.accent}50 0%, transparent 60%)`,
+                  background: `radial-gradient(circle at 20% 30%, ${event.accent}60 0%, transparent 60%)`,
                 }}
               />
 
@@ -168,7 +170,7 @@ export function EventsCarousel() {
                 className="relative z-10 inline-flex items-center rounded-lg border px-2.5 py-1 text-[10px] font-semibold tracking-wider uppercase"
                 style={{
                   borderColor: `${event.accent}40`,
-                  backgroundColor: `${event.accent}20`,
+                  backgroundColor: `${event.accent}18`,
                   color: event.accent,
                 }}
               >
@@ -179,14 +181,14 @@ export function EventsCarousel() {
                 <span
                   className="absolute top-5 right-5 z-10 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold"
                   style={{
-                    backgroundColor: "rgba(232,148,0,0.2)",
-                    color: "#E89400",
-                    border: "1px solid rgba(232,148,0,0.3)",
+                    backgroundColor: `${event.accent}20`,
+                    color: event.accent,
+                    border: `1px solid ${event.accent}30`,
                   }}
                 >
                   <span
                     className="h-1.5 w-1.5 animate-pulse rounded-full"
-                    style={{ backgroundColor: "#E89400" }}
+                    style={{ backgroundColor: event.accent }}
                   />
                   LIMITADO
                 </span>
@@ -209,7 +211,10 @@ export function EventsCarousel() {
                 </div>
                 <span
                   className="rounded-xl px-3 py-1.5 text-[11px] font-bold transition-all group-hover:opacity-90"
-                  style={{ backgroundColor: event.accent, color: "#0A0A0B" }}
+                  style={{
+                    backgroundColor: event.accent,
+                    color: event.accent === "#c8ff00" ? "#0A0A0B" : "#0A0A0B",
+                  }}
                 >
                   Ver ingresso
                 </span>

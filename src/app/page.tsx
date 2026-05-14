@@ -24,7 +24,7 @@ export default function HomePage() {
               className="flex h-8 w-8 items-center justify-center rounded-lg"
               style={{ backgroundColor: "var(--ink)" }}
             >
-              <AxonLogo size={17} className="text-[var(--paper)]" />
+              <AxonLogo size={17} className="text-[var(--pulse)]" />
             </div>
             <span
               className="text-[17px] font-black tracking-[-0.045em]"
@@ -80,22 +80,22 @@ export default function HomePage() {
       </header>
 
       <main>
-        {/* Hero — dark, gradients */}
+        {/* Hero */}
         <section
           className="relative overflow-hidden border-b px-5 pt-[100px] pb-[80px] md:px-8"
           style={{ borderColor: "var(--rule)", backgroundColor: "#08080A" }}
         >
           {/* Gradient orbs */}
           <div
-            className="pointer-events-none absolute top-[-120px] left-[-80px] h-[500px] w-[500px] rounded-full opacity-30"
+            className="pointer-events-none absolute top-[-120px] left-[-80px] h-[500px] w-[500px] rounded-full opacity-20"
             style={{
-              background: "radial-gradient(circle, rgba(232,148,0,0.25) 0%, transparent 70%)",
+              background: "radial-gradient(circle, rgba(200,255,0,0.3) 0%, transparent 70%)",
               filter: "blur(80px)",
             }}
             aria-hidden="true"
           />
           <div
-            className="pointer-events-none absolute right-[-80px] bottom-[-80px] h-[400px] w-[400px] rounded-full opacity-20"
+            className="pointer-events-none absolute right-[-80px] bottom-[-80px] h-[400px] w-[400px] rounded-full opacity-15"
             style={{
               background: "radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%)",
               filter: "blur(80px)",
@@ -103,21 +103,21 @@ export default function HomePage() {
             aria-hidden="true"
           />
           <div
-            className="pointer-events-none absolute top-1/2 left-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10"
+            className="pointer-events-none absolute top-1/2 left-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-8"
             style={{
-              background: "radial-gradient(circle, rgba(232,148,0,0.4) 0%, transparent 70%)",
+              background: "radial-gradient(circle, rgba(200,255,0,0.2) 0%, transparent 70%)",
               filter: "blur(60px)",
             }}
             aria-hidden="true"
           />
 
-          {/* Pulse line SVG */}
+          {/* ECG pulse SVG */}
           <svg
-            className="pointer-events-none absolute bottom-0 left-0 h-auto w-full opacity-15"
+            className="pointer-events-none absolute bottom-0 left-0 h-auto w-full opacity-10"
             viewBox="0 0 1400 120"
             preserveAspectRatio="none"
             fill="none"
-            stroke="rgba(232,148,0,0.8)"
+            stroke="rgba(200,255,0,0.9)"
             strokeWidth="1.5"
             aria-hidden="true"
           >
@@ -133,7 +133,10 @@ export default function HomePage() {
                 backgroundColor: "rgba(255,255,255,0.05)",
               }}
             >
-              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#E89400" }} />
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: "var(--pulse)" }}
+              />
               <span className="text-[11px] font-semibold tracking-[0.12em] text-white/50 uppercase">
                 AXON Ingressos
               </span>
@@ -145,8 +148,8 @@ export default function HomePage() {
               <span className="relative inline-block">
                 <span className="relative z-10">o pulso </span>
                 <span
-                  className="absolute bottom-1 left-0 z-0 h-[0.22em] w-full rounded"
-                  style={{ backgroundColor: "#E89400", opacity: 0.9 }}
+                  className="absolute bottom-1 left-0 z-0 h-[0.18em] w-full rounded"
+                  style={{ backgroundColor: "var(--pulse)", opacity: 0.85 }}
                 />
               </span>
               <span className="text-white/30">já acelera.</span>
@@ -160,7 +163,7 @@ export default function HomePage() {
               <Link
                 href="/eventos"
                 className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-[15px] font-bold transition-opacity hover:opacity-90"
-                style={{ backgroundColor: "#E89400", color: "#0A0A0B" }}
+                style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
               >
                 Explorar eventos
               </Link>
@@ -193,10 +196,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Eventos em destaque — carrossel */}
+        {/* Eventos em destaque */}
         <section className="border-b py-[64px]" style={{ borderColor: "var(--rule)" }}>
           <div className="mx-auto max-w-[1200px] px-5 md:px-8">
-            <div className="mb-8 flex items-end justify-between">
+            <div className="mb-10 flex items-end justify-between">
               <div>
                 <p
                   className="mb-1.5 text-[11px] font-semibold tracking-[0.12em] uppercase"
@@ -251,19 +254,19 @@ export default function HomePage() {
                   n: "01",
                   title: "Escolha o evento",
                   desc: "Navegue por shows, vaquejadas, festivais e muito mais. Filtre por categoria, cidade ou data.",
-                  accent: "#E89400",
+                  accent: "var(--pulse)",
                 },
                 {
                   n: "02",
                   title: "Pague pelo Pix",
                   desc: "Aprovação em segundos. Sem precisar sair do celular, sem taxa surpresa, sem burocracia.",
-                  accent: "#6366F1",
+                  accent: "var(--info)",
                 },
                 {
                   n: "03",
                   title: "Entre pelo QR Code",
                   desc: "Seu ingresso digital aparece na tela. Mostre na entrada e aproveite. Funciona até offline.",
-                  accent: "#10B981",
+                  accent: "var(--success)",
                 },
               ].map(({ n, title, desc, accent }) => (
                 <div key={n} className="flex gap-5">
@@ -307,14 +310,22 @@ export default function HomePage() {
 
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               {[
-                { label: "Shows e Música", href: "/eventos?categoria=show", accent: "#E5342B" },
-                { label: "Esportes", href: "/eventos?categoria=esporte", accent: "#2D7AF6" },
+                {
+                  label: "Shows e Música",
+                  href: "/eventos?categoria=show",
+                  accent: "var(--danger)",
+                },
+                { label: "Esportes", href: "/eventos?categoria=esporte", accent: "var(--info)" },
                 {
                   label: "Gospel e Religioso",
                   href: "/eventos?categoria=religioso",
                   accent: "#7C3AED",
                 },
-                { label: "Festas e Micareta", href: "/eventos?categoria=outro", accent: "#E89400" },
+                {
+                  label: "Festas e Micareta",
+                  href: "/eventos?categoria=outro",
+                  accent: "var(--pulse)",
+                },
               ].map(({ label, href, accent }) => (
                 <Link
                   key={label}
@@ -345,9 +356,9 @@ export default function HomePage() {
           style={{ backgroundColor: "#08080A" }}
         >
           <div
-            className="pointer-events-none absolute top-0 right-0 h-[400px] w-[400px] opacity-20"
+            className="pointer-events-none absolute top-0 right-0 h-[400px] w-[400px] opacity-15"
             style={{
-              background: "radial-gradient(circle, rgba(232,148,0,0.3) 0%, transparent 70%)",
+              background: "radial-gradient(circle, rgba(200,255,0,0.25) 0%, transparent 70%)",
               filter: "blur(80px)",
             }}
             aria-hidden="true"
@@ -360,7 +371,7 @@ export default function HomePage() {
                   Para quem organiza
                 </p>
                 <h2 className="mb-5 text-[clamp(26px,3.5vw,46px)] leading-[1.05] font-black tracking-[-0.04em] text-white">
-                  Você cria. A AXON <span style={{ color: "#E89400" }}>transmite.</span>
+                  Você cria. A AXON <span style={{ color: "var(--pulse)" }}>transmite.</span>
                 </h2>
                 <p className="mb-10 text-[16px] leading-relaxed text-white/50">
                   Do evento criado ao ingresso vendido em minutos. Dashboard em tempo real, repasse
@@ -376,7 +387,10 @@ export default function HomePage() {
                     "App de validação offline para a portaria",
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-3 text-[14px] text-white/50">
-                      <span className="h-px w-4 shrink-0" style={{ backgroundColor: "#E89400" }} />
+                      <span
+                        className="h-px w-4 shrink-0"
+                        style={{ backgroundColor: "var(--pulse)" }}
+                      />
                       {item}
                     </li>
                   ))}
@@ -385,7 +399,7 @@ export default function HomePage() {
                 <Link
                   href="/organizador/comecar"
                   className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-[15px] font-bold transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: "#E89400", color: "#0A0A0B" }}
+                  style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
                 >
                   Começar agora, é grátis
                 </Link>
@@ -408,7 +422,7 @@ export default function HomePage() {
                   >
                     <span
                       className="font-mono text-[30px] font-black tracking-tight"
-                      style={{ color: "#E89400" }}
+                      style={{ color: "var(--pulse)" }}
                     >
                       {v}
                     </span>
@@ -431,7 +445,7 @@ export default function HomePage() {
                   className="flex h-7 w-7 items-center justify-center rounded-lg"
                   style={{ backgroundColor: "var(--ink)" }}
                 >
-                  <AxonLogo size={14} className="text-[var(--paper)]" />
+                  <AxonLogo size={14} className="text-[var(--pulse)]" />
                 </div>
                 <span
                   className="text-[15px] font-black tracking-[-0.04em]"
