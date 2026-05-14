@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 140" role="img" aria-label="AXON">
+  <title>AXON</title>
+  <defs>
+    <style>
+      .axon-wordmark {
+        font-family: 'Geist', 'Inter', system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 110px;
+        letter-spacing: -0.05em;
+        fill: currentColor;
+      }
+    </style>
+  </defs>
+
+  <!-- Símbolo: triângulo limpo -->
+  <g transform="translate(10, 18) scale(1.04)">
+    <path
+      d="M50 6 L94 94 L6 94 Z"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="10"
+      stroke-linejoin="miter"
+    />
+  </g>
+
+  <!-- Wordmark -->
+  <text x="140" y="100" class="axon-wordmark">AXON</text>
+</svg>

@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@theme inline {
+  /* ─── Cores do brand mapeadas para Tailwind v4 ─── */
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+
+  --color-primary: var(--pulse);
+  --color-primary-foreground: var(--pulse-ink);
+  --color-primary-deep: var(--pulse-deep);
+  --color-primary-soft: var(--pulse-soft);
+
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+
+  --color-paper: var(--paper);
+  --color-paper-pure: var(--paper-pure);
+  --color-paper-soft: var(--paper-soft);
+
+  --color-muted: var(--mute);
+  --color-muted-foreground: var(--mute-2);
+  --color-border: var(--rule);
+  --color-border-strong: var(--rule-strong);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  /* ─── Tipografia ─── */
+  --font-sans: var(--font-geist), var(--font-sans);
+  --font-mono: var(--font-jetbrains), var(--font-mono);
+
+  /* ─── Radius ─── */
+  --radius-sm: var(--radius-sm);
+  --radius: var(--radius-md);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+
+  /* ─── Shadows ─── */
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+}
+
+/* ─── Estilos base ─── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-geist), var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Focus ring global ─── */
+*:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ─── Scrollbar sutil ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--rule-strong);
+  border-radius: var(--radius-full);
+}
+
+/* ─── Selection ─── */
+::selection {
+  background-color: var(--pulse);
+  color: var(--pulse-ink);
+}

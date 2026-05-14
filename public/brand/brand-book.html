@@ -1,0 +1,2051 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AXON — Brand Book</title>
+
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================ */
+/*  AXON Brand Book                                              */
+/* ============================================================ */
+
+:root {
+  --ink: #0A0A0B;
+  --ink-2: #16161A;
+  --ink-3: #2A2A2F;
+  --ink-4: #4A4A52;
+  --paper: #FAFAF7;
+  --paper-pure: #FFFFFF;
+  --paper-soft: #F4F4EE;
+  --mute: #6B6B70;
+  --mute-2: #9C9CA3;
+  --rule: #E5E5E0;
+  --rule-strong: #C9C9C0;
+  --pulse: #C8FF00;
+  --pulse-deep: #A2D900;
+  --pulse-soft: #ECFFA8;
+  --success: #00B96B;
+  --warning: #E89400;
+  --danger: #E5342B;
+  --info: #2D7AF6;
+
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ─── Layout ─── */
+
+.shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+section {
+  padding: 96px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+section:last-of-type { border-bottom: 0; }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--pulse);
+  border-radius: 50%;
+}
+
+.section-title {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-bottom: 24px;
+}
+
+.section-lead {
+  font-size: 18px;
+  color: var(--ink-3);
+  max-width: 620px;
+  line-height: 1.55;
+  margin-bottom: 64px;
+}
+
+/* ============================================================ */
+/* TOPBAR                                                        */
+/* ============================================================ */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(250, 250, 247, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.topbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.brand-mini {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 17px;
+}
+
+.brand-mini svg {
+  width: 26px;
+  height: 26px;
+}
+
+.topnav {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.topnav a {
+  color: var(--mute);
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+
+.topnav a:hover { color: var(--ink); }
+
+.topnav-version {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute-2);
+  padding: 4px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+@media (max-width: 720px) {
+  .topnav { display: none; }
+}
+
+/* ============================================================ */
+/* HERO                                                          */
+/* ============================================================ */
+
+.hero {
+  padding: 120px 0 96px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-mark {
+  width: clamp(260px, 36vw, 480px);
+  margin-bottom: 56px;
+}
+
+.hero-mark svg {
+  width: 100%;
+  height: auto;
+  color: var(--ink);
+}
+
+.hero-title {
+  font-size: clamp(56px, 10vw, 132px);
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+  margin-bottom: 32px;
+}
+
+.hero-title em {
+  font-style: normal;
+  background-image: linear-gradient(180deg, transparent 60%, var(--pulse) 60%);
+}
+
+.hero-tagline {
+  font-size: clamp(20px, 2.4vw, 26px);
+  color: var(--ink-3);
+  max-width: 640px;
+  line-height: 1.45;
+  margin-bottom: 56px;
+}
+
+.hero-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  padding-top: 40px;
+  border-top: 1px solid var(--rule);
+}
+
+.hero-meta dt {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--mute);
+  margin-bottom: 8px;
+}
+
+.hero-meta dd {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* Ambient ECG line behind hero */
+.ecg-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.5;
+  overflow: hidden;
+}
+
+.ecg-bg svg {
+  position: absolute;
+  bottom: 10%;
+  left: -10%;
+  width: 130%;
+  height: auto;
+}
+
+.ecg-bg path {
+  fill: none;
+  stroke: var(--pulse);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  opacity: 0.4;
+}
+
+/* ============================================================ */
+/* MANIFESTO                                                     */
+/* ============================================================ */
+
+.manifesto {
+  background: var(--ink);
+  color: var(--paper);
+  border-bottom: 0;
+}
+
+.manifesto .eyebrow { color: var(--mute-2); }
+.manifesto .eyebrow::before { background: var(--pulse); }
+
+.manifesto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .manifesto-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+
+.manifesto-quote {
+  font-size: clamp(28px, 3.6vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.manifesto-quote em {
+  font-style: normal;
+  color: var(--pulse);
+}
+
+.manifesto-body p {
+  font-size: 17px;
+  color: var(--mute-2);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.manifesto-body p:last-child { margin-bottom: 0; }
+
+.manifesto-body strong {
+  color: var(--paper);
+  font-weight: 600;
+}
+
+/* ============================================================ */
+/* LOGO                                                          */
+/* ============================================================ */
+
+.logo-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 48px;
+  margin-bottom: 56px;
+}
+
+@media (max-width: 800px) { .logo-grid { grid-template-columns: 1fr; } }
+
+.logo-stage {
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 80px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  position: relative;
+}
+
+.logo-stage.dark {
+  background: var(--ink);
+  border-color: var(--ink-2);
+}
+
+.logo-stage.dark svg { color: var(--paper); }
+
+.logo-stage > svg {
+  max-width: 280px;
+  width: 100%;
+  height: auto;
+  color: var(--ink);
+}
+
+.stage-label {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--mute-2);
+}
+
+.logo-stage.dark .stage-label { color: var(--mute); }
+
+.lockup-rules {
+  background: var(--paper-soft);
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid var(--rule);
+}
+
+.lockup-rules h4 {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mute);
+  margin-bottom: 16px;
+}
+
+.lockup-rules ul {
+  list-style: none;
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+.lockup-rules li {
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lockup-rules li:first-child { border-top: 0; }
+
+.lockup-rules code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.variants {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.variant {
+  aspect-ratio: 1;
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 24px;
+}
+
+.variant.dark { background: var(--ink); }
+.variant.dark svg { color: var(--paper); }
+
+.variant.pulse-bg {
+  background: var(--pulse);
+}
+
+.variant svg {
+  width: 60%;
+  height: auto;
+  color: var(--ink);
+}
+
+.variant-caption {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mute-2);
+}
+
+.variant.dark .variant-caption { color: var(--mute); }
+
+/* Misuse */
+
+.misuse {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 64px;
+}
+
+.misuse-item {
+  aspect-ratio: 1.2;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--paper-pure);
+}
+
+.misuse-item.bad {
+  filter: contrast(1.05);
+}
+
+.misuse-item svg {
+  width: 50%;
+  height: auto;
+  color: var(--ink);
+}
+
+.misuse-item.bad-stretch svg { transform: scaleX(1.6); }
+.misuse-item.bad-rotate svg { transform: rotate(15deg); }
+.misuse-item.bad-busy {
+  background: linear-gradient(135deg, #ff0066, #ffaa00, #00ddff);
+}
+.misuse-item.bad-color svg { color: #ff00aa; }
+
+.misuse-item .mark-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  background: var(--danger);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.misuse-caption {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mute);
+}
+
+/* ============================================================ */
+/* COLOR                                                         */
+/* ============================================================ */
+
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.swatch {
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid transparent;
+}
+
+.swatch[data-name="pulse"]      { background: var(--pulse);    color: var(--ink); }
+.swatch[data-name="pulse-deep"] { background: var(--pulse-deep); color: var(--ink); }
+.swatch[data-name="pulse-soft"] { background: var(--pulse-soft); color: var(--ink); }
+.swatch[data-name="ink"]        { background: var(--ink);      color: var(--paper); }
+.swatch[data-name="ink-2"]      { background: var(--ink-2);    color: var(--paper); }
+.swatch[data-name="ink-3"]      { background: var(--ink-3);    color: var(--paper); }
+.swatch[data-name="paper"]      { background: var(--paper);    color: var(--ink); border-color: var(--rule); }
+.swatch[data-name="paper-pure"] { background: var(--paper-pure);color: var(--ink); border-color: var(--rule); }
+.swatch[data-name="paper-soft"] { background: var(--paper-soft);color: var(--ink); border-color: var(--rule); }
+.swatch[data-name="mute"]       { background: var(--mute);     color: var(--paper); }
+.swatch[data-name="rule"]       { background: var(--rule);     color: var(--ink); }
+.swatch[data-name="success"]    { background: var(--success);  color: white; }
+.swatch[data-name="warning"]    { background: var(--warning);  color: white; }
+.swatch[data-name="danger"]     { background: var(--danger);   color: white; }
+.swatch[data-name="info"]       { background: var(--info);     color: white; }
+
+.swatch-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0.85;
+}
+
+.swatch-name {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.swatch-hex {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.color-philosophy {
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 24px;
+  padding: 56px;
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (max-width: 800px) {
+  .color-philosophy { grid-template-columns: 1fr; padding: 32px; }
+}
+
+.color-philosophy h3 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+  line-height: 1.1;
+}
+
+.color-philosophy h3 em {
+  color: var(--pulse);
+  font-style: normal;
+}
+
+.color-philosophy p {
+  color: var(--mute-2);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.philosophy-pulse {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--pulse);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.philosophy-pulse svg {
+  width: 70%;
+  height: auto;
+  color: var(--ink);
+}
+
+/* ============================================================ */
+/* TYPOGRAPHY                                                    */
+/* ============================================================ */
+
+.type-specimen {
+  display: grid;
+  gap: 32px;
+  margin-bottom: 64px;
+}
+
+.specimen-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 32px;
+  padding: 32px 0;
+  border-top: 1px solid var(--rule);
+  align-items: baseline;
+}
+
+.specimen-row:first-child { border-top: 0; padding-top: 0; }
+
+@media (max-width: 800px) {
+  .specimen-row { grid-template-columns: 1fr; gap: 12px; }
+}
+
+.specimen-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.specimen-meta strong {
+  display: block;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  text-transform: none;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.specimen-sample.display {
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+}
+
+.specimen-sample.h1 {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.specimen-sample.h2 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.specimen-sample.h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.specimen-sample.body {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink-3);
+  max-width: 560px;
+}
+
+.specimen-sample.small {
+  font-size: 13px;
+  color: var(--mute);
+}
+
+.specimen-sample.mono {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+}
+
+.type-fonts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 700px) { .type-fonts { grid-template-columns: 1fr; } }
+
+.font-card {
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 32px;
+  background: var(--paper-pure);
+}
+
+.font-card-name {
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 24px;
+}
+
+.font-card-name.mono {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.font-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+
+/* ============================================================ */
+/* VOICE                                                         */
+/* ============================================================ */
+
+.voice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.voice-card {
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.voice-card h4 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.voice-card p {
+  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.voice-example {
+  display: grid;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+
+.voice-row {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 12px;
+  align-items: start;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.voice-row .tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  height: fit-content;
+}
+
+.voice-row .tag.yes { background: var(--pulse); color: var(--ink); }
+.voice-row .tag.no  { background: var(--paper-soft); color: var(--mute); border: 1px solid var(--rule); }
+
+.voice-row .tag.no::before { content: ''; }
+
+.voice-row .text { color: var(--ink-3); }
+.voice-row .text.no { color: var(--mute); text-decoration: line-through; text-decoration-color: var(--mute-2); }
+
+/* ============================================================ */
+/* APPLICATIONS                                                  */
+/* ============================================================ */
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.app-card {
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  min-height: 280px;
+}
+
+.app-card-label {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--mute);
+  background: var(--paper);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--rule);
+}
+
+.app-card.dark .app-card-label {
+  background: var(--ink-2);
+  border-color: var(--ink-3);
+  color: var(--mute-2);
+}
+
+/* TICKET */
+.app-ticket {
+  grid-column: span 6;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.ticket {
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 28px;
+  width: 100%;
+  max-width: 380px;
+  font-family: var(--font-sans);
+  position: relative;
+  display: grid;
+  gap: 20px;
+}
+
+.ticket::before, .ticket::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--ink);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ticket::before { left: -8px; }
+.ticket::after { right: -8px; }
+
+.ticket-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mute);
+}
+
+.ticket-head svg { width: 24px; height: 24px; }
+
+.ticket-event {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.ticket-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px dashed var(--rule-strong);
+  border-bottom: 1px dashed var(--rule-strong);
+}
+
+.ticket-meta dt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mute);
+  margin-bottom: 2px;
+}
+
+.ticket-meta dd {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ticket-qr {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ticket-qr-img {
+  width: 80px;
+  height: 80px;
+  background: var(--ink);
+  border-radius: 8px;
+  background-image:
+    linear-gradient(90deg, var(--paper) 4%, transparent 4%, transparent 8%, var(--paper) 8%, var(--paper) 12%, transparent 12%, transparent 20%, var(--paper) 20%, var(--paper) 24%, transparent 24%, transparent 32%, var(--paper) 32%, var(--paper) 40%, transparent 40%, transparent 48%, var(--paper) 48%, var(--paper) 56%, transparent 56%, transparent 64%, var(--paper) 64%, var(--paper) 72%, transparent 72%, transparent 80%, var(--paper) 80%, var(--paper) 84%, transparent 84%, transparent 92%, var(--paper) 92%, var(--paper) 96%, transparent 96%),
+    linear-gradient(0deg, transparent 4%, var(--paper) 4%, var(--paper) 12%, transparent 12%, transparent 20%, var(--paper) 20%, var(--paper) 28%, transparent 28%, transparent 36%, var(--paper) 36%, var(--paper) 44%, transparent 44%, transparent 52%, var(--paper) 52%, var(--paper) 60%, transparent 60%, transparent 68%, var(--paper) 68%, var(--paper) 76%, transparent 76%, transparent 84%, var(--paper) 84%, var(--paper) 92%, transparent 92%);
+  background-size: 100% 100%;
+  flex-shrink: 0;
+}
+
+.ticket-qr-info {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+.ticket-qr-info code {
+  color: var(--ink);
+  display: block;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+/* DASHBOARD */
+.app-dashboard {
+  grid-column: span 6;
+  background: var(--paper);
+  padding: 32px;
+}
+
+.dash-frame {
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dash-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.dash-top-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.dash-top-left svg { width: 18px; height: 18px; color: var(--ink); }
+
+.dash-top-right {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+}
+
+.dash-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--rule);
+}
+
+.dash-stat {
+  background: var(--paper-pure);
+  padding: 16px 14px;
+}
+
+.dash-stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--mute);
+  margin-bottom: 8px;
+}
+
+.dash-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.dash-stat-delta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--success);
+  margin-top: 4px;
+}
+
+.dash-chart {
+  padding: 16px 20px 8px;
+  height: 110px;
+  position: relative;
+}
+
+.dash-chart svg { width: 100%; height: 100%; }
+
+.dash-chart path { fill: none; stroke: var(--pulse); stroke-width: 2; }
+
+.dash-chart .area { fill: var(--pulse-soft); stroke: none; opacity: 0.5; }
+
+/* PWA SCAN */
+.app-scan {
+  grid-column: span 4;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phone {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 9/19;
+  background: var(--ink-2);
+  border-radius: 32px;
+  border: 8px solid #000;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+}
+
+.phone-status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--pulse);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.phone-status::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--pulse);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--pulse);
+  animation: pulse-blink 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.phone-result {
+  background: var(--pulse);
+  color: var(--ink);
+  border-radius: 16px;
+  padding: 24px 20px;
+  width: 100%;
+  text-align: center;
+  margin-top: 32px;
+}
+
+.phone-result-icon {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.phone-result-text {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.phone-result-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 8px;
+  color: var(--ink-3);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* EMAIL */
+.app-email {
+  grid-column: span 4;
+  background: var(--paper-soft);
+  padding: 32px;
+}
+
+.email {
+  background: var(--paper-pure);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 20px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.email-from {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.email-from svg { width: 16px; height: 16px; }
+
+.email-subject {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.email-body p {
+  color: var(--ink-3);
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.email-cta {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--pulse);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+/* SOCIAL */
+.app-social {
+  grid-column: span 4;
+  background: var(--pulse);
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-post {
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 16px;
+  padding: 32px 24px;
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.social-post svg { width: 32px; height: 32px; color: var(--paper); }
+
+.social-post-title {
+  font-size: clamp(20px, 3.5vw, 26px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.social-post-title em {
+  font-style: normal;
+  color: var(--pulse);
+}
+
+.social-post-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+@media (max-width: 900px) {
+  .app-ticket, .app-dashboard { grid-column: span 12; }
+  .app-scan, .app-email, .app-social { grid-column: span 6; }
+}
+
+@media (max-width: 640px) {
+  .app-scan, .app-email, .app-social { grid-column: span 12; }
+}
+
+/* ============================================================ */
+/* FOOTER                                                        */
+/* ============================================================ */
+
+.footer {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 80px 0 56px;
+  border-bottom: 0;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 56px;
+}
+
+@media (max-width: 700px) { .footer-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+.footer-brand {
+  width: 220px;
+  margin-bottom: 24px;
+}
+
+.footer-brand svg {
+  width: 100%;
+  height: auto;
+  color: var(--paper);
+}
+
+.footer-tagline {
+  color: var(--mute-2);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer-col h5 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--mute);
+  margin-bottom: 16px;
+}
+
+.footer-col ul {
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.footer-col li {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--paper);
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--ink-3);
+  padding-top: 32px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 600px) {
+  .footer-bottom { flex-direction: column; gap: 12px; }
+}
+
+/* Selection */
+::selection { background: var(--pulse); color: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- TOPBAR                                                        -->
+<!-- ============================================================ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-mini">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="miter"/>
+        <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+      </svg>
+      AXON
+    </div>
+    <nav>
+      <ul class="topnav">
+        <li><a href="#manifesto">Manifesto</a></li>
+        <li><a href="#logo">Logo</a></li>
+        <li><a href="#color">Cor</a></li>
+        <li><a href="#type">Tipografia</a></li>
+        <li><a href="#voice">Voz</a></li>
+        <li><a href="#apps">Aplicações</a></li>
+      </ul>
+    </nav>
+    <span class="topnav-version">v1.0 · 2026</span>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- HERO                                                          -->
+<!-- ============================================================ -->
+<section class="hero shell" id="top">
+  <div class="ecg-bg" aria-hidden="true">
+    <svg viewBox="0 0 1400 200" preserveAspectRatio="none">
+      <path d="M0 100 L300 100 L320 100 L340 60 L360 140 L380 100 L600 100 L620 100 L640 30 L660 170 L680 100 L900 100 L920 100 L940 70 L960 130 L980 100 L1400 100" />
+    </svg>
+  </div>
+
+  <div class="eyebrow">Manual da marca · v1.0</div>
+
+  <div class="hero-mark">
+    <svg viewBox="0 0 600 140" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(10, 18) scale(1.04)">
+        <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="miter"/>
+        <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+      </g>
+      <text x="140" y="100" font-family="Geist, Inter, system-ui" font-weight="800" font-size="110" letter-spacing="-5">AXON</text>
+    </svg>
+  </div>
+
+  <h1 class="hero-title">O <em>impulso</em><br/>do ingresso.</h1>
+  <p class="hero-tagline">
+    AXON é o marketplace que transmite ingressos como o sistema nervoso transmite sinais:
+    rápido, autenticado, sem perda. <strong>Authenticated X-platform Operational Node.</strong>
+  </p>
+
+  <dl class="hero-meta">
+    <div>
+      <dt>Versão</dt>
+      <dd>1.0 · Maio 2026</dd>
+    </div>
+    <div>
+      <dt>Proprietário</dt>
+      <dd>Johnattan · Natal · RN</dd>
+    </div>
+    <div>
+      <dt>Tom</dt>
+      <dd>Minimalismo técnico</dd>
+    </div>
+    <div>
+      <dt>Acento único</dt>
+      <dd style="font-family:var(--font-mono)">#C8FF00 · pulse</dd>
+    </div>
+  </dl>
+</section>
+
+<!-- ============================================================ -->
+<!-- MANIFESTO                                                     -->
+<!-- ============================================================ -->
+<section class="manifesto" id="manifesto">
+  <div class="shell">
+    <div class="eyebrow">01 · Manifesto</div>
+    <div class="manifesto-grid">
+      <p class="manifesto-quote">
+        Um ingresso é só uma <em>permissão</em>.<br/>
+        Nosso trabalho é fazer essa permissão chegar do organizador até a porta — em <em>milissegundos</em>, sem ruído.
+      </p>
+      <div class="manifesto-body">
+        <p>
+          AXON nasceu da observação de que a indústria de ingressos no Brasil envelheceu mal:
+          checkouts arrastados, antifraude fraca, repasse lento, validação que cai junto com o 4G.
+        </p>
+        <p>
+          Nosso compromisso é único: <strong>nada entre o sinal e o destino.</strong>
+          Pix instantâneo. QR autenticado por HMAC. Validação offline. Repasse em D+1.
+          Sem inflar promessas, sem cobrar pelo que deveria ser padrão.
+        </p>
+        <p>
+          O nome vem da biologia. <strong>Axônio</strong> é o eixo do neurônio que transmite impulsos
+          elétricos pelo corpo — a tecnologia de comunicação mais rápida que a natureza inventou.
+          A gente quer ser isso pro mercado de eventos.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- LOGO                                                          -->
+<!-- ============================================================ -->
+<section class="shell" id="logo">
+  <div class="eyebrow">02 · Logo & Símbolo</div>
+  <h2 class="section-title">Um sinal, duas formas.</h2>
+  <p class="section-lead">
+    O monogram é um triângulo monolítico — o "A" como circuito.
+    A barra interna foi substituída por um pulso elétrico que termina em um nodo sináptico.
+    O símbolo funciona sozinho, e o wordmark é o lockup oficial.
+  </p>
+
+  <div class="logo-grid">
+    <div class="logo-stage">
+      <span class="stage-label">Lockup principal</span>
+      <svg viewBox="0 0 600 140" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(10, 18) scale(1.04)">
+          <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="miter"/>
+          <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+        </g>
+        <text x="140" y="100" font-family="Geist, Inter, system-ui" font-weight="800" font-size="110" letter-spacing="-5">AXON</text>
+      </svg>
+    </div>
+
+    <div class="lockup-rules">
+      <h4>Regras de uso</h4>
+      <ul>
+        <li><span>Tamanho mínimo digital</span><code>24px</code></li>
+        <li><span>Tamanho mínimo print</span><code>10mm</code></li>
+        <li><span>Área de proteção</span><code>= altura do A</code></li>
+        <li><span>Formato preferido</span><code>SVG</code></li>
+        <li><span>Pode girar</span><code>nunca</code></li>
+        <li><span>Pode esticar</span><code>nunca</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="variants">
+    <div class="variant">
+      <svg viewBox="0 0 100 100">
+        <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10"/>
+        <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+      </svg>
+      <span class="variant-caption">Monogram · ink</span>
+    </div>
+    <div class="variant dark">
+      <svg viewBox="0 0 100 100">
+        <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10"/>
+        <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+      </svg>
+      <span class="variant-caption">Monogram · paper</span>
+    </div>
+    <div class="variant pulse-bg">
+      <svg viewBox="0 0 100 100">
+        <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="#0A0A0B" stroke-width="10"/>
+        <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#0A0A0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="72" cy="64" r="4.5" fill="#0A0A0B"/>
+      </svg>
+      <span class="variant-caption" style="color:var(--ink)">Monogram · pulse</span>
+    </div>
+    <div class="variant">
+      <svg viewBox="0 0 100 100">
+        <path d="M50 6 L94 94 L6 94 Z" fill="currentColor"/>
+      </svg>
+      <span class="variant-caption">Silhueta · ink</span>
+    </div>
+  </div>
+
+  <h3 style="margin-top:80px; font-size:22px; font-weight:700; letter-spacing:-0.02em; margin-bottom:8px;">Usos proibidos</h3>
+  <p style="color:var(--mute); font-size:14px; margin-bottom:24px;">A marca tem 4 inimigos. Não cometa estes erros.</p>
+
+  <div class="misuse">
+    <div class="misuse-item bad bad-stretch">
+      <span class="mark-x">×</span>
+      <svg viewBox="0 0 100 100">
+        <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10"/>
+        <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+      </svg>
+      <span class="misuse-caption">Não distorcer</span>
+    </div>
+    <div class="misuse-item bad bad-rotate">
+      <span class="mark-x">×</span>
+      <svg viewBox="0 0 100 100">
+        <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10"/>
+        <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+      </svg>
+      <span class="misuse-caption">Não girar</span>
+    </div>
+    <div class="misuse-item bad bad-busy">
+      <span class="mark-x">×</span>
+      <svg viewBox="0 0 100 100">
+        <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="white" stroke-width="10"/>
+        <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+      </svg>
+      <span class="misuse-caption" style="color:white;">Não usar sobre fundo caótico</span>
+    </div>
+    <div class="misuse-item bad-color">
+      <span class="mark-x">×</span>
+      <svg viewBox="0 0 100 100">
+        <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10"/>
+        <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="72" cy="64" r="4.5" fill="currentColor"/>
+      </svg>
+      <span class="misuse-caption">Não recolorir o acento</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- COLOR                                                         -->
+<!-- ============================================================ -->
+<section class="shell" id="color">
+  <div class="eyebrow">03 · Cor</div>
+  <h2 class="section-title">Preto, papel, e um <em style="font-style:normal;background-image:linear-gradient(180deg, transparent 60%, var(--pulse) 60%);">único pulso</em>.</h2>
+  <p class="section-lead">
+    A paleta é deliberadamente austera. <strong>Pulse</strong> é o único acento da marca —
+    usado com economia, sempre para sinalizar ação, atenção ou identidade.
+    Cores semânticas existem para comunicar estados de sistema, não decoração.
+  </p>
+
+  <h3 style="font-size:14px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.1em; color:var(--mute); margin-bottom:16px;">Pulse · acento único</h3>
+  <div class="swatch-grid" style="margin-bottom:48px;">
+    <div class="swatch" data-name="pulse">
+      <div class="swatch-meta"><span>Pulse</span><span>Acento da marca</span></div>
+      <div>
+        <div class="swatch-name">pulse</div>
+        <div class="swatch-hex">#C8FF00 · rgb(200, 255, 0)</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="pulse-deep">
+      <div class="swatch-meta"><span>Pulse Deep</span><span>Hover/active</span></div>
+      <div>
+        <div class="swatch-name">pulse-deep</div>
+        <div class="swatch-hex">#A2D900</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="pulse-soft">
+      <div class="swatch-meta"><span>Pulse Soft</span><span>Backgrounds sutis</span></div>
+      <div>
+        <div class="swatch-name">pulse-soft</div>
+        <div class="swatch-hex">#ECFFA8</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:14px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.1em; color:var(--mute); margin-bottom:16px;">Ink & paper · base</h3>
+  <div class="swatch-grid" style="margin-bottom:48px;">
+    <div class="swatch" data-name="ink">
+      <div class="swatch-meta"><span>Ink</span><span>Texto principal · superfície escura</span></div>
+      <div>
+        <div class="swatch-name">ink</div>
+        <div class="swatch-hex">#0A0A0B</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="ink-2">
+      <div class="swatch-meta"><span>Ink 2</span><span>Surface elevada (dark)</span></div>
+      <div>
+        <div class="swatch-name">ink-2</div>
+        <div class="swatch-hex">#16161A</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="ink-3">
+      <div class="swatch-meta"><span>Ink 3</span><span>Texto secundário</span></div>
+      <div>
+        <div class="swatch-name">ink-3</div>
+        <div class="swatch-hex">#2A2A2F</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="paper">
+      <div class="swatch-meta"><span>Paper</span><span>Background principal</span></div>
+      <div>
+        <div class="swatch-name">paper</div>
+        <div class="swatch-hex">#FAFAF7</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="paper-pure">
+      <div class="swatch-meta"><span>Paper Pure</span><span>Cards · superfície branca</span></div>
+      <div>
+        <div class="swatch-name">paper-pure</div>
+        <div class="swatch-hex">#FFFFFF</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="mute">
+      <div class="swatch-meta"><span>Mute</span><span>Texto secundário neutro</span></div>
+      <div>
+        <div class="swatch-name">mute</div>
+        <div class="swatch-hex">#6B6B70</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="rule">
+      <div class="swatch-meta"><span>Rule</span><span>Divisores · bordas</span></div>
+      <div>
+        <div class="swatch-name">rule</div>
+        <div class="swatch-hex">#E5E5E0</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:14px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.1em; color:var(--mute); margin-bottom:16px;">Semânticas · estados de sistema</h3>
+  <div class="swatch-grid">
+    <div class="swatch" data-name="success">
+      <div class="swatch-meta"><span>Sucesso</span><span>Pagamento ok · check-in válido</span></div>
+      <div>
+        <div class="swatch-name">success</div>
+        <div class="swatch-hex">#00B96B</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="warning">
+      <div class="swatch-meta"><span>Atenção</span><span>Meia-entrada · doc pendente</span></div>
+      <div>
+        <div class="swatch-name">warning</div>
+        <div class="swatch-hex">#E89400</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="danger">
+      <div class="swatch-meta"><span>Erro</span><span>Falha · fraude · indisponível</span></div>
+      <div>
+        <div class="swatch-name">danger</div>
+        <div class="swatch-hex">#E5342B</div>
+      </div>
+    </div>
+    <div class="swatch" data-name="info">
+      <div class="swatch-meta"><span>Info</span><span>Notas · informações neutras</span></div>
+      <div>
+        <div class="swatch-name">info</div>
+        <div class="swatch-hex">#2D7AF6</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="color-philosophy">
+    <div>
+      <h3>Por que <em>pulse</em>?</h3>
+      <p>
+        Lime electric é a cor das telas de osciloscópio, do verde fosforescente em monitores cardíacos,
+        do sinal vital. Não é o verde da natureza nem o verde corporativo. É energia em movimento.
+      </p>
+      <p style="margin-top:12px;">
+        Como acento <strong style="color:white;">único</strong>, ele aparece raramente — mas quando aparece, manda.
+        Cada CTA, cada estado de foco, cada confirmação positiva. É a assinatura visual do AXON.
+      </p>
+    </div>
+    <div class="philosophy-pulse">
+      <svg viewBox="0 0 100 100">
+        <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="#0A0A0B" stroke-width="10"/>
+        <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#0A0A0B" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="72" cy="64" r="4.5" fill="#0A0A0B"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TYPOGRAPHY                                                    -->
+<!-- ============================================================ -->
+<section class="shell" id="type">
+  <div class="eyebrow">04 · Tipografia</div>
+  <h2 class="section-title">Geist + JetBrains Mono.</h2>
+  <p class="section-lead">
+    <strong>Geist</strong> (Vercel, 2024) é a tipografia geométrica que carrega a marca —
+    moderna, neutra, perfeita para escala. <strong>JetBrains Mono</strong> entra para dados técnicos,
+    códigos de ingresso, métricas. Não usamos Inter ou Roboto.
+  </p>
+
+  <div class="type-fonts">
+    <div class="font-card">
+      <div class="font-card-name">Aa Bb 0123</div>
+      <div class="font-card-meta">
+        <span>Geist · sans</span>
+        <span>Display · UI · Body</span>
+      </div>
+    </div>
+    <div class="font-card">
+      <div class="font-card-name mono">{ Aa·07 }</div>
+      <div class="font-card-meta">
+        <span>JetBrains Mono</span>
+        <span>Mono · técnico · IDs</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="type-specimen" style="margin-top:80px;">
+    <div class="specimen-row">
+      <div class="specimen-meta">
+        <strong>Display</strong>
+        88px · 800 · -5% tracking
+      </div>
+      <div class="specimen-sample display">O sinal chega antes do som.</div>
+    </div>
+    <div class="specimen-row">
+      <div class="specimen-meta">
+        <strong>H1</strong>
+        48px · 700 · -4% tracking
+      </div>
+      <div class="specimen-sample h1">Authenticated X-platform Operational Node.</div>
+    </div>
+    <div class="specimen-row">
+      <div class="specimen-meta">
+        <strong>H2</strong>
+        32px · 700 · -3% tracking
+      </div>
+      <div class="specimen-sample h2">Ingressos transmitidos em milissegundos.</div>
+    </div>
+    <div class="specimen-row">
+      <div class="specimen-meta">
+        <strong>H3</strong>
+        22px · 600 · -2% tracking
+      </div>
+      <div class="specimen-sample h3">Pix instantâneo. Repasse em D+1.</div>
+    </div>
+    <div class="specimen-row">
+      <div class="specimen-meta">
+        <strong>Body</strong>
+        16px · 400 · normal · 1.55
+      </div>
+      <div class="specimen-sample body">
+        O AXON é o sistema nervoso do mercado de eventos. Conecta organizador, comprador e validador
+        em uma rede autenticada, com QR criptografado por HMAC, validação offline e antifraude em
+        cinco camadas. Sem floreios. Sem promessas vazias. Só performance.
+      </div>
+    </div>
+    <div class="specimen-row">
+      <div class="specimen-meta">
+        <strong>Small</strong>
+        13px · 400 · mute
+      </div>
+      <div class="specimen-sample small">A nota fiscal será emitida em até 48h após a compra. Política sujeita aos termos do organizador.</div>
+    </div>
+    <div class="specimen-row">
+      <div class="specimen-meta">
+        <strong>Mono</strong>
+        14px · 500 · +2% tracking
+      </div>
+      <div class="specimen-sample mono">order_id: TKK1.9f2c8d1a4b3e · status: paid · 2026-05-14T03:42Z</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- VOICE                                                         -->
+<!-- ============================================================ -->
+<section class="shell" id="voice">
+  <div class="eyebrow">05 · Voz & Tom</div>
+  <h2 class="section-title">Direto. Técnico. Confiável.</h2>
+  <p class="section-lead">
+    Falamos português brasileiro como um engenheiro fala com outro: sem ruído,
+    sem urgência fabricada, sem "fofura" corporativa. Os princípios abaixo guiam
+    cada palavra do produto, do e-mail ao tweet.
+  </p>
+
+  <div class="voice-grid">
+    <div class="voice-card">
+      <h4>Sem floreio</h4>
+      <p>Linguagem direta. Verbos no presente. Frases curtas. Cada palavra justifica seu espaço.</p>
+      <div class="voice-example">
+        <div class="voice-row">
+          <span class="tag yes">Yes</span>
+          <span class="text">Pix confirmado. Seu ingresso está no e-mail.</span>
+        </div>
+        <div class="voice-row">
+          <span class="tag no">No</span>
+          <span class="text no">Estamos super felizes em confirmar seu pagamento! 🎉 Seu ingresso já está a caminho ❤️</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="voice-card">
+      <h4>Honesto</h4>
+      <p>Não promete o que não cumpre. Quando algo dá errado, assume sem rodeio e propõe próximo passo.</p>
+      <div class="voice-example">
+        <div class="voice-row">
+          <span class="tag yes">Yes</span>
+          <span class="text">Pagamento recusado pelo banco. Tente outro cartão ou pague no Pix.</span>
+        </div>
+        <div class="voice-row">
+          <span class="tag no">No</span>
+          <span class="text no">Algo inesperado aconteceu. Por favor tente novamente em alguns instantes.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="voice-card">
+      <h4>Técnico, sem ser frio</h4>
+      <p>Usa termos precisos quando agregam (HMAC, D+1, antifraude). Explica em uma linha quando o usuário pode estranhar.</p>
+      <div class="voice-example">
+        <div class="voice-row">
+          <span class="tag yes">Yes</span>
+          <span class="text">Seu QR é único e assinado. Compartilhar = perder a vez na entrada.</span>
+        </div>
+        <div class="voice-row">
+          <span class="tag no">No</span>
+          <span class="text no">Atenção: seu código de acesso é especial! Não passe pra ninguém! 🚨</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="voice-card">
+      <h4>Confiante</h4>
+      <p>Pede o que precisa pedir, sem desculpas. Não pede "por favor" em fluxos normais — fica gentil sem ser servil.</p>
+      <div class="voice-example">
+        <div class="voice-row">
+          <span class="tag yes">Yes</span>
+          <span class="text">Confirme seu CPF para validar a meia-entrada.</span>
+        </div>
+        <div class="voice-row">
+          <span class="tag no">No</span>
+          <span class="text no">Você poderia, se possível, por favor informar seu CPF para que possamos validar?</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- APPLICATIONS                                                  -->
+<!-- ============================================================ -->
+<section class="shell" id="apps">
+  <div class="eyebrow">06 · Aplicações</div>
+  <h2 class="section-title">A marca, em movimento.</h2>
+  <p class="section-lead">
+    Como o sistema AXON aparece no mundo real — no ingresso digital, no painel do organizador,
+    na tela do porteiro, no e-mail transacional, nas redes sociais.
+  </p>
+
+  <div class="apps-grid">
+    <!-- TICKET -->
+    <div class="app-card app-ticket dark">
+      <span class="app-card-label">Ingresso digital</span>
+      <div class="ticket">
+        <div class="ticket-head">
+          <span>AXON · #9F2C</span>
+          <svg viewBox="0 0 100 100">
+            <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10"/>
+            <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+          </svg>
+        </div>
+        <div class="ticket-event">Festival Rotação<br/>Sertão 2026</div>
+        <dl class="ticket-meta">
+          <div><dt>Data</dt><dd>15 jun · 22h</dd></div>
+          <div><dt>Local</dt><dd>Currais Novos · RN</dd></div>
+          <div><dt>Setor</dt><dd>Pista · 2º lote</dd></div>
+          <div><dt>Titular</dt><dd>Johnattan F.</dd></div>
+        </dl>
+        <div class="ticket-qr">
+          <div class="ticket-qr-img"></div>
+          <div class="ticket-qr-info">
+            <code>TKK1.9f2c8d1a.7b4e</code>
+            Não compartilhe.<br/>O primeiro a entrar usa.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="app-card app-dashboard">
+      <span class="app-card-label">Painel do organizador</span>
+      <div class="dash-frame">
+        <div class="dash-top">
+          <div class="dash-top-left">
+            <svg viewBox="0 0 100 100">
+              <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10"/>
+              <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+              <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+            </svg>
+            Vendas · ao vivo
+          </div>
+          <div class="dash-top-right">14:32 · 14 mai</div>
+        </div>
+        <div class="dash-stats">
+          <div class="dash-stat">
+            <div class="dash-stat-label">Hoje</div>
+            <div class="dash-stat-value">R$ 8.420</div>
+            <div class="dash-stat-delta">↑ 12% vs ontem</div>
+          </div>
+          <div class="dash-stat">
+            <div class="dash-stat-label">Vendidos</div>
+            <div class="dash-stat-value">128 / 500</div>
+            <div class="dash-stat-delta">26% lotação</div>
+          </div>
+          <div class="dash-stat">
+            <div class="dash-stat-label">Check-ins</div>
+            <div class="dash-stat-value">0 / 128</div>
+            <div class="dash-stat-delta" style="color:var(--mute)">evento em 32d</div>
+          </div>
+        </div>
+        <div class="dash-chart">
+          <svg viewBox="0 0 400 100" preserveAspectRatio="none">
+            <path class="area" d="M0 80 L40 70 L80 75 L120 60 L160 65 L200 40 L240 45 L280 30 L320 35 L360 20 L400 25 L400 100 L0 100 Z"/>
+            <path d="M0 80 L40 70 L80 75 L120 60 L160 65 L200 40 L240 45 L280 30 L320 35 L360 20 L400 25"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- PWA SCAN -->
+    <div class="app-card app-scan dark">
+      <span class="app-card-label">PWA · Porteiro</span>
+      <div class="phone">
+        <div class="phone-status">Validando</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--mute);text-transform:uppercase;letter-spacing:0.1em;text-align:center;margin-bottom:16px;">Portão A · 4 sync</div>
+        <div class="phone-result">
+          <div class="phone-result-icon">✓</div>
+          <div class="phone-result-text">Válido</div>
+          <div class="phone-result-name">Johnattan F.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMAIL -->
+    <div class="app-card app-email">
+      <span class="app-card-label">E-mail transacional</span>
+      <div class="email">
+        <div class="email-from">
+          <svg viewBox="0 0 100 100" style="color:var(--ink)">
+            <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10"/>
+            <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+          </svg>
+          AXON
+        </div>
+        <div class="email-subject">Seu ingresso está pronto.</div>
+        <div class="email-body">
+          <p>Pagamento confirmado às <strong>14:32</strong>. Seu QR está em anexo e disponível no app.</p>
+          <p>Festival Rotação Sertão · 15 jun · 22h.</p>
+          <div class="email-cta">Abrir ingresso →</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="app-card app-social">
+      <span class="app-card-label" style="background:rgba(0,0,0,0.1);border-color:transparent;color:var(--ink);">Social · 1:1</span>
+      <div class="social-post">
+        <svg viewBox="0 0 100 100">
+          <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10"/>
+          <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+        </svg>
+        <div class="social-post-title">O ingresso chega antes do <em>som</em>.</div>
+        <div class="social-post-meta">AXON · v1.0 · maio 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- FOOTER                                                        -->
+<!-- ============================================================ -->
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <svg viewBox="0 0 600 140" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(10, 18) scale(1.04)">
+              <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="miter"/>
+              <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="#C8FF00" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+              <circle cx="72" cy="64" r="4.5" fill="#C8FF00"/>
+            </g>
+            <text x="140" y="100" font-family="Geist, Inter, system-ui" font-weight="800" font-size="110" letter-spacing="-5">AXON</text>
+          </svg>
+        </div>
+        <p class="footer-tagline">
+          Authenticated X-platform Operational Node.<br/>
+          O sinal chega antes do som.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Arquivos</h5>
+        <ul>
+          <li>logo-axon.svg</li>
+          <li>symbol-axon.svg</li>
+          <li>favicon.svg</li>
+          <li>tokens.css</li>
+          <li>tokens.json</li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Versão</h5>
+        <ul>
+          <li>v1.0 · 2026-05-14</li>
+          <li>Maintainer · Johnattan</li>
+          <li>Pulse · #C8FF00</li>
+          <li>Ink · #0A0A0B</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 AXON · Todos os direitos reservados</span>
+      <span>Brand book · v1.0</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

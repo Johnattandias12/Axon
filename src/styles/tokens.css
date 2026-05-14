@@ -1,0 +1,157 @@
+/* ============================================================
+   AXON · Design Tokens
+   v1.0 · 2026
+   ============================================================ */
+
+:root {
+  /* ─────────────── INK & PAPER ─────────────── */
+  --ink: #0a0a0b; /* preto absoluto (UI principal) */
+  --ink-2: #16161a; /* near-black, hover de surfaces escuras */
+  --ink-3: #2a2a2f; /* texto secundário em fundo claro */
+  --ink-4: #4a4a52; /* texto terciário, ícones */
+
+  --paper: #fafaf7; /* off-white quente (background) */
+  --paper-pure: #ffffff; /* branco puro (cards) */
+  --paper-soft: #f4f4ee; /* surfaces alternadas */
+
+  --mute: #6b6b70; /* texto mute */
+  --mute-2: #9c9ca3; /* placeholder, disabled */
+  --rule: #e5e5e0; /* divisores, bordas */
+  --rule-strong: #c9c9c0; /* bordas marcadas */
+
+  /* ─────────────── PULSE (único acento) ─────────────── */
+  --pulse: #c8ff00; /* lime electric — CTAs, foco, marca */
+  --pulse-deep: #a2d900; /* hover/active */
+  --pulse-soft: #ecffa8; /* background sutil (badges) */
+  --pulse-ink: #0a0a0b; /* texto SOBRE pulse */
+
+  /* ─────────────── SEMÂNTICAS (sóbrias) ─────────────── */
+  --success: #00b96b;
+  --success-soft: #dafbe6;
+  --warning: #e89400;
+  --warning-soft: #fff1cc;
+  --danger: #e5342b;
+  --danger-soft: #ffe1de;
+  --info: #2d7af6;
+  --info-soft: #dbe8ff;
+
+  /* ─────────────── TIPOGRAFIA ─────────────── */
+  --font-sans:
+    "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-display: "Geist", "Inter", system-ui, sans-serif;
+
+  /* Escala (1.250 — major third) */
+  --text-xs: 0.75rem; /* 12 */
+  --text-sm: 0.875rem; /* 14 */
+  --text-base: 1rem; /* 16 */
+  --text-lg: 1.125rem; /* 18 */
+  --text-xl: 1.25rem; /* 20 */
+  --text-2xl: 1.5rem; /* 24 */
+  --text-3xl: 1.875rem; /* 30 */
+  --text-4xl: 2.25rem; /* 36 */
+  --text-5xl: 3rem; /* 48 */
+  --text-6xl: 3.75rem; /* 60 */
+  --text-7xl: 4.5rem; /* 72 */
+  --text-8xl: 6rem; /* 96 */
+
+  --tracking-tight: -0.04em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.08em;
+  --tracking-mono: 0.02em;
+
+  --leading-tight: 1.05;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  /* ─────────────── ESPAÇAMENTO (escala 4px) ─────────────── */
+  --space-0: 0;
+  --space-1: 0.25rem; /* 4 */
+  --space-2: 0.5rem; /* 8 */
+  --space-3: 0.75rem; /* 12 */
+  --space-4: 1rem; /* 16 */
+  --space-5: 1.25rem; /* 20 */
+  --space-6: 1.5rem; /* 24 */
+  --space-8: 2rem; /* 32 */
+  --space-10: 2.5rem; /* 40 */
+  --space-12: 3rem; /* 48 */
+  --space-16: 4rem; /* 64 */
+  --space-20: 5rem; /* 80 */
+  --space-24: 6rem; /* 96 */
+  --space-32: 8rem; /* 128 */
+
+  /* ─────────────── RADII ─────────────── */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ─────────────── SHADOWS ─────────────── */
+  --shadow-sm: 0 1px 2px rgba(10, 10, 11, 0.06);
+  --shadow-md: 0 4px 12px rgba(10, 10, 11, 0.08);
+  --shadow-lg: 0 12px 32px rgba(10, 10, 11, 0.12);
+  --shadow-glow: 0 0 0 4px rgba(200, 255, 0, 0.25);
+
+  /* ─────────────── MOTION ─────────────── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+  --duration-slow: 400ms;
+
+  /* ─────────────── FOCO ─────────────── */
+  --focus-ring: 0 0 0 3px var(--pulse);
+}
+
+/* ─────────────── DARK MODE ─────────────── */
+[data-theme="dark"] {
+  --ink: #fafaf7;
+  --ink-2: #e5e5e0;
+  --ink-3: #c9c9c0;
+  --ink-4: #9c9ca3;
+
+  --paper: #0a0a0b;
+  --paper-pure: #0a0a0b;
+  --paper-soft: #16161a;
+
+  --mute: #9c9ca3;
+  --mute-2: #6b6b70;
+  --rule: #2a2a2f;
+  --rule-strong: #4a4a52;
+
+  --pulse-soft: #2a3500;
+  --pulse-ink: #0a0a0b;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.7);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #fafaf7;
+    --ink-2: #e5e5e0;
+    --ink-3: #c9c9c0;
+    --ink-4: #9c9ca3;
+
+    --paper: #0a0a0b;
+    --paper-pure: #0a0a0b;
+    --paper-soft: #16161a;
+
+    --mute: #9c9ca3;
+    --mute-2: #6b6b70;
+    --rule: #2a2a2f;
+    --rule-strong: #4a4a52;
+
+    --pulse-soft: #2a3500;
+    --pulse-ink: #0a0a0b;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.7);
+  }
+}
