@@ -116,10 +116,10 @@ export default function HomePage() {
             <path d="M0 60 L300 60 L320 60 L340 20 L365 100 L390 60 L680 60 L700 60 L720 10 L745 110 L770 60 L1060 60 L1080 60 L1100 35 L1125 85 L1150 60 L1400 60" />
           </svg>
 
-          <div className="relative mx-auto max-w-[1200px]">
+          <div className="animate-in fade-in slide-in-from-bottom-8 relative mx-auto max-w-[1200px] duration-1000">
             {/* Eyebrow */}
             <div
-              className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+              className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 backdrop-blur-md transition-colors hover:bg-white/10"
               style={{
                 borderColor: "rgba(255,255,255,0.12)",
                 backgroundColor: "rgba(255,255,255,0.05)",
@@ -150,17 +150,18 @@ export default function HomePage() {
               Eu não costumo duvidar disso. O impulso é o que te move.
             </p>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="animate-in fade-in slide-in-from-bottom-8 fill-mode-both flex flex-wrap gap-4 delay-300 duration-1000">
               <Link
                 href="/eventos"
-                className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-[15px] font-bold transition-opacity hover:opacity-90"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-8 py-4 text-[16px] font-bold transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(200,255,0,0.5)]"
                 style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
               >
-                Explorar eventos
+                <div className="absolute inset-0 translate-y-full bg-white/20 transition-transform duration-300 ease-out group-hover:translate-y-0" />
+                <span className="relative z-10">Explorar eventos</span>
               </Link>
               <Link
                 href="/entrar"
-                className="inline-flex items-center gap-2 rounded-xl border px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-white/5"
+                className="inline-flex items-center gap-2 rounded-xl border px-8 py-4 text-[16px] font-semibold text-white transition-all hover:border-white/30 hover:bg-white/10"
                 style={{ borderColor: "rgba(255,255,255,0.15)" }}
               >
                 Criar conta grátis
@@ -260,18 +261,24 @@ export default function HomePage() {
                   accent: "var(--success)",
                 },
               ].map(({ n, title, desc, accent }) => (
-                <div key={n} className="flex gap-5">
+                <div
+                  key={n}
+                  className="group -ml-4 flex gap-5 rounded-2xl p-4 transition-colors hover:bg-white/5"
+                >
                   <span
-                    className="shrink-0 font-mono text-[11px] font-bold tracking-[0.12em]"
-                    style={{ color: accent, marginTop: "2px" }}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[13px] font-bold tracking-[0.12em] transition-transform group-hover:scale-110"
+                    style={{ backgroundColor: `${accent}20`, color: accent }}
                   >
                     {n}
                   </span>
                   <div>
-                    <p className="mb-2 font-bold" style={{ color: "var(--ink)" }}>
+                    <p
+                      className="mb-2 text-lg font-bold transition-colors group-hover:text-[var(--pulse)]"
+                      style={{ color: "var(--ink)" }}
+                    >
                       {title}
                     </p>
-                    <p className="text-[14px] leading-relaxed" style={{ color: "var(--mute)" }}>
+                    <p className="text-[15px] leading-relaxed" style={{ color: "var(--mute)" }}>
                       {desc}
                     </p>
                   </div>
