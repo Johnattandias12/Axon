@@ -136,9 +136,9 @@ export default function HomePage() {
 
             {/* Headline */}
             <h1 className="mb-6 max-w-[820px] text-[clamp(44px,8vw,106px)] leading-[0.93] font-black tracking-[-0.055em] text-white">
-              Dizem Que Só Se Vive{" "}
+              Dizem que:{" "}
               <span className="relative inline-block">
-                <span className="relative z-10">Uma Vez... </span>
+                <span className="relative z-10">"Só se vive uma vez..." </span>
                 <span
                   className="absolute bottom-1 left-0 z-0 h-[0.18em] w-full rounded"
                   style={{ backgroundColor: "var(--pulse)", opacity: 0.85 }}
@@ -147,7 +147,7 @@ export default function HomePage() {
             </h1>
 
             <p className="mb-10 max-w-[520px] text-[clamp(15px,1.8vw,19px)] leading-[1.65] text-white/50">
-              Eu Não Costumo Duvidar Disso. O Impulso É O Que Te Move.
+              Eu não costumo duvidar disso. O impulso é o que te move.
             </p>
 
             <div className="flex flex-wrap gap-3">
