@@ -136,9 +136,9 @@ export default function HomePage() {
 
             {/* Headline */}
             <h1 className="mb-6 max-w-[820px] text-[clamp(44px,8vw,106px)] leading-[0.93] font-black tracking-[-0.055em] text-white">
-              dizem que só se vive{" "}
+              Dizem Que Só Se Vive{" "}
               <span className="relative inline-block">
-                <span className="relative z-10">uma vez... </span>
+                <span className="relative z-10">Uma Vez... </span>
                 <span
                   className="absolute bottom-1 left-0 z-0 h-[0.18em] w-full rounded"
                   style={{ backgroundColor: "var(--pulse)", opacity: 0.85 }}
@@ -147,7 +147,7 @@ export default function HomePage() {
             </h1>
 
             <p className="mb-10 max-w-[520px] text-[clamp(15px,1.8vw,19px)] leading-[1.65] text-white/50">
-              eu não costumo duvidar disso. o impulso é o que te move.
+              Eu Não Costumo Duvidar Disso. O Impulso É O Que Te Move.
             </p>
 
             <div className="flex flex-wrap gap-3">
@@ -540,7 +540,7 @@ export default function HomePage() {
               © 2026 AXON. Todos os direitos reservados.
             </p>
             <p className="text-[12px]" style={{ color: "var(--mute-2)" }}>
-              desenvolvido por beyonder 2026 johnattan dias.
+              Desenvolvido por Beyonder - Johnattan Dias. 2026
             </p>
           </div>
         </div>
