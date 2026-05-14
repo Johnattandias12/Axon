@@ -1,9 +1,9 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { LayoutDashboard, Calendar, LogOut } from "lucide-react"
+import { AxonLogo } from "@/components/shared/AxonLogo"
 
 export default async function OrganizadorLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
@@ -25,11 +25,13 @@ export default async function OrganizadorLayout({ children }: { children: ReactN
           style={{ borderColor: "var(--rule)" }}
         >
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/brand/symbol-axon.svg" alt="AXON" width={22} height={22} />
-            <span
-              className="text-sm font-bold"
-              style={{ color: "var(--ink)", letterSpacing: "-0.04em" }}
+            <div
+              className="flex h-6 w-6 items-center justify-center rounded-md"
+              style={{ backgroundColor: "var(--ink)" }}
             >
+              <AxonLogo size={12} className="text-[var(--paper)]" />
+            </div>
+            <span className="text-sm font-black tracking-[-0.04em]" style={{ color: "var(--ink)" }}>
               AXON
             </span>
           </Link>
@@ -61,7 +63,12 @@ export default async function OrganizadorLayout({ children }: { children: ReactN
           style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
         >
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/brand/symbol-axon.svg" alt="AXON" width={22} height={22} />
+            <div
+              className="flex h-6 w-6 items-center justify-center rounded-md"
+              style={{ backgroundColor: "var(--ink)" }}
+            >
+              <AxonLogo size={12} className="text-[var(--paper)]" />
+            </div>
           </Link>
           <span className="ml-3 text-sm font-semibold" style={{ color: "var(--ink)" }}>
             Painel

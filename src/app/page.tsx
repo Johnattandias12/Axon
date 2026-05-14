@@ -1,230 +1,77 @@
-import Image from "next/image"
 import Link from "next/link"
-
-interface MockEvent {
-  id: string
-  title: string
-  category: string
-  date: string
-  location: string
-  price: string
-  badge: string
-  badgeType: "available" | "limited" | "sold-out" | "free"
-  gradient: string
-}
-
-const featuredEvents: MockEvent[] = [
-  {
-    id: "carnaxelita-2026",
-    title: "Carnaxelita 2026",
-    category: "Micareta",
-    date: "12 a 15 Out 2026",
-    location: "Currais Novos, RN",
-    price: "R$ 120 a R$ 450",
-    badge: "Lote 2 · 23 restantes",
-    badgeType: "limited",
-    gradient: "from-[#3d1c02] via-[#1a0a00] to-[#0A0A0B]",
-  },
-  {
-    id: "festa-santana-caico-2026",
-    title: "Festa de Santana 2026",
-    category: "Tradicional",
-    date: "25 a 30 Jul 2026",
-    location: "Caicó, RN",
-    price: "R$ 0 a R$ 180",
-    badge: "Inscrições abertas",
-    badgeType: "available",
-    gradient: "from-[#1c0a3d] via-[#0e0520] to-[#0A0A0B]",
-  },
-  {
-    id: "carnatal-2026",
-    title: "Carnatal 2026",
-    category: "Carnaval",
-    date: "Dez 2026",
-    location: "Natal, RN",
-    price: "A partir de R$ 200",
-    badge: "Em breve",
-    badgeType: "free",
-    gradient: "from-[#021a3d] via-[#000e20] to-[#0A0A0B]",
-  },
-]
-
-const weekEvents: MockEvent[] = [
-  {
-    id: "vaquejada-currais-novos-2026",
-    title: "Vaquejada de Currais Novos",
-    category: "Vaquejada",
-    date: "04 a 07 Ago 2026",
-    location: "Currais Novos, RN",
-    price: "R$ 80 a R$ 300",
-    badge: "Lote 1 disponível",
-    badgeType: "available",
-    gradient: "from-[#2a1800] via-[#150c00] to-[#0A0A0B]",
-  },
-  {
-    id: "forro-natal-2026",
-    title: "Noite de Forró em Natal",
-    category: "Show",
-    date: "Sáb, 20 Jun",
-    location: "Natal, RN",
-    price: "R$ 60",
-    badge: "Disponível",
-    badgeType: "available",
-    gradient: "from-[#2a0014] via-[#150009] to-[#0A0A0B]",
-  },
-  {
-    id: "gospel-rn-2026",
-    title: "Festival Gospel RN",
-    category: "Gospel",
-    date: "28 e 29 Jun 2026",
-    location: "Natal, RN",
-    price: "Gratuito e VIP R$ 80",
-    badge: "Inscrições abertas",
-    badgeType: "free",
-    gradient: "from-[#002a1a] via-[#00150d] to-[#0A0A0B]",
-  },
-  {
-    id: "vaquejada-mossoro-2026",
-    title: "Vaquejada de Mossoró",
-    category: "Vaquejada",
-    date: "Set 2026",
-    location: "Mossoró, RN",
-    price: "R$ 90 a R$ 250",
-    badge: "Em breve",
-    badgeType: "available",
-    gradient: "from-[#001a2a] via-[#000d15] to-[#0A0A0B]",
-  },
-]
-
-function BadgeStyle(type: MockEvent["badgeType"]) {
-  switch (type) {
-    case "limited":
-      return "bg-amber-50 text-amber-700 border-amber-200"
-    case "sold-out":
-      return "bg-neutral-100 text-neutral-400 border-neutral-200"
-    case "free":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200"
-    default:
-      return "bg-green-50 text-green-700 border-green-200"
-  }
-}
-
-function EventCard({ event, size = "md" }: { event: MockEvent; size?: "lg" | "md" }) {
-  const isSoldOut = event.badgeType === "sold-out"
-  const aspectRatio = size === "lg" ? "aspect-[4/3]" : "aspect-[3/2]"
-
-  return (
-    <Link
-      href={`/eventos/${event.id}`}
-      className="group flex cursor-pointer flex-col"
-      aria-label={event.title}
-    >
-      <div
-        className={`relative overflow-hidden rounded-2xl ${aspectRatio} mb-4 bg-gradient-to-br ${event.gradient}`}
-      >
-        <div className="absolute top-3 left-3 z-10">
-          <span className="rounded-lg border border-white/20 bg-black/60 px-2 py-1 text-[10px] font-medium tracking-wide text-white/70 uppercase backdrop-blur-sm">
-            {event.category}
-          </span>
-        </div>
-
-        {isSoldOut && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/60">
-            <span className="text-[11px] font-semibold tracking-widest text-white/60 uppercase">
-              Esgotado
-            </span>
-          </div>
-        )}
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-      </div>
-
-      <div className="flex flex-1 flex-col">
-        <div className="mb-1 flex items-start justify-between gap-2">
-          <h3
-            className={`leading-snug font-semibold ${size === "lg" ? "text-[17px]" : "text-[15px]"} text-[var(--ink)] transition-colors group-hover:text-[var(--ink-3)]`}
-          >
-            {event.title}
-          </h3>
-          <span
-            className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${BadgeStyle(event.badgeType)}`}
-          >
-            {event.badge}
-          </span>
-        </div>
-
-        <p className="mb-3 text-[13px] text-[var(--mute)]">
-          {event.date} · {event.location}
-        </p>
-
-        <div className="mt-auto flex items-center justify-between">
-          <span className="text-[13px] font-semibold text-[var(--ink)]">{event.price}</span>
-          {!isSoldOut && (
-            <span className="text-[11px] font-semibold tracking-wide text-[var(--pulse)] uppercase transition-colors group-hover:text-[var(--pulse-deep)]">
-              Ver ingresso
-            </span>
-          )}
-        </div>
-      </div>
-    </Link>
-  )
-}
+import { AxonLogo } from "@/components/shared/AxonLogo"
+import { EventsCarousel } from "@/components/shared/EventsCarousel"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen w-full bg-[var(--paper)] text-[var(--ink)]">
+    <div
+      className="min-h-screen w-full"
+      style={{ backgroundColor: "var(--paper)", color: "var(--ink)" }}
+    >
+      {/* Header */}
       <header
-        className="sticky top-0 z-50 border-b border-[var(--rule)] bg-[var(--paper)]/95 backdrop-blur-md"
-        role="banner"
+        className="sticky top-0 z-50 border-b"
+        style={{
+          borderColor: "var(--rule)",
+          backgroundColor: "color-mix(in srgb, var(--paper) 85%, transparent)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+        }}
       >
-        <div className="mx-auto flex h-[60px] max-w-[1200px] items-center justify-between gap-6 px-6 md:px-8">
-          <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="AXON">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--ink)]">
-              <Image
-                src="/brand/symbol-axon.svg"
-                alt=""
-                width={18}
-                height={18}
-                aria-hidden="true"
-                className="brightness-0 invert"
-              />
+        <div className="mx-auto flex h-[58px] max-w-[1200px] items-center justify-between gap-6 px-5 md:px-8">
+          <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="AXON">
+            <div
+              className="flex h-8 w-8 items-center justify-center rounded-lg"
+              style={{ backgroundColor: "var(--ink)" }}
+            >
+              <AxonLogo size={17} className="text-[var(--paper)]" />
             </div>
-            <span className="text-[18px] font-black tracking-[-0.04em]">AXON</span>
+            <span
+              className="text-[17px] font-black tracking-[-0.045em]"
+              style={{ color: "var(--ink)" }}
+            >
+              AXON
+            </span>
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex" aria-label="Navegação principal">
+          <nav className="hidden items-center gap-7 md:flex">
             <Link
               href="/eventos"
-              className="text-sm font-medium text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+              className="text-sm font-medium transition-colors"
+              style={{ color: "var(--mute)" }}
             >
               Eventos
             </Link>
-            <Link
+            <a
               href="#organizadores"
-              className="text-sm font-medium text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+              className="text-sm font-medium transition-colors"
+              style={{ color: "var(--mute)" }}
             >
-              Para quem organiza
-            </Link>
-            <Link
+              Organizadores
+            </a>
+            <a
               href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda com a AXON.")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-medium text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+              className="text-sm font-medium transition-colors"
+              style={{ color: "var(--mute)" }}
             >
               Suporte
-            </Link>
+            </a>
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
             <Link
               href="/entrar"
-              className="hidden px-3 py-2 text-sm font-medium text-[var(--mute)] transition-colors hover:text-[var(--ink)] sm:inline-flex"
+              className="hidden px-3 py-2 text-sm font-medium transition-colors sm:inline-flex"
+              style={{ color: "var(--mute)" }}
             >
               Entrar
             </Link>
             <Link
               href="/entrar"
-              className="inline-flex rounded-xl bg-[var(--ink)] px-4 py-2 text-sm font-bold text-[var(--paper)] transition-colors hover:bg-[var(--ink-2)]"
+              className="inline-flex rounded-xl px-4 py-2 text-sm font-bold transition-colors"
+              style={{ backgroundColor: "var(--ink)", color: "var(--paper)" }}
             >
               Criar conta
             </Link>
@@ -233,207 +80,206 @@ export default function HomePage() {
       </header>
 
       <main>
-        {/* Hero */}
-        <section className="relative overflow-hidden border-b border-[var(--rule)] pt-[88px] pb-[72px]">
+        {/* Hero — dark, gradients */}
+        <section
+          className="relative overflow-hidden border-b px-5 pt-[100px] pb-[80px] md:px-8"
+          style={{ borderColor: "var(--rule)", backgroundColor: "#08080A" }}
+        >
+          {/* Gradient orbs */}
           <div
-            className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+            className="pointer-events-none absolute top-[-120px] left-[-80px] h-[500px] w-[500px] rounded-full opacity-30"
+            style={{
+              background: "radial-gradient(circle, rgba(232,148,0,0.25) 0%, transparent 70%)",
+              filter: "blur(80px)",
+            }}
+            aria-hidden="true"
+          />
+          <div
+            className="pointer-events-none absolute right-[-80px] bottom-[-80px] h-[400px] w-[400px] rounded-full opacity-20"
+            style={{
+              background: "radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%)",
+              filter: "blur(80px)",
+            }}
+            aria-hidden="true"
+          />
+          <div
+            className="pointer-events-none absolute top-1/2 left-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10"
+            style={{
+              background: "radial-gradient(circle, rgba(232,148,0,0.4) 0%, transparent 70%)",
+              filter: "blur(60px)",
+            }}
+            aria-hidden="true"
+          />
+
+          {/* Pulse line SVG */}
+          <svg
+            className="pointer-events-none absolute bottom-0 left-0 h-auto w-full opacity-15"
+            viewBox="0 0 1400 120"
+            preserveAspectRatio="none"
+            fill="none"
+            stroke="rgba(232,148,0,0.8)"
+            strokeWidth="1.5"
             aria-hidden="true"
           >
-            <svg
-              className="absolute bottom-0 -left-[5%] h-auto w-[110%] opacity-10"
-              viewBox="0 0 1400 200"
-              preserveAspectRatio="none"
-              fill="none"
-              stroke="var(--pulse)"
-              strokeWidth="1.5"
-            >
-              <path d="M0 100 L280 100 L300 100 L320 55 L345 145 L370 100 L620 100 L645 100 L665 35 L690 165 L715 100 L960 100 L980 100 L1000 70 L1025 130 L1050 100 L1400 100" />
-            </svg>
-          </div>
+            <path d="M0 60 L300 60 L320 60 L340 20 L365 100 L390 60 L680 60 L700 60 L720 10 L745 110 L770 60 L1060 60 L1080 60 L1100 35 L1125 85 L1150 60 L1400 60" />
+          </svg>
 
-          <div className="mx-auto max-w-[1200px] px-6 md:px-8">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--rule)] bg-[var(--paper-pure)] px-4 py-1.5">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--pulse)]" />
-              <span className="text-[12px] font-medium text-[var(--mute)]">
-                Rio Grande do Norte
+          <div className="relative mx-auto max-w-[1200px]">
+            {/* Eyebrow */}
+            <div
+              className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
+              style={{
+                borderColor: "rgba(255,255,255,0.12)",
+                backgroundColor: "rgba(255,255,255,0.05)",
+              }}
+            >
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "#E89400" }} />
+              <span className="text-[11px] font-semibold tracking-[0.12em] text-white/50 uppercase">
+                AXON Ingressos
               </span>
             </div>
 
-            <h1 className="mb-5 max-w-[820px] text-[clamp(42px,8vw,96px)] leading-[0.95] font-black tracking-[-0.05em]">
-              O RN sabe{" "}
+            {/* Headline */}
+            <h1 className="mb-6 max-w-[820px] text-[clamp(44px,8vw,106px)] leading-[0.93] font-black tracking-[-0.055em] text-white">
+              Antes de entrar,{" "}
               <span className="relative inline-block">
-                <span className="relative z-10">fazer festa.</span>
+                <span className="relative z-10">o pulso </span>
                 <span
-                  className="absolute bottom-1 left-0 -z-0 h-3 w-full rounded"
-                  style={{ backgroundColor: "var(--pulse)", opacity: 0.35 }}
+                  className="absolute bottom-1 left-0 z-0 h-[0.22em] w-full rounded"
+                  style={{ backgroundColor: "#E89400", opacity: 0.9 }}
                 />
               </span>
+              <span className="text-white/30">já acelera.</span>
             </h1>
 
-            <p className="mb-10 max-w-[540px] text-[clamp(16px,2vw,20px)] leading-[1.6] text-[var(--ink-3)]">
-              Carnaxelita, Vaquejada, Carnatal e muito mais. Compre seu ingresso agora, pague pelo
-              Pix e chegue tranquilo.
+            <p className="mb-10 max-w-[520px] text-[clamp(15px,1.8vw,19px)] leading-[1.65] text-white/50">
+              AXON converte esse impulso em acesso. Do clique ao QR Code em segundos, sem atrito.
             </p>
 
-            <div className="mb-12 flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3">
               <Link
                 href="/eventos"
-                className="inline-flex items-center gap-2 rounded-xl bg-[var(--ink)] px-6 py-3 text-[15px] font-bold text-[var(--paper)] transition-colors hover:bg-[var(--ink-2)]"
+                className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-[15px] font-bold transition-opacity hover:opacity-90"
+                style={{ backgroundColor: "#E89400", color: "#0A0A0B" }}
               >
-                Ver todos os eventos
+                Explorar eventos
               </Link>
               <Link
-                href={`https://wa.me/5584981235396?text=${encodeURIComponent("Oi! Quero saber mais sobre a AXON.")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--rule)] bg-[var(--paper-pure)] px-6 py-3 text-[15px] font-semibold text-[var(--ink)] transition-colors hover:bg-[var(--paper-soft)]"
+                href="/entrar"
+                className="inline-flex items-center gap-2 rounded-xl border px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-white/5"
+                style={{ borderColor: "rgba(255,255,255,0.15)" }}
               >
-                Falar no WhatsApp
+                Criar conta grátis
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-8 gap-y-5 border-t border-[var(--rule)] pt-8 md:grid-cols-4">
+            {/* Stats */}
+            <div
+              className="mt-14 grid grid-cols-2 gap-x-10 gap-y-6 border-t pt-10 md:grid-cols-4"
+              style={{ borderColor: "rgba(255,255,255,0.08)" }}
+            >
               {[
-                { label: "Pix na hora", desc: "Aprovação instantânea" },
-                { label: "QR Code", desc: "Ingresso digital seguro" },
-                { label: "Sem fila", desc: "Tudo pelo celular" },
-                { label: "Suporte", desc: "A gente te ajuda" },
-              ].map(({ label, desc }) => (
-                <div key={label}>
-                  <p className="mb-0.5 text-[14px] font-bold text-[var(--ink)]">{label}</p>
-                  <p className="text-[13px] text-[var(--mute)]">{desc}</p>
+                { v: "Pix", d: "Aprovação instantânea" },
+                { v: "QR Code", d: "Ingresso no celular" },
+                { v: "D+1", d: "Repasse ao organizador" },
+                { v: "Offline", d: "Validação sem internet" },
+              ].map(({ v, d }) => (
+                <div key={v}>
+                  <p className="mb-0.5 text-sm font-bold text-white">{v}</p>
+                  <p className="text-[13px] text-white/40">{d}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Em destaque */}
-        <section id="eventos" className="border-b border-[var(--rule)] py-[64px]">
-          <div className="mx-auto max-w-[1200px] px-6 md:px-8">
-            <div className="mb-10 flex items-end justify-between">
+        {/* Eventos em destaque — carrossel */}
+        <section className="border-b py-[64px]" style={{ borderColor: "var(--rule)" }}>
+          <div className="mx-auto max-w-[1200px] px-5 md:px-8">
+            <div className="mb-8 flex items-end justify-between">
               <div>
-                <p className="mb-1.5 text-[11px] font-semibold tracking-widest text-[var(--mute)] uppercase">
+                <p
+                  className="mb-1.5 text-[11px] font-semibold tracking-[0.12em] uppercase"
+                  style={{ color: "var(--mute)" }}
+                >
                   Em destaque
                 </p>
-                <h2 className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight">
-                  Os eventos mais esperados do estado
-                </h2>
-              </div>
-              <Link
-                href="/eventos"
-                className="hidden text-sm font-semibold text-[var(--mute)] transition-colors hover:text-[var(--ink)] md:inline-flex"
-              >
-                Ver todos
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              {featuredEvents.map((event) => (
-                <EventCard key={event.id} event={event} size="lg" />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Mais eventos */}
-        <section className="border-b border-[var(--rule)] bg-[var(--paper-soft)] py-[64px]">
-          <div className="mx-auto max-w-[1200px] px-6 md:px-8">
-            <div className="mb-10 flex items-end justify-between">
-              <div>
-                <p className="mb-1.5 text-[11px] font-semibold tracking-widest text-[var(--mute)] uppercase">
-                  Outros eventos
-                </p>
-                <h2 className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight">
-                  Tem coisa boa por toda parte
-                </h2>
-              </div>
-              <Link
-                href="/eventos"
-                className="hidden text-sm font-semibold text-[var(--mute)] transition-colors hover:text-[var(--ink)] md:inline-flex"
-              >
-                Ver todos
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
-              {weekEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Categorias */}
-        <section className="border-b border-[var(--rule)] py-[64px]">
-          <div className="mx-auto max-w-[1200px] px-6 md:px-8">
-            <div className="mb-10">
-              <p className="mb-1.5 text-[11px] font-semibold tracking-widest text-[var(--mute)] uppercase">
-                Categorias
-              </p>
-              <h2 className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight">
-                Cada tipo de rolê tem seu lugar
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {[
-                { label: "Shows e Música", emoji: "🎵", href: "/eventos?categoria=show" },
-                { label: "Esportes", emoji: "🏆", href: "/eventos?categoria=esporte" },
-                { label: "Gospel e Religioso", emoji: "✨", href: "/eventos?categoria=religioso" },
-                { label: "Festas e Micareta", emoji: "🎉", href: "/eventos?categoria=outro" },
-              ].map(({ label, emoji, href }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  className="group flex flex-col gap-3 rounded-2xl border border-[var(--rule)] bg-[var(--paper-pure)] p-5 text-left transition-all hover:border-[var(--rule-strong)] hover:shadow-md"
+                <h2
+                  className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight"
+                  style={{ color: "var(--ink)" }}
                 >
-                  <span className="text-[26px] leading-none">{emoji}</span>
-                  <span className="text-[15px] leading-tight font-semibold text-[var(--ink)] transition-colors group-hover:text-[var(--ink-3)]">
-                    {label}
-                  </span>
-                </Link>
-              ))}
+                  Eventos que valem a experiência
+                </h2>
+              </div>
+              <Link
+                href="/eventos"
+                className="hidden text-sm font-semibold transition-colors hover:opacity-70 md:inline-flex"
+                style={{ color: "var(--mute)" }}
+              >
+                Ver todos
+              </Link>
             </div>
+
+            <EventsCarousel />
           </div>
         </section>
 
         {/* Como funciona */}
-        <section className="border-b border-[var(--rule)] bg-[var(--paper-soft)] py-[64px]">
-          <div className="mx-auto max-w-[1200px] px-6 md:px-8">
-            <div className="mb-10">
-              <p className="mb-1.5 text-[11px] font-semibold tracking-widest text-[var(--mute)] uppercase">
+        <section
+          className="border-b py-[64px]"
+          style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}
+        >
+          <div className="mx-auto max-w-[1200px] px-5 md:px-8">
+            <div className="mb-12">
+              <p
+                className="mb-1.5 text-[11px] font-semibold tracking-[0.12em] uppercase"
+                style={{ color: "var(--mute)" }}
+              >
                 Como funciona
               </p>
-              <h2 className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight">
-                Simples assim
+              <h2
+                className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight"
+                style={{ color: "var(--ink)" }}
+              >
+                Três etapas. Zero complicação.
               </h2>
             </div>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               {[
                 {
-                  n: "1",
+                  n: "01",
                   title: "Escolha o evento",
-                  desc: "Explore os shows, vaquejadas e festas mais esperados do RN.",
+                  desc: "Navegue por shows, vaquejadas, festivais e muito mais. Filtre por categoria, cidade ou data.",
+                  accent: "#E89400",
                 },
                 {
-                  n: "2",
-                  title: "Compre pelo Pix",
-                  desc: "Pagamento rápido e seguro. Em menos de um minuto o ingresso é seu.",
+                  n: "02",
+                  title: "Pague pelo Pix",
+                  desc: "Aprovação em segundos. Sem precisar sair do celular, sem taxa surpresa, sem burocracia.",
+                  accent: "#6366F1",
                 },
                 {
-                  n: "3",
-                  title: "Chega na frente",
-                  desc: "Mostre o QR Code na entrada e aproveite. Sem papel, sem fila, sem dor de cabeça.",
+                  n: "03",
+                  title: "Entre pelo QR Code",
+                  desc: "Seu ingresso digital aparece na tela. Mostre na entrada e aproveite. Funciona até offline.",
+                  accent: "#10B981",
                 },
-              ].map(({ n, title, desc }) => (
-                <div key={n} className="flex gap-4">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--ink)] text-sm font-black text-[var(--paper)]">
+              ].map(({ n, title, desc, accent }) => (
+                <div key={n} className="flex gap-5">
+                  <span
+                    className="shrink-0 font-mono text-[11px] font-bold tracking-[0.12em]"
+                    style={{ color: accent, marginTop: "2px" }}
+                  >
                     {n}
                   </span>
                   <div>
-                    <p className="mb-1 font-bold text-[var(--ink)]">{title}</p>
-                    <p className="text-[14px] leading-relaxed text-[var(--mute)]">{desc}</p>
+                    <p className="mb-2 font-bold" style={{ color: "var(--ink)" }}>
+                      {title}
+                    </p>
+                    <p className="text-[14px] leading-relaxed" style={{ color: "var(--mute)" }}>
+                      {desc}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -441,35 +287,96 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Categorias */}
+        <section className="border-b py-[64px]" style={{ borderColor: "var(--rule)" }}>
+          <div className="mx-auto max-w-[1200px] px-5 md:px-8">
+            <div className="mb-10">
+              <p
+                className="mb-1.5 text-[11px] font-semibold tracking-[0.12em] uppercase"
+                style={{ color: "var(--mute)" }}
+              >
+                Categorias
+              </p>
+              <h2
+                className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight"
+                style={{ color: "var(--ink)" }}
+              >
+                Cada tipo de emoção tem um palco
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              {[
+                { label: "Shows e Música", href: "/eventos?categoria=show", accent: "#E5342B" },
+                { label: "Esportes", href: "/eventos?categoria=esporte", accent: "#2D7AF6" },
+                {
+                  label: "Gospel e Religioso",
+                  href: "/eventos?categoria=religioso",
+                  accent: "#7C3AED",
+                },
+                { label: "Festas e Micareta", href: "/eventos?categoria=outro", accent: "#E89400" },
+              ].map(({ label, href, accent }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className="group flex flex-col justify-between rounded-2xl border p-5 transition-all hover:shadow-md"
+                  style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
+                >
+                  <div
+                    className="mb-10 h-1 w-8 rounded-full transition-all group-hover:w-12"
+                    style={{ backgroundColor: accent }}
+                  />
+                  <p
+                    className="text-[15px] leading-tight font-semibold"
+                    style={{ color: "var(--ink)" }}
+                  >
+                    {label}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Para organizadores */}
-        <section id="organizadores" className="bg-[var(--ink)] py-[88px] text-[var(--paper)]">
-          <div className="mx-auto max-w-[1200px] px-6 md:px-8">
-            <div className="grid grid-cols-1 items-center gap-14 md:grid-cols-2">
+        <section
+          id="organizadores"
+          className="relative overflow-hidden py-[96px]"
+          style={{ backgroundColor: "#08080A" }}
+        >
+          <div
+            className="pointer-events-none absolute top-0 right-0 h-[400px] w-[400px] opacity-20"
+            style={{
+              background: "radial-gradient(circle, rgba(232,148,0,0.3) 0%, transparent 70%)",
+              filter: "blur(80px)",
+            }}
+            aria-hidden="true"
+          />
+
+          <div className="relative mx-auto max-w-[1200px] px-5 md:px-8">
+            <div className="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
               <div>
-                <p className="mb-4 text-[11px] font-semibold tracking-widest text-[var(--mute-2)] uppercase">
-                  Para quem organiza eventos
+                <p className="mb-5 text-[11px] font-semibold tracking-[0.12em] text-white/40 uppercase">
+                  Para quem organiza
                 </p>
-                <h2 className="mb-5 text-[clamp(26px,3.5vw,42px)] leading-[1.1] font-bold tracking-tight">
-                  Você cuida do evento. A gente cuida do ingresso.
+                <h2 className="mb-5 text-[clamp(26px,3.5vw,46px)] leading-[1.05] font-black tracking-[-0.04em] text-white">
+                  Você cria. A AXON <span style={{ color: "#E89400" }}>transmite.</span>
                 </h2>
-                <p className="mb-8 text-[16px] leading-relaxed text-[var(--mute-2)]">
-                  Crie seu evento em minutos, acompanhe as vendas em tempo real e receba o dinheiro
-                  no dia seguinte via Pix. Sem burocracia e sem taxa de adesão.
+                <p className="mb-10 text-[16px] leading-relaxed text-white/50">
+                  Do evento criado ao ingresso vendido em minutos. Dashboard em tempo real, repasse
+                  D+1 via Pix e validação de QR na portaria. Sem taxa de adesão.
                 </p>
 
                 <ul className="mb-10 space-y-3">
                   {[
-                    "Criação de evento em minutos",
-                    "Venda de ingressos com lotes e meia-entrada",
-                    "Repasse D+1 direto na sua conta",
-                    "App de validação de QR Code na portaria",
-                    "Dashboard com vendas em tempo real",
+                    "Criação de evento em menos de 5 minutos",
+                    "Lotes com preços e datas configuráveis",
+                    "Meia-entrada automática (Lei 12.933/2013)",
+                    "Repasse D+1 direto na conta",
+                    "App de validação offline para a portaria",
                   ].map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-center gap-3 text-[14px] text-[var(--mute-2)]"
-                    >
-                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--pulse)]" />
+                    <li key={item} className="flex items-center gap-3 text-[14px] text-white/50">
+                      <span className="h-px w-4 shrink-0" style={{ backgroundColor: "#E89400" }} />
                       {item}
                     </li>
                   ))}
@@ -477,27 +384,35 @@ export default function HomePage() {
 
                 <Link
                   href="/organizador/comecar"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[var(--pulse)] px-6 py-3 text-[15px] font-bold text-[var(--pulse-ink)] transition-colors hover:bg-[var(--pulse-deep)]"
+                  className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-[15px] font-bold transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: "#E89400", color: "#0A0A0B" }}
                 >
-                  Quero vender ingressos
+                  Começar agora, é grátis
                 </Link>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { value: "0%", label: "Sem taxa de adesão" },
-                  { value: "D+1", label: "Repasse garantido" },
-                  { value: "Pix", label: "Pagamento instantâneo" },
-                  { value: "QR", label: "Validação segura" },
-                ].map(({ value, label }) => (
+                  { v: "0%", l: "Taxa de adesão" },
+                  { v: "D+1", l: "Repasse garantido" },
+                  { v: "Pix", l: "Pagamento instantâneo" },
+                  { v: "QR", l: "Validação segura" },
+                ].map(({ v, l }) => (
                   <div
-                    key={label}
-                    className="flex flex-col gap-2 rounded-2xl border border-white/10 p-6"
+                    key={l}
+                    className="flex flex-col gap-3 rounded-2xl border p-6"
+                    style={{
+                      borderColor: "rgba(255,255,255,0.08)",
+                      backgroundColor: "rgba(255,255,255,0.03)",
+                    }}
                   >
-                    <span className="text-[28px] font-black tracking-tight text-[var(--pulse)]">
-                      {value}
+                    <span
+                      className="font-mono text-[30px] font-black tracking-tight"
+                      style={{ color: "#E89400" }}
+                    >
+                      {v}
                     </span>
-                    <span className="text-[13px] leading-snug text-[var(--mute-2)]">{label}</span>
+                    <span className="text-[13px] leading-snug text-white/40">{l}</span>
                   </div>
                 ))}
               </div>
@@ -506,54 +421,62 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-[var(--rule)] py-14">
-        <div className="mx-auto max-w-[1200px] px-6 md:px-8">
+      {/* Footer */}
+      <footer className="border-t py-14" style={{ borderColor: "var(--rule)" }}>
+        <div className="mx-auto max-w-[1200px] px-5 md:px-8">
           <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="mb-4 flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--ink)]">
-                  <Image
-                    src="/brand/symbol-axon.svg"
-                    alt=""
-                    width={14}
-                    height={14}
-                    className="brightness-0 invert"
-                  />
+                <div
+                  className="flex h-7 w-7 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: "var(--ink)" }}
+                >
+                  <AxonLogo size={14} className="text-[var(--paper)]" />
                 </div>
-                <span className="text-[15px] font-black tracking-[-0.04em]">AXON</span>
+                <span
+                  className="text-[15px] font-black tracking-[-0.04em]"
+                  style={{ color: "var(--ink)" }}
+                >
+                  AXON
+                </span>
               </Link>
-              <p className="mb-4 text-[13px] leading-relaxed text-[var(--mute)]">
-                Ingressos online para os melhores eventos do Rio Grande do Norte.
+              <p className="mb-5 text-[13px] leading-relaxed" style={{ color: "var(--mute)" }}>
+                Ingressos digitais para os melhores eventos.
               </p>
               <a
                 href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90"
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90"
+                style={{ backgroundColor: "#25D366" }}
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                 </svg>
-                Falar com suporte
+                Suporte no WhatsApp
               </a>
             </div>
 
             <nav>
-              <h3 className="mb-4 text-[11px] font-bold tracking-widest text-[var(--mute)] uppercase">
+              <h3
+                className="mb-4 text-[11px] font-bold tracking-[0.12em] uppercase"
+                style={{ color: "var(--mute)" }}
+              >
                 Plataforma
               </h3>
               <ul className="space-y-2.5">
                 {[
-                  { label: "Ver eventos", href: "/eventos" },
-                  { label: "Para organizadores", href: "/organizador/comecar" },
-                  { label: "Minha conta", href: "/minha-conta" },
-                ].map(({ label, href }) => (
-                  <li key={href}>
+                  { l: "Ver eventos", h: "/eventos" },
+                  { l: "Para organizadores", h: "/organizador/comecar" },
+                  { l: "Minha conta", h: "/minha-conta" },
+                ].map(({ l, h }) => (
+                  <li key={h}>
                     <Link
-                      href={href}
-                      className="text-[13px] text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+                      href={h}
+                      className="text-[13px] transition-colors hover:opacity-100"
+                      style={{ color: "var(--mute)" }}
                     >
-                      {label}
+                      {l}
                     </Link>
                   </li>
                 ))}
@@ -561,52 +484,52 @@ export default function HomePage() {
             </nav>
 
             <nav>
-              <h3 className="mb-4 text-[11px] font-bold tracking-widest text-[var(--mute)] uppercase">
+              <h3
+                className="mb-4 text-[11px] font-bold tracking-[0.12em] uppercase"
+                style={{ color: "var(--mute)" }}
+              >
                 Contato
               </h3>
               <ul className="space-y-2.5">
                 <li>
+                  <p className="text-[13px]" style={{ color: "var(--mute)" }}>
+                    CEO: Johnattan Dias
+                  </p>
+                </li>
+                <li>
                   <a
-                    href={`https://wa.me/5584981235396`}
+                    href="https://wa.me/5584981235396"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[13px] text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+                    className="text-[13px] transition-colors hover:opacity-100"
+                    style={{ color: "var(--mute)" }}
                   >
                     +55 84 9 8123-5396
-                  </a>
-                </li>
-                <li>
-                  <p className="text-[13px] text-[var(--mute)]">CEO: Johnattan Dias</p>
-                </li>
-                <li>
-                  <a
-                    href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda.")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[13px] text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
-                  >
-                    Suporte no WhatsApp
                   </a>
                 </li>
               </ul>
             </nav>
 
             <nav>
-              <h3 className="mb-4 text-[11px] font-bold tracking-widest text-[var(--mute)] uppercase">
+              <h3
+                className="mb-4 text-[11px] font-bold tracking-[0.12em] uppercase"
+                style={{ color: "var(--mute)" }}
+              >
                 Legal
               </h3>
               <ul className="space-y-2.5">
                 {[
-                  { label: "Privacidade", href: "/privacidade" },
-                  { label: "Termos de uso", href: "/termos" },
-                  { label: "Reembolso", href: "/reembolso" },
-                ].map(({ label, href }) => (
-                  <li key={href}>
+                  { l: "Privacidade", h: "/privacidade" },
+                  { l: "Termos de uso", h: "/termos" },
+                  { l: "Reembolso", h: "/reembolso" },
+                ].map(({ l, h }) => (
+                  <li key={h}>
                     <Link
-                      href={href}
-                      className="text-[13px] text-[var(--mute)] transition-colors hover:text-[var(--ink)]"
+                      href={h}
+                      className="text-[13px] transition-colors hover:opacity-100"
+                      style={{ color: "var(--mute)" }}
                     >
-                      {label}
+                      {l}
                     </Link>
                   </li>
                 ))}
@@ -614,24 +537,30 @@ export default function HomePage() {
             </nav>
           </div>
 
-          <div className="flex flex-col items-center justify-between gap-4 border-t border-[var(--rule)] pt-8 sm:flex-row">
-            <p className="text-[12px] text-[var(--mute)]">
+          <div
+            className="flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row"
+            style={{ borderColor: "var(--rule)" }}
+          >
+            <p className="text-[12px]" style={{ color: "var(--mute-2)" }}>
               © 2026 AXON. Todos os direitos reservados.
             </p>
-            <p className="text-[12px] text-[var(--mute-2)]">Desenvolvido pela Beyonder © 2026</p>
+            <p className="text-[12px]" style={{ color: "var(--mute-2)" }}>
+              Desenvolvido pela Beyonder © 2026
+            </p>
           </div>
         </div>
       </footer>
 
-      {/* Botão flutuante de WhatsApp */}
+      {/* WhatsApp flutuante */}
       <a
         href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda com a AXON.")}`}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Falar no WhatsApp"
-        className="fixed right-6 bottom-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+        aria-label="Suporte no WhatsApp"
+        className="fixed right-6 bottom-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110 active:scale-95"
+        style={{ backgroundColor: "#25D366" }}
       >
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
         </svg>
       </a>

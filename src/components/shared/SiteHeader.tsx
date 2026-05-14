@@ -1,6 +1,6 @@
 import Link from "next/link"
-import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
+import { AxonLogo } from "./AxonLogo"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -46,11 +46,16 @@ export async function SiteHeader() {
       }}
     >
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <Image src="/brand/symbol-axon.svg" alt="AXON" width={24} height={24} />
+        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="AXON">
+          <div
+            className="flex h-7 w-7 items-center justify-center rounded-lg"
+            style={{ backgroundColor: "var(--ink)" }}
+          >
+            <AxonLogo size={14} className="text-[var(--paper)]" />
+          </div>
           <span
-            className="hidden text-sm font-bold tracking-tight sm:block"
-            style={{ color: "var(--ink)", letterSpacing: "-0.04em" }}
+            className="hidden text-[15px] font-black tracking-[-0.045em] sm:block"
+            style={{ color: "var(--ink)" }}
           >
             AXON
           </span>
