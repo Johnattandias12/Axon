@@ -263,7 +263,7 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
               {[
                 {
                   n: "01",
@@ -283,25 +283,57 @@ export default function HomePage() {
                   desc: "Seu ingresso digital aparece na tela. Mostre na entrada e aproveite. Funciona até offline.",
                   accent: "var(--success)",
                 },
-              ].map(({ n, title, desc, accent }) => (
+              ].map(({ n, title, desc, accent }, idx) => (
                 <div
                   key={n}
-                  className="group -ml-4 flex gap-5 rounded-2xl border border-transparent p-6 transition-all hover:border-white/10 hover:bg-zinc-900/80 hover:shadow-xl"
+                  className="group relative flex gap-5 overflow-hidden rounded-2xl border p-6 transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]"
+                  style={{
+                    borderColor: "var(--rule)",
+                    backgroundColor: "var(--paper-pure)",
+                  }}
                 >
+                  <div
+                    className="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full opacity-10 blur-3xl transition-opacity group-hover:opacity-25"
+                    style={{ backgroundColor: accent }}
+                    aria-hidden="true"
+                  />
+                  {idx < 2 && (
+                    <svg
+                      className="pointer-events-none absolute top-1/2 -right-6 hidden h-6 w-12 -translate-y-1/2 opacity-30 md:block"
+                      viewBox="0 0 48 24"
+                      fill="none"
+                      style={{ color: "var(--mute)" }}
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M2 12 L40 12 M30 4 L40 12 L30 20"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
                   <span
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[15px] font-black tracking-[0.12em] shadow-lg transition-transform group-hover:scale-110"
-                    style={{ backgroundColor: accent, color: "#0A0A0B" }}
+                    className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[14px] font-black tracking-[0.12em] transition-transform group-hover:scale-110"
+                    style={{
+                      backgroundColor: accent,
+                      color: "var(--pulse-ink)",
+                      boxShadow: `0 8px 24px -8px ${accent}`,
+                    }}
                   >
                     {n}
                   </span>
-                  <div>
+                  <div className="relative z-10">
                     <p
-                      className="mb-3 text-xl font-bold transition-colors group-hover:text-white"
+                      className="mb-2 text-lg font-bold tracking-tight"
                       style={{ color: "var(--ink)" }}
                     >
                       {title}
                     </p>
-                    <p className="text-[15px] leading-relaxed text-zinc-400">{desc}</p>
+                    <p className="text-[14px] leading-relaxed" style={{ color: "var(--mute)" }}>
+                      {desc}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -332,49 +364,98 @@ export default function HomePage() {
                 {
                   label: "Shows e Música",
                   href: "/eventos?categoria=show",
-                  accent: "var(--danger)",
+                  accent: "var(--pulse)",
+                  icon: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M9 18V5l12-2v13" />
+                      <circle cx="6" cy="18" r="3" />
+                      <circle cx="18" cy="16" r="3" />
+                    </svg>
+                  ),
                 },
-                { label: "Esportes", href: "/eventos?categoria=esporte", accent: "var(--info)" },
+                {
+                  label: "Esportes",
+                  href: "/eventos?categoria=esporte",
+                  accent: "var(--info)",
+                  icon: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 2a14.5 14.5 0 0 0 0 20M2 12h20" />
+                    </svg>
+                  ),
+                },
                 {
                   label: "Gospel e Religioso",
                   href: "/eventos?categoria=religioso",
-                  accent: "#7C3AED",
+                  accent: "var(--warning)",
+                  icon: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 3v18M6 9h12" />
+                    </svg>
+                  ),
                 },
                 {
                   label: "Festas e Micareta",
                   href: "/eventos?categoria=outro",
-                  accent: "var(--pulse)",
+                  accent: "var(--success)",
+                  icon: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M5.8 11.3 2 22l10.7-3.79" />
+                      <path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01" />
+                      <path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10" />
+                      <path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17" />
+                      <path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7" />
+                      <path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z" />
+                    </svg>
+                  ),
                 },
-              ].map(({ label, href, accent }) => (
+              ].map(({ label, href, accent, icon }) => (
                 <Link
                   key={label}
                   href={href}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-6 transition-all hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)]"
+                  className="group relative flex aspect-square flex-col justify-between overflow-hidden rounded-2xl border p-5 transition-all hover:-translate-y-1"
                   style={{
-                    borderColor: "rgba(255,255,255,0.08)",
-                    backgroundColor: "rgba(255,255,255,0.02)",
+                    borderColor: "var(--rule)",
+                    backgroundColor: "var(--paper-pure)",
                   }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                   <div
-                    className="mb-12 h-1.5 w-10 rounded-full shadow-[0_0_10px_currentColor] transition-all group-hover:w-16"
-                    style={{ backgroundColor: accent, color: accent }}
+                    className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full opacity-15 blur-2xl transition-all duration-500 group-hover:scale-150 group-hover:opacity-30"
+                    style={{ backgroundColor: accent }}
+                    aria-hidden="true"
                   />
-                  <p
-                    className="relative z-10 text-[17px] leading-tight font-bold"
-                    style={{ color: "var(--ink)" }}
+                  <div
+                    className="relative flex h-10 w-10 items-center justify-center rounded-xl transition-transform group-hover:scale-110"
+                    style={{
+                      backgroundColor: `color-mix(in srgb, ${accent} 12%, transparent)`,
+                      color: accent,
+                    }}
                   >
-                    {label}
-                  </p>
-                  <svg
-                    className="absolute right-5 bottom-5 h-6 w-6 -translate-x-4 text-white opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
+                    <span className="h-5 w-5">{icon}</span>
+                  </div>
+                  <div className="relative z-10">
+                    <p
+                      className="text-[16px] leading-tight font-bold"
+                      style={{ color: "var(--ink)" }}
+                    >
+                      {label}
+                    </p>
+                    <div
+                      className="mt-2 flex items-center gap-1 text-xs font-medium opacity-60 transition-opacity group-hover:opacity-100"
+                      style={{ color: accent }}
+                    >
+                      Explorar
+                      <svg
+                        className="h-3 w-3 transition-transform group-hover:translate-x-1"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -468,12 +549,27 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-14" style={{ borderColor: "var(--rule)" }}>
+      <footer
+        className="relative overflow-hidden border-t py-14"
+        style={{ borderColor: "var(--rule)" }}
+      >
+        {/* ECG pulse decorativo */}
+        <svg
+          className="pointer-events-none absolute top-0 right-0 left-0 h-3 w-full opacity-50"
+          viewBox="0 0 1400 24"
+          preserveAspectRatio="none"
+          fill="none"
+          stroke="var(--pulse)"
+          strokeWidth="1.5"
+          aria-hidden="true"
+        >
+          <path d="M0 12 L320 12 L340 12 L355 4 L375 20 L390 12 L720 12 L740 12 L755 2 L775 22 L790 12 L1080 12 L1100 12 L1115 6 L1130 18 L1145 12 L1400 12" />
+        </svg>
         <div className="mx-auto max-w-[1200px] px-5 md:px-8">
           <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
             <div className="col-span-2 md:col-span-1">
               <Link href="/" className="mb-4 flex items-center gap-2.5">
-                <AxonLogo size={20} className="text-white" />
+                <AxonLogo size={22} tone="ink" />
                 <span
                   className="text-[17px] font-black tracking-tight"
                   style={{ color: "var(--ink)" }}

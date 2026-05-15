@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     template: "%s · AXON",
   },
   description:
-    "Marketplace brasileiro de ingressos. Compra em segundos, QR assinado, acesso verificado.",
-  metadataBase: new URL(process.env["NEXT_PUBLIC_APP_URL"] ?? "http://localhost:3000"),
+    "Ingressos online em segundos. QR Code assinado, validação na porta e acesso verificado.",
+  metadataBase: new URL(process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"),
   openGraph: {
     type: "website",
     locale: "pt_BR",

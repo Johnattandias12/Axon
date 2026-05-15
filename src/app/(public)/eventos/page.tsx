@@ -63,11 +63,25 @@ export default async function EventosPage({
     <div className="min-h-screen" style={{ backgroundColor: "var(--paper)" }}>
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="mb-8 space-y-4">
+          <div className="flex items-center gap-2">
+            <span
+              className="h-px w-8"
+              style={{
+                background: "linear-gradient(90deg, transparent, var(--pulse))",
+              }}
+            />
+            <span
+              className="text-[11px] font-semibold tracking-[0.12em] uppercase"
+              style={{ color: "var(--mute)" }}
+            >
+              AXON · Catálogo
+            </span>
+          </div>
           <h1
-            className="text-2xl font-bold tracking-tight"
-            style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}
+            className="text-3xl font-bold tracking-tight md:text-4xl"
+            style={{ color: "var(--ink)", letterSpacing: "-0.035em" }}
           >
-            Eventos
+            Encontre seu próximo evento
           </h1>
 
           <form className="flex flex-wrap gap-3" method="GET">

@@ -237,6 +237,8 @@ export type Database = {
           name?: string
           price_cents?: number
           quantity_total?: number
+          quantity_sold?: number
+          quantity_reserved?: number
           is_half_price?: boolean
           starts_at?: string
           ends_at?: string | null
@@ -291,6 +293,8 @@ export type Database = {
           payment_method?: "pix" | "credit_card" | null
           gateway_order_id?: string | null
           reserved_until?: string | null
+          paid_at?: string | null
+          cancelled_at?: string | null
           metadata?: Json
           buyer_ip?: string | null
           buyer_user_agent?: string | null
@@ -319,6 +323,43 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          id: string
+          order_id: string
+          ticket_lot_id: string
+          quantity: number
+          unit_price_cents: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          ticket_lot_id: string
+          quantity: number
+          unit_price_cents: number
+        }
+        Update: {
+          quantity?: number
+          unit_price_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_ticket_lot_id_fkey"
+            columns: ["ticket_lot_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_lots"
             referencedColumns: ["id"]
           },
         ]

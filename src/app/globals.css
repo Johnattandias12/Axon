@@ -88,3 +88,126 @@ body {
   background-color: var(--pulse);
   color: var(--pulse-ink);
 }
+
+/* ─── AXON animations ─── */
+@keyframes axon-pulse-draw {
+  0% {
+    stroke-dashoffset: 80;
+    opacity: 0.4;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -80;
+    opacity: 0.4;
+  }
+}
+
+@keyframes axon-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes axon-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes axon-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes axon-spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.axon-fade-up {
+  animation: axon-fade-up 0.5s var(--ease-out) both;
+}
+
+.axon-glow {
+  animation: axon-glow-pulse 3s var(--ease-in-out) infinite;
+}
+
+.axon-shimmer {
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    color-mix(in srgb, var(--pulse) 30%, transparent) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: axon-shimmer 2.5s linear infinite;
+}
+
+/* ─── Smooth hover lift for cards ─── */
+.axon-card-lift {
+  transition:
+    transform 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out),
+    border-color 0.3s var(--ease-out);
+}
+
+.axon-card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--pulse);
+}
+
+/* ─── Gradient text helper ─── */
+.axon-text-gradient {
+  background: linear-gradient(135deg, var(--ink) 0%, var(--pulse-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── Grid background pattern ─── */
+.axon-grid-bg {
+  background-image:
+    linear-gradient(rgba(200, 255, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 255, 0, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+[data-theme="dark"] .axon-grid-bg {
+  background-image:
+    linear-gradient(rgba(200, 255, 0, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 255, 0, 0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ─── Conic gradient glow ─── */
+.axon-conic-glow {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    color-mix(in srgb, var(--pulse) 20%, transparent) 25%,
+    transparent 50%,
+    color-mix(in srgb, var(--info) 20%, transparent) 75%,
+    transparent 100%
+  );
+  filter: blur(40px);
+}

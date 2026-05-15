@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
-import { AxonLogo } from "./AxonLogo"
+import { AxonSymbol } from "./AxonLogo"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -41,18 +41,26 @@ export async function SiteHeader() {
     <header
       className="sticky top-0 z-50 border-b backdrop-blur-sm"
       style={{
-        backgroundColor: "color-mix(in srgb, var(--paper) 92%, transparent)",
+        backgroundColor: "color-mix(in srgb, var(--paper) 88%, transparent)",
         borderColor: "var(--rule)",
       }}
     >
+      {/* Pulse thread */}
+      <div
+        className="absolute right-0 bottom-0 left-0 h-[2px] opacity-80"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent 0%, var(--pulse) 45%, var(--pulse) 55%, transparent 100%)",
+        }}
+        aria-hidden="true"
+      />
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="AXON">
-          <div
-            className="flex h-7 w-7 items-center justify-center rounded-lg"
-            style={{ backgroundColor: "var(--ink)" }}
-          >
-            <AxonLogo size={14} className="text-[var(--pulse)]" />
-          </div>
+        <Link
+          href="/"
+          className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-80"
+          aria-label="AXON"
+        >
+          <AxonSymbol size={26} tone="ink" />
           <span
             className="hidden text-[15px] font-black tracking-[-0.045em] sm:block"
             style={{ color: "var(--ink)" }}
