@@ -164,3 +164,45 @@ html {
 .overflow-y-auto {
   -webkit-overflow-scrolling: touch;
 }
+
+/* ─────────────── MOBILE / iOS optimizations extras ─────────────── */
+
+/* Aceita o gesto de zoom do navegador mas evita auto-zoom em inputs (iOS) */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* iOS só evita zoom se >= 16px */
+  }
+}
+
+/* Touch targets mínimos no mobile (44pt Apple) */
+@media (pointer: coarse) {
+  button,
+  a[role="button"],
+  [type="button"],
+  [type="submit"] {
+    min-height: 36px;
+  }
+}
+
+/* Transição global mais fluida ao navegar */
+@supports (view-transition-name: root) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 200ms;
+  }
+}
+
+/* Font smoothing ainda mais firme no Mac */
+body {
+  font-feature-settings: "ss01", "cv01", "cv02";
+  text-rendering: optimizeLegibility;
+}
+
+/* Sem barra horizontal acidental */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}

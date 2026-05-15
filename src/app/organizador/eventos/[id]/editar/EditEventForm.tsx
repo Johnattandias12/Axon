@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createClient } from "@/lib/supabase/client"
+import { EventBannerUploader } from "@/components/event/EventBannerUploader"
 
 const schema = z.object({
   title: z.string().min(5, "Título muito curto"),
@@ -28,6 +29,8 @@ type FormData = z.infer<typeof schema>
 
 interface Props {
   eventId: string
+  organizerId: string
+  bannerUrl: string | null
   initial: FormData
 }
 
@@ -39,7 +42,7 @@ const categories = [
   { value: "outro", label: "Outro" },
 ]
 
-export function EditEventForm({ eventId, initial }: Props) {
+export function EditEventForm({ eventId, organizerId, bannerUrl, initial }: Props) {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
@@ -87,6 +90,16 @@ export function EditEventForm({ eventId, initial }: Props) {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+      <div
+        className="space-y-5 rounded-xl border p-5"
+        style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
+      >
+        <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
+          Imagem de capa
+        </p>
+        <EventBannerUploader eventId={eventId} organizerId={organizerId} initialUrl={bannerUrl} />
+      </div>
+
       <div
         className="space-y-5 rounded-xl border p-5"
         style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}

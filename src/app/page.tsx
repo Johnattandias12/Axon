@@ -4,6 +4,7 @@ import { EventsCarousel } from "@/components/shared/EventsCarousel"
 import { CategoriesCarousel } from "@/components/shared/CategoriesCarousel"
 import { ThemeToggle } from "@/components/shared/ThemeToggle"
 import { MobileMenu } from "@/components/shared/MobileMenu"
+import { NeuronAnimation } from "@/components/shared/NeuronAnimation"
 
 export default function HomePage() {
   return (
@@ -105,18 +106,8 @@ export default function HomePage() {
             aria-hidden="true"
           />
 
-          {/* ECG pulse SVG */}
-          <svg
-            className="pointer-events-none absolute bottom-0 left-0 h-auto w-full opacity-10"
-            viewBox="0 0 1400 120"
-            preserveAspectRatio="none"
-            fill="none"
-            stroke="rgba(200,255,0,0.9)"
-            strokeWidth="1.5"
-            aria-hidden="true"
-          >
-            <path d="M0 60 L300 60 L320 60 L340 20 L365 100 L390 60 L680 60 L700 60 L720 10 L745 110 L770 60 L1060 60 L1080 60 L1100 35 L1125 85 L1150 60 L1400 60" />
-          </svg>
+          {/* Neuron — sinapses se ramificando */}
+          <NeuronAnimation className="absolute inset-0 h-full w-full opacity-40" />
 
           <div className="animate-in fade-in slide-in-from-bottom-8 relative mx-auto max-w-[1200px] duration-1000">
             {/* Eyebrow */}

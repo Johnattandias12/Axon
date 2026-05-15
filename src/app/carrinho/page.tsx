@@ -7,6 +7,7 @@ import { centsToBRL, formatDate } from "@/lib/utils"
 import { SiteHeader } from "@/components/shared/SiteHeader"
 import { CartItemRow } from "@/components/cart/CartItemRow"
 import { CheckoutForm } from "@/components/cart/CheckoutForm"
+import { PageBackLink } from "@/components/shared/PageHeader"
 import { ShoppingBag, Calendar, MapPin, Sparkles, ArrowRight } from "lucide-react"
 
 export const metadata: Metadata = { title: "Carrinho · AXON" }
@@ -64,7 +65,8 @@ export default async function CarrinhoPage() {
       <SiteHeader />
 
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mb-8">
+        <div className="mb-8 space-y-3">
+          <PageBackLink href="/eventos" label="Continuar comprando" />
           <div className="flex items-center gap-2">
             <span
               className="h-px w-8"
@@ -78,7 +80,7 @@ export default async function CarrinhoPage() {
             </p>
           </div>
           <h1
-            className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
+            className="text-3xl font-bold tracking-tight sm:text-4xl"
             style={{ color: "var(--ink)", letterSpacing: "-0.035em" }}
           >
             {totalItems > 0

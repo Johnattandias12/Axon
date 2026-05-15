@@ -89,6 +89,92 @@ body {
   color: var(--pulse-ink);
 }
 
+/* ─── Neuron animation (hero) ─── */
+@keyframes neuron-branch {
+  0% {
+    stroke-dashoffset: 600;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.7;
+  }
+  60% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    stroke-dashoffset: -600;
+    opacity: 0;
+  }
+}
+
+@keyframes neuron-sub {
+  0%,
+  20% {
+    stroke-dashoffset: 80;
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -80;
+    opacity: 0;
+  }
+}
+
+@keyframes neuron-node {
+  0%,
+  60% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+  85% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes neuron-float {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes neuron-core-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.9);
+    transform-origin: 700px 300px;
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
 /* ─── AXON animations ─── */
 @keyframes axon-pulse-draw {
   0% {

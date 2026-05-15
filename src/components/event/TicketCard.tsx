@@ -1,5 +1,5 @@
-import QRCode from "qrcode"
 import { AxonSymbol } from "@/components/shared/AxonLogo"
+import { TicketQrCode } from "./TicketQrCode"
 import { centsToBRL, formatDate } from "@/lib/utils"
 
 interface TicketCardProps {
@@ -31,7 +31,7 @@ interface TicketCardProps {
  * Layout estilo bilhete físico: corpo principal + canhoto separado por linha tracejada.
  * Renderizado server-side com QR Code SVG.
  */
-export async function TicketCard({
+export function TicketCard({
   ticket,
   event,
   typeName,
@@ -40,18 +40,6 @@ export async function TicketCard({
   index,
   total,
 }: TicketCardProps) {
-  const qrSvgRaw = await QRCode.toString(ticket.qr_hash, {
-    type: "svg",
-    errorCorrectionLevel: "M",
-    margin: 1,
-    color: { dark: "#0a0a0b", light: "#00000000" },
-  })
-  // Substitui atributos width/height por 100% e garante xmlns para inline
-  const qrSvg = qrSvgRaw
-    .replace(/<svg([^>]*)\swidth="[^"]*"/i, "<svg$1")
-    .replace(/<svg([^>]*)\sheight="[^"]*"/i, "<svg$1")
-    .replace(/<svg([^>]*?)>/i, '<svg$1 width="100%" height="100%" preserveAspectRatio="xMidYMid meet">')
-
   const statusLabel: Record<string, { label: string; color: string; bg: string }> = {
     valid: { label: "Válido", color: "var(--success)", bg: "var(--success-soft)" },
     used: { label: "Utilizado", color: "var(--mute)", bg: "var(--paper-soft)" },
@@ -217,10 +205,7 @@ export async function TicketCard({
               boxShadow: "0 0 0 4px var(--pulse-soft)",
             }}
           >
-            <div
-              className="flex h-32 w-32 items-center justify-center"
-              dangerouslySetInnerHTML={{ __html: qrSvg }}
-            />
+            <TicketQrCode payload={ticket.qr_hash} size={128} />
           </div>
           <p
             className="text-center font-mono text-[9px] leading-tight break-all"

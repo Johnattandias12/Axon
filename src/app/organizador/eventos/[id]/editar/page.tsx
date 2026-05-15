@@ -30,7 +30,7 @@ export default async function EditarEventoPage({ params }: Props) {
   const { data: event } = await supabase
     .from("events")
     .select(
-      "id, title, description, category, age_rating, venue_name, address, city, state, starts_at, ends_at, cover_policy, status"
+      "id, title, description, category, age_rating, venue_name, address, city, state, starts_at, ends_at, cover_policy, status, banner_url"
     )
     .eq("id", id)
     .eq("organizer_id", organizer.id)
@@ -70,6 +70,8 @@ export default async function EditarEventoPage({ params }: Props) {
 
       <EditEventForm
         eventId={id}
+        organizerId={organizer.id}
+        bannerUrl={event.banner_url}
         initial={{
           title: event.title,
           description: event.description ?? "",
