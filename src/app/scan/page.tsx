@@ -1,173 +1,432 @@
 "use client"
 
-import { useState } from "react"
-import { QrCode, ScanLine, Search, History, CheckCircle2, XCircle, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState, useTransition, useEffect } from "react"
+import {
+  QrCode,
+  ScanLine,
+  Search,
+  History,
+  CheckCircle2,
+  XCircle,
+  User,
+  Clock,
+  Loader2,
+  Wifi,
+  ArrowLeft,
+} from "lucide-react"
+import Link from "next/link"
+import { AxonSymbol } from "@/components/shared/AxonLogo"
+import { validateQr, type ValidateResult } from "./actions"
+
+interface HistoryItem extends Extract<ValidateResult, { ok: true }> {
+  at: number
+}
 
 export default function ScanAppPage() {
   const [activeTab, setActiveTab] = useState<"scan" | "history">("scan")
-  const [scanStatus, setScanStatus] = useState<"idle" | "success" | "error">("idle")
+  const [input, setInput] = useState("")
+  const [result, setResult] = useState<ValidateResult | null>(null)
+  const [pending, startTransition] = useTransition()
+  const [history, setHistory] = useState<HistoryItem[]>([])
 
-  // Simula um scan
-  const handleSimulateScan = (status: "success" | "error") => {
-    setScanStatus(status)
-    setTimeout(() => setScanStatus("idle"), 3000)
+  useEffect(() => {
+    if (result?.ok && result.status === "valid") {
+      setHistory((h) => [{ ...result, at: Date.now() }, ...h].slice(0, 20))
+    }
+  }, [result])
+
+  function run(payload: string) {
+    if (!payload.trim()) return
+    setResult(null)
+    startTransition(async () => {
+      const r = await validateQr(payload.trim())
+      setResult(r)
+      setTimeout(() => setResult(null), 5000)
+    })
   }
 
+  const successCount = history.filter((h) => h.ok && h.status === "valid").length
+
   return (
-    <div className="flex min-h-screen flex-col bg-black text-white md:mx-auto md:max-w-md md:border-x md:border-white/10 md:shadow-2xl">
+    <div
+      className="flex min-h-screen flex-col md:mx-auto md:max-w-md md:border-x md:shadow-2xl"
+      style={{
+        backgroundColor: "var(--ink)",
+        color: "var(--paper)",
+        borderColor: "rgba(255,255,255,0.08)",
+      }}
+    >
       {/* Header */}
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-zinc-900 p-4">
+      <header
+        className="sticky top-0 z-10 flex items-center justify-between border-b p-4"
+        style={{
+          backgroundColor: "var(--ink-2)",
+          borderColor: "rgba(255,255,255,0.08)",
+        }}
+      >
+        <Link
+          href="/"
+          className="flex items-center gap-2 transition-opacity hover:opacity-70"
+          aria-label="Voltar"
+        >
+          <ArrowLeft size={16} style={{ color: "rgba(250,250,247,0.5)" }} />
+          <AxonSymbol size={22} tone="pulse" />
+        </Link>
         <div>
-          <h1 className="text-lg font-bold">Validação na Porta</h1>
-          <p className="flex items-center gap-1 text-xs text-lime-500">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-lime-500"></span>
-            Modo Online Ativo
+          <h1 className="text-sm font-bold tracking-tight">Validação na Porta</h1>
+          <p className="flex items-center gap-1 text-[11px]" style={{ color: "var(--pulse)" }}>
+            <span
+              className="h-1.5 w-1.5 animate-pulse rounded-full"
+              style={{ backgroundColor: "var(--pulse)" }}
+            />
+            <Wifi size={9} />
+            Online
           </p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-black">428</p>
-          <p className="text-xs text-zinc-400">Check-ins</p>
+          <p
+            className="font-mono text-xl font-black tabular-nums"
+            style={{ letterSpacing: "-0.02em" }}
+          >
+            {successCount}
+          </p>
+          <p className="text-[10px]" style={{ color: "rgba(250,250,247,0.5)" }}>
+            check-ins
+          </p>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="relative flex flex-1 flex-col overflow-hidden">
         {activeTab === "scan" ? (
           <div className="flex flex-1 flex-col">
-            {/* Viewfinder Simulado */}
-            <div className="relative flex flex-1 flex-col items-center justify-center bg-zinc-950">
-              {/* Câmera Placeholder */}
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1576085898323-218337e3e43c?auto=format&fit=crop&q=80&w=800')] bg-cover bg-center opacity-20"></div>
+            {/* Viewfinder */}
+            <div
+              className="relative flex flex-1 flex-col items-center justify-center"
+              style={{ backgroundColor: "#050507" }}
+            >
+              {/* Grid background */}
+              <svg
+                className="pointer-events-none absolute inset-0 h-full w-full opacity-20"
+                aria-hidden="true"
+              >
+                <defs>
+                  <pattern
+                    id="scan-grid"
+                    x="0"
+                    y="0"
+                    width="24"
+                    height="24"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <path
+                      d="M 24 0 L 0 0 0 24"
+                      fill="none"
+                      stroke="rgba(200,255,0,0.15)"
+                      strokeWidth="0.5"
+                    />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#scan-grid)" />
+              </svg>
 
-              {/* Scan Overlay */}
+              {/* Pulse glow */}
+              <div
+                className="pointer-events-none absolute top-1/2 left-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25"
+                style={{
+                  background: "radial-gradient(circle, rgba(200,255,0,0.5) 0%, transparent 60%)",
+                  filter: "blur(80px)",
+                }}
+                aria-hidden="true"
+              />
+
+              {/* Viewfinder frame */}
               <div className="relative z-10 p-8">
                 <div
-                  className={`relative flex h-64 w-64 items-center justify-center rounded-3xl border-2 transition-colors duration-300 ${
-                    scanStatus === "idle"
-                      ? "border-white/30"
-                      : scanStatus === "success"
-                        ? "border-green-500 bg-green-500/20"
-                        : "border-red-500 bg-red-500/20"
-                  }`}
+                  className="relative flex h-64 w-64 items-center justify-center rounded-3xl border-2 transition-colors duration-300"
+                  style={{
+                    borderColor: !result
+                      ? "rgba(200,255,0,0.25)"
+                      : result.ok && result.status === "valid"
+                        ? "var(--success)"
+                        : result.ok
+                          ? "var(--warning)"
+                          : "var(--danger)",
+                    backgroundColor: !result
+                      ? "transparent"
+                      : result.ok && result.status === "valid"
+                        ? "rgba(0,185,107,0.15)"
+                        : result.ok
+                          ? "rgba(232,148,0,0.15)"
+                          : "rgba(229,52,43,0.15)",
+                  }}
                 >
-                  {/* Canto do viewfinder */}
-                  <div className="absolute top-0 left-0 h-8 w-8 rounded-tl-3xl border-t-4 border-l-4 border-lime-500"></div>
-                  <div className="absolute top-0 right-0 h-8 w-8 rounded-tr-3xl border-t-4 border-r-4 border-lime-500"></div>
-                  <div className="absolute bottom-0 left-0 h-8 w-8 rounded-bl-3xl border-b-4 border-l-4 border-lime-500"></div>
-                  <div className="absolute right-0 bottom-0 h-8 w-8 rounded-br-3xl border-r-4 border-b-4 border-lime-500"></div>
+                  {/* Corners */}
+                  {(["t", "r", "b", "l"] as const).map((c) => (
+                    <span
+                      key={c}
+                      className="absolute h-8 w-8 border-[var(--pulse)]"
+                      style={{
+                        top: c === "t" || c === "l" ? 0 : c === "r" ? 0 : "auto",
+                        right: c === "r" || c === "t" ? 0 : "auto",
+                        bottom: c === "b" || c === "l" ? 0 : "auto",
+                        left: c === "l" || c === "b" ? 0 : "auto",
+                        borderTopWidth: c === "t" || c === "l" || c === "r" ? 4 : 0,
+                        borderLeftWidth: c === "l" || c === "t" || c === "b" ? 4 : 0,
+                        borderRightWidth: c === "r" ? 4 : c === "t" ? 0 : 0,
+                        borderBottomWidth: c === "b" ? 4 : c === "l" || c === "r" ? 0 : 0,
+                        borderTopLeftRadius: c === "t" || c === "l" ? "1.5rem" : 0,
+                        borderTopRightRadius: c === "r" ? "1.5rem" : 0,
+                        borderBottomLeftRadius: c === "l" || c === "b" ? "1.5rem" : 0,
+                        borderBottomRightRadius: c === "b" ? "1.5rem" : 0,
+                      }}
+                    />
+                  ))}
 
-                  {/* Feedback Status */}
-                  {scanStatus === "idle" && (
-                    <ScanLine className="h-16 w-16 animate-pulse text-white/50" />
-                  )}
-                  {scanStatus === "success" && (
-                    <div className="animate-in zoom-in text-center">
-                      <CheckCircle2 className="mx-auto mb-2 h-16 w-16 text-green-500" />
-                      <p className="text-xl font-bold text-green-500">APROVADO</p>
+                  {pending ? (
+                    <div className="text-center">
+                      <Loader2
+                        size={48}
+                        className="mx-auto animate-spin"
+                        style={{ color: "var(--pulse)" }}
+                      />
+                      <p className="mt-3 text-xs" style={{ color: "rgba(250,250,247,0.6)" }}>
+                        Validando…
+                      </p>
                     </div>
-                  )}
-                  {scanStatus === "error" && (
-                    <div className="animate-in zoom-in text-center">
-                      <XCircle className="mx-auto mb-2 h-16 w-16 text-red-500" />
-                      <p className="text-xl font-bold text-red-500">INVÁLIDO</p>
-                    </div>
+                  ) : !result ? (
+                    <ScanLine
+                      size={56}
+                      className="animate-pulse"
+                      style={{ color: "rgba(250,250,247,0.4)" }}
+                    />
+                  ) : result.ok && result.status === "valid" ? (
+                    <FeedbackOK r={result} />
+                  ) : result.ok ? (
+                    <FeedbackWarn r={result} />
+                  ) : (
+                    <FeedbackError msg={result.error} />
                   )}
 
-                  {/* Linha de scan animada */}
-                  {scanStatus === "idle" && (
-                    <div className="absolute top-0 left-0 h-0.5 w-full animate-[scan_2s_ease-in-out_infinite] bg-lime-500 shadow-[0_0_8px_rgba(132,204,22,0.8)]"></div>
+                  {/* Linha de scan */}
+                  {!result && !pending && (
+                    <div
+                      className="pointer-events-none absolute top-0 left-0 h-0.5 w-full"
+                      style={{
+                        backgroundColor: "var(--pulse)",
+                        boxShadow: "0 0 12px var(--pulse)",
+                        animation: "scan 2s ease-in-out infinite",
+                      }}
+                    />
                   )}
                 </div>
               </div>
 
-              <div className="absolute bottom-8 left-0 z-10 flex w-full justify-center gap-4 px-6">
-                <Button
-                  variant="outline"
-                  className="border-white/20 bg-black/50 text-white backdrop-blur-md"
-                  onClick={() => handleSimulateScan("success")}
-                >
-                  Simular Sucesso
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-white/20 bg-black/50 text-white backdrop-blur-md"
-                  onClick={() => handleSimulateScan("error")}
-                >
-                  Simular Erro
-                </Button>
-              </div>
+              <p
+                className="px-6 text-center text-[11px]"
+                style={{ color: "rgba(250,250,247,0.5)" }}
+              >
+                Cole o código do QR abaixo para validar.
+                <br />
+                Suporte a câmera será habilitado em PWA dedicada.
+              </p>
             </div>
 
-            {/* Busca Manual */}
-            <div className="border-t border-white/10 bg-zinc-900 p-4">
-              <div className="relative">
-                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-                <Input
-                  placeholder="Buscar por CPF ou Nome..."
-                  className="w-full border-white/10 bg-black pl-10 text-white placeholder:text-zinc-600"
+            {/* Input manual */}
+            <div
+              className="border-t p-4"
+              style={{
+                borderColor: "rgba(255,255,255,0.08)",
+                backgroundColor: "var(--ink-2)",
+              }}
+            >
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  run(input)
+                }}
+                className="relative"
+              >
+                <Search
+                  size={14}
+                  className="absolute top-1/2 left-3 -translate-y-1/2"
+                  style={{ color: "rgba(250,250,247,0.4)" }}
                 />
-              </div>
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="AXN1.xxxxxxxx…"
+                  className="w-full rounded-xl border py-3 pr-24 pl-10 font-mono text-xs transition-colors outline-none focus:border-[var(--pulse)]"
+                  style={{
+                    borderColor: "rgba(255,255,255,0.1)",
+                    backgroundColor: "var(--ink)",
+                    color: "var(--paper)",
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={pending || !input.trim()}
+                  className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-lg px-3 py-1.5 text-[11px] font-bold transition-transform hover:scale-[1.03] disabled:opacity-50"
+                  style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+                >
+                  Validar
+                </button>
+              </form>
             </div>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto bg-black p-4">
-            <h2 className="mb-4 text-lg font-semibold text-white">Últimos Check-ins</h2>
-            <div className="space-y-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-4 rounded-xl border border-white/5 bg-zinc-900 p-4"
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lime-500/20 text-lime-500">
-                    <User className="h-5 w-5" />
+          <div className="flex-1 overflow-y-auto p-4" style={{ backgroundColor: "var(--ink)" }}>
+            <h2 className="mb-4 text-sm font-semibold">Últimos check-ins</h2>
+            {history.length === 0 ? (
+              <div
+                className="rounded-2xl border border-dashed p-12 text-center"
+                style={{ borderColor: "rgba(255,255,255,0.08)" }}
+              >
+                <History size={28} className="mx-auto" style={{ color: "rgba(250,250,247,0.3)" }} />
+                <p className="mt-3 text-sm" style={{ color: "rgba(250,250,247,0.6)" }}>
+                  Nenhum check-in nesta sessão
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {history.map((h, idx) => (
+                  <div
+                    key={`${h.ticketId}-${idx}`}
+                    className="flex items-center gap-3 rounded-xl border p-3"
+                    style={{
+                      borderColor: "rgba(255,255,255,0.08)",
+                      backgroundColor: "var(--ink-2)",
+                    }}
+                  >
+                    <div
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                      style={{
+                        backgroundColor: "rgba(200,255,0,0.12)",
+                        color: "var(--pulse)",
+                      }}
+                    >
+                      <User size={15} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{h.holderName}</p>
+                      <p
+                        className="truncate text-[10px]"
+                        style={{ color: "rgba(250,250,247,0.5)" }}
+                      >
+                        {h.typeName} · {h.lotName}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p
+                        className="font-mono text-[10px]"
+                        style={{ color: "rgba(250,250,247,0.4)" }}
+                      >
+                        {new Date(h.at).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-white">João da Silva Pereira</p>
-                    <p className="text-xs text-zinc-400">Pista - Lote 1 • Ingresso #AX{1000 + i}</p>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <p className="text-xs text-zinc-500">Agora</p>
-                    <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-green-500"></span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </main>
 
-      {/* Bottom Navigation */}
-      <nav className="flex border-t border-white/10 bg-zinc-900">
+      {/* Bottom Nav */}
+      <nav
+        className="flex border-t"
+        style={{
+          borderColor: "rgba(255,255,255,0.08)",
+          backgroundColor: "var(--ink-2)",
+        }}
+      >
         <button
-          className={`flex flex-1 flex-col items-center gap-1 py-4 transition-colors ${activeTab === "scan" ? "text-lime-500" : "text-zinc-500 hover:text-zinc-300"}`}
+          className="flex flex-1 flex-col items-center gap-1 py-3 transition-colors"
+          style={{
+            color: activeTab === "scan" ? "var(--pulse)" : "rgba(250,250,247,0.45)",
+          }}
           onClick={() => setActiveTab("scan")}
         >
-          <QrCode className="h-6 w-6" />
-          <span className="text-xs font-medium">Escanear</span>
+          <QrCode size={18} />
+          <span className="text-[10px] font-medium">Escanear</span>
         </button>
         <button
-          className={`flex flex-1 flex-col items-center gap-1 py-4 transition-colors ${activeTab === "history" ? "text-lime-500" : "text-zinc-500 hover:text-zinc-300"}`}
+          className="flex flex-1 flex-col items-center gap-1 py-3 transition-colors"
+          style={{
+            color: activeTab === "history" ? "var(--pulse)" : "rgba(250,250,247,0.45)",
+          }}
           onClick={() => setActiveTab("history")}
         >
-          <History className="h-6 w-6" />
-          <span className="text-xs font-medium">Histórico</span>
+          <History size={18} />
+          <span className="text-[10px] font-medium">Histórico</span>
         </button>
       </nav>
 
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes scan {
-          0% { top: 0; opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { top: 100%; opacity: 0; }
-        }
-      `,
-        }}
-      />
+      <style>{`@keyframes scan { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }`}</style>
+    </div>
+  )
+}
+
+function FeedbackOK({ r }: { r: Extract<ValidateResult, { ok: true }> }) {
+  return (
+    <div className="text-center">
+      <CheckCircle2 size={56} className="mx-auto" style={{ color: "var(--success)" }} />
+      <p
+        className="mt-2 font-mono text-base font-black tracking-wider"
+        style={{ color: "var(--success)" }}
+      >
+        APROVADO
+      </p>
+      <p className="mt-1 text-xs font-semibold">{r.holderName}</p>
+      <p className="text-[10px]" style={{ color: "rgba(250,250,247,0.6)" }}>
+        {r.typeName} · {r.lotName}
+      </p>
+    </div>
+  )
+}
+
+function FeedbackWarn({ r }: { r: Extract<ValidateResult, { ok: true }> }) {
+  const label =
+    r.status === "already_used"
+      ? "JÁ UTILIZADO"
+      : r.status === "cancelled"
+        ? "CANCELADO"
+        : "REEMBOLSADO"
+  return (
+    <div className="text-center">
+      <Clock size={48} className="mx-auto" style={{ color: "var(--warning)" }} />
+      <p
+        className="mt-2 font-mono text-sm font-black tracking-wider"
+        style={{ color: "var(--warning)" }}
+      >
+        {label}
+      </p>
+      <p className="mt-1 text-[11px] font-semibold">{r.holderName}</p>
+      {r.usedAt && (
+        <p className="text-[10px]" style={{ color: "rgba(250,250,247,0.6)" }}>
+          em {new Date(r.usedAt).toLocaleString("pt-BR")}
+        </p>
+      )}
+    </div>
+  )
+}
+
+function FeedbackError({ msg }: { msg: string }) {
+  return (
+    <div className="px-3 text-center">
+      <XCircle size={56} className="mx-auto" style={{ color: "var(--danger)" }} />
+      <p
+        className="mt-2 font-mono text-base font-black tracking-wider"
+        style={{ color: "var(--danger)" }}
+      >
+        INVÁLIDO
+      </p>
+      <p className="mt-1 text-[10px]" style={{ color: "rgba(250,250,247,0.6)" }}>
+        {msg}
+      </p>
     </div>
   )
 }
