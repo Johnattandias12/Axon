@@ -4,8 +4,11 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { TicketCard } from "@/components/event/TicketCard"
 import { TicketPdfButton } from "@/components/event/TicketPdfButton"
+import { CelebrateOnMount } from "@/components/shared/CelebrateOnMount"
+import { PageBackLink } from "@/components/shared/PageHeader"
+import { EventCountdown } from "@/components/event/EventCountdown"
 import { centsToBRL, formatDate } from "@/lib/utils"
-import { ChevronLeft, CheckCircle2, Sparkles } from "lucide-react"
+import { CheckCircle2, Sparkles } from "lucide-react"
 
 export const metadata: Metadata = { title: "Meu ingresso · AXON" }
 
@@ -41,16 +44,19 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
 
   const tickets = order.tickets ?? []
 
+  // Confete só quando comprou agora há pouco (últimos 2 min)
+  const justBought =
+    order.paid_at && Date.now() - new Date(order.paid_at).getTime() < 2 * 60 * 1000
+
   return (
     <div className="space-y-8">
-      <Link
-        href="/minha-conta"
-        className="inline-flex items-center gap-1.5 text-sm transition-colors hover:opacity-70"
-        style={{ color: "var(--mute)" }}
-      >
-        <ChevronLeft size={14} />
-        Minha conta
-      </Link>
+      {justBought && (
+        <CelebrateOnMount
+          id={order.id}
+          message="🎉 Compra confirmada — bora pro evento!"
+        />
+      )}
+      <PageBackLink href="/minha-conta" label="Minha conta" />
 
       {/* Success header */}
       <div
@@ -122,6 +128,9 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
           </div>
         </div>
       </div>
+
+      {/* Countdown */}
+      <EventCountdown startsAt={event.starts_at} />
 
       {/* Tickets */}
       <div>

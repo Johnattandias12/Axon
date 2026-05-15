@@ -1,12 +1,22 @@
 "use client"
 
-import { useActionState, useTransition } from "react"
-import { Loader2, ShieldCheck } from "lucide-react"
+import { useActionState, useTransition, useState } from "react"
+import { Loader2, ShieldCheck, CheckCircle2 } from "lucide-react"
 import { checkoutDemo, type CheckoutState } from "@/app/carrinho/actions"
+import { formatCPF } from "@/lib/utils/validators"
 
-export function CheckoutForm() {
+interface Props {
+  defaultName?: string
+  defaultCpf?: string
+}
+
+export function CheckoutForm({ defaultName = "", defaultCpf = "" }: Props) {
   const [state, action] = useActionState<CheckoutState, FormData>(checkoutDemo, null)
   const [pending, startTransition] = useTransition()
+  const [name, setName] = useState(defaultName)
+  const [cpf, setCpf] = useState(defaultCpf ? formatCPF(defaultCpf) : "")
+
+  const hasSaved = defaultName.length > 0 && defaultCpf.length > 0
 
   function submit(fd: FormData) {
     startTransition(() => action(fd))
@@ -14,6 +24,16 @@ export function CheckoutForm() {
 
   return (
     <form action={submit} className="space-y-3">
+      {hasSaved && (
+        <div
+          className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[10px]"
+          style={{ backgroundColor: "var(--pulse-soft)", color: "var(--pulse-deep)" }}
+        >
+          <CheckCircle2 size={11} />
+          Seus dados já estão salvos. Editou? Será atualizado no perfil.
+        </div>
+      )}
+
       <div>
         <label
           htmlFor="holderName"
@@ -28,7 +48,9 @@ export function CheckoutForm() {
           required
           minLength={2}
           placeholder="Nome completo"
-          className="w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none focus:border-[var(--pulse)]"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--pulse)]"
           style={{
             borderColor: "var(--rule)",
             backgroundColor: "var(--paper-soft)",
@@ -50,7 +72,10 @@ export function CheckoutForm() {
           name="holderCpf"
           required
           placeholder="000.000.000-00"
-          className="w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none focus:border-[var(--pulse)]"
+          value={cpf}
+          onChange={(e) => setCpf(formatCPF(e.target.value))}
+          inputMode="numeric"
+          className="w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--pulse)]"
           style={{
             borderColor: "var(--rule)",
             backgroundColor: "var(--paper-soft)",
@@ -58,6 +83,9 @@ export function CheckoutForm() {
           }}
         />
       </div>
+
+      {/* Flag pra atualizar profile no checkout */}
+      <input type="hidden" name="saveToProfile" value="1" />
 
       {state?.ok === false && (
         <p

@@ -19,16 +19,19 @@ export default async function CarrinhoPage() {
   } = await supabase.auth.getUser()
   if (!user) redirect("/entrar?redirectTo=/carrinho")
 
-  const { data: items } = await supabase
-    .from("cart_items")
-    .select(
-      `id, quantity, added_at, ticket_lot_id,
+  const [{ data: items }, { data: profile }] = await Promise.all([
+    supabase
+      .from("cart_items")
+      .select(
+        `id, quantity, added_at, ticket_lot_id,
        ticket_lots(id, name, price_cents, is_half_price, quantity_total, quantity_sold, quantity_reserved,
          ticket_types(name),
          events(id, slug, title, starts_at, venue_name, city, state, banner_url, status))`
-    )
-    .eq("user_id", user.id)
-    .order("added_at", { ascending: false })
+      )
+      .eq("user_id", user.id)
+      .order("added_at", { ascending: false }),
+    supabase.from("profiles").select("full_name, cpf").eq("id", user.id).single(),
+  ])
 
   const list = items ?? []
 
@@ -150,7 +153,10 @@ export default async function CarrinhoPage() {
                 </div>
 
                 <div className="border-t p-5" style={{ borderColor: "var(--rule)" }}>
-                  <CheckoutForm />
+                  <CheckoutForm
+                    defaultName={profile?.full_name ?? ""}
+                    defaultCpf={profile?.cpf ?? ""}
+                  />
                 </div>
 
                 <div

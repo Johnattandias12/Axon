@@ -162,11 +162,21 @@ export async function checkoutDemo(
   if (!user || !user.email) return { ok: false, error: "Faça login para finalizar." }
 
   const holderName = String(formData.get("holderName") ?? "").trim()
-  const holderCpf = String(formData.get("holderCpf") ?? "").trim()
+  const holderCpfRaw = String(formData.get("holderCpf") ?? "").trim()
+  const holderCpf = holderCpfRaw.replace(/\D/g, "")
+  const saveToProfile = formData.get("saveToProfile") === "1"
   if (holderName.length < 2) return { ok: false, error: "Informe o nome do titular." }
   if (holderCpf.length < 3) return { ok: false, error: "Informe o documento." }
 
   const admin = createAdminClient()
+
+  // Salva dados no perfil pra próxima compra ser mais rápida
+  if (saveToProfile) {
+    await admin
+      .from("profiles")
+      .update({ full_name: holderName, cpf: holderCpf })
+      .eq("id", user.id)
+  }
 
   const { data: items } = await admin
     .from("cart_items")
