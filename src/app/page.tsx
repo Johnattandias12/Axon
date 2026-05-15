@@ -468,25 +468,60 @@ export default function HomePage() {
           className="relative overflow-hidden py-[96px]"
           style={{ backgroundColor: "#08080A" }}
         >
+          {/* Grid bg sutil */}
           <div
-            className="pointer-events-none absolute top-0 right-0 h-[400px] w-[400px] opacity-15"
+            className="axon-grid-bg pointer-events-none absolute inset-0 opacity-50"
+            aria-hidden="true"
+          />
+          <div
+            className="pointer-events-none absolute top-0 right-0 h-[400px] w-[400px] opacity-25"
             style={{
-              background: "radial-gradient(circle, rgba(200,255,0,0.25) 0%, transparent 70%)",
+              background: "radial-gradient(circle, rgba(200,255,0,0.3) 0%, transparent 70%)",
+              filter: "blur(80px)",
+            }}
+            aria-hidden="true"
+          />
+          <div
+            className="pointer-events-none absolute bottom-0 left-0 h-[300px] w-[300px] opacity-15"
+            style={{
+              background: "radial-gradient(circle, rgba(45,122,246,0.3) 0%, transparent 70%)",
               filter: "blur(80px)",
             }}
             aria-hidden="true"
           />
 
+          {/* ECG no topo */}
+          <svg
+            className="pointer-events-none absolute top-0 right-0 left-0 h-3 opacity-50"
+            viewBox="0 0 1400 24"
+            preserveAspectRatio="none"
+            fill="none"
+            stroke="rgba(200,255,0,0.9)"
+            strokeWidth="1.5"
+            aria-hidden="true"
+          >
+            <path d="M0 12 L320 12 L340 12 L355 4 L375 20 L390 12 L720 12 L740 12 L755 2 L775 22 L790 12 L1080 12 L1100 12 L1115 6 L1130 18 L1145 12 L1400 12" />
+          </svg>
+
           <div className="relative mx-auto max-w-[1200px] px-5 md:px-8">
             <div className="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
               <div>
-                <p className="mb-5 text-[11px] font-semibold tracking-[0.12em] text-white/40 uppercase">
-                  Para quem organiza
-                </p>
+                <div className="mb-5 inline-flex items-center gap-2">
+                  <span
+                    className="h-1 w-1 rounded-full"
+                    style={{ backgroundColor: "var(--pulse)" }}
+                  />
+                  <p className="text-[11px] font-semibold tracking-[0.12em] text-white/50 uppercase">
+                    Para quem organiza
+                  </p>
+                </div>
                 <h2 className="mb-5 text-[clamp(26px,3.5vw,46px)] leading-[1.05] font-black tracking-[-0.04em] text-white">
-                  Você cria. A AXON <span style={{ color: "var(--pulse)" }}>transmite.</span>
+                  Você cria. A AXON{" "}
+                  <span style={{ color: "var(--pulse)", textShadow: "0 0 40px var(--pulse)" }}>
+                    transmite.
+                  </span>
                 </h2>
-                <p className="mb-10 text-[16px] leading-relaxed text-white/50">
+                <p className="mb-10 max-w-[480px] text-[16px] leading-relaxed text-white/60">
                   Do evento criado ao ingresso vendido em minutos. Dashboard em tempo real, repasse
                   D+1 via Pix e validação de QR na portaria. Sem taxa de adesão.
                 </p>
@@ -499,11 +534,18 @@ export default function HomePage() {
                     "Repasse D+1 direto na conta",
                     "App de validação offline para a portaria",
                   ].map((item) => (
-                    <li key={item} className="flex items-center gap-3 text-[14px] text-white/50">
-                      <span
-                        className="h-px w-4 shrink-0"
-                        style={{ backgroundColor: "var(--pulse)" }}
-                      />
+                    <li key={item} className="flex items-center gap-3 text-[14px] text-white/60">
+                      <svg
+                        className="h-3 w-3 shrink-0"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        stroke="var(--pulse)"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M2 6l3 3 5-6" />
+                      </svg>
                       {item}
                     </li>
                   ))}
@@ -511,35 +553,49 @@ export default function HomePage() {
 
                 <Link
                   href="/organizador/comecar"
-                  className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-[15px] font-bold transition-opacity hover:opacity-90"
+                  className="group inline-flex items-center gap-2 rounded-xl px-6 py-3 text-[15px] font-bold transition-all hover:scale-105 hover:shadow-[0_0_40px_-8px_var(--pulse)]"
                   style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
                 >
                   Começar agora, é grátis
+                  <svg
+                    className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 {[
-                  { v: "0%", l: "Taxa de adesão" },
-                  { v: "D+1", l: "Repasse garantido" },
-                  { v: "Pix", l: "Pagamento instantâneo" },
-                  { v: "QR", l: "Validação segura" },
-                ].map(({ v, l }) => (
+                  { v: "0%", l: "Taxa de adesão", a: "var(--pulse)" },
+                  { v: "D+1", l: "Repasse garantido", a: "var(--info)" },
+                  { v: "Pix", l: "Pagamento instantâneo", a: "var(--success)" },
+                  { v: "QR", l: "Validação segura", a: "var(--warning)" },
+                ].map(({ v, l, a }) => (
                   <div
                     key={l}
-                    className="flex flex-col gap-3 rounded-2xl border p-6"
+                    className="group relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-6 transition-all hover:-translate-y-1"
                     style={{
-                      borderColor: "rgba(255,255,255,0.08)",
+                      borderColor: "rgba(255,255,255,0.1)",
                       backgroundColor: "rgba(255,255,255,0.03)",
                     }}
                   >
+                    <div
+                      className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full opacity-15 blur-2xl transition-opacity group-hover:opacity-30"
+                      style={{ backgroundColor: a }}
+                      aria-hidden="true"
+                    />
                     <span
-                      className="font-mono text-[30px] font-black tracking-tight"
-                      style={{ color: "var(--pulse)" }}
+                      className="relative font-mono text-[30px] font-black tracking-tight"
+                      style={{ color: a }}
                     >
                       {v}
                     </span>
-                    <span className="text-[13px] leading-snug text-white/40">{l}</span>
+                    <span className="text-[13px] leading-snug text-white/50">{l}</span>
                   </div>
                 ))}
               </div>

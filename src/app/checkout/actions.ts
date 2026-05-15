@@ -5,6 +5,8 @@ import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { generateQrPayload } from "@/lib/qr/hmac"
+import { sendTicketConfirmation } from "@/lib/email/send"
+import { formatDate } from "@/lib/utils"
 
 const buyDemoSchema = z.object({
   lotId: z.string().uuid(),
@@ -49,7 +51,7 @@ export async function buyDemo(_prev: BuyDemoState, formData: FormData): Promise<
 
   const { data: lot, error: lotErr } = await admin
     .from("ticket_lots")
-    .select("*, events!inner(id, status, organizer_id, title)")
+    .select("*, events!inner(id, status, organizer_id, title, starts_at, venue_name, city, state)")
     .eq("id", parsed.data.lotId)
     .single()
 
@@ -122,6 +124,29 @@ export async function buyDemo(_prev: BuyDemoState, formData: FormData): Promise<
     .from("ticket_lots")
     .update({ quantity_sold: lot.quantity_sold + parsed.data.quantity })
     .eq("id", lot.id)
+
+  // Envia email de confirmação (silencioso se sem RESEND_API_KEY)
+  if (user.email) {
+    const appUrl = process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"
+    const evt = event as {
+      title: string
+      starts_at: string
+      venue_name: string | null
+      city: string | null
+      state: string | null
+    }
+    void sendTicketConfirmation({
+      to: user.email,
+      buyerName: parsed.data.holderName,
+      eventTitle: evt.title,
+      eventDate: formatDate(evt.starts_at, { dateStyle: "full", timeStyle: "short" }),
+      eventLocation: [evt.venue_name, evt.city, evt.state].filter(Boolean).join(" · ") || "",
+      ticketCount: parsed.data.quantity,
+      totalCents: total,
+      orderUrl: `${appUrl}/minha-conta/ingressos/${order.id}`,
+      qrPayloads: ticketsToInsert.map((t) => t.qr_hash),
+    })
+  }
 
   redirect(`/minha-conta/ingressos/${order.id}`)
 }
