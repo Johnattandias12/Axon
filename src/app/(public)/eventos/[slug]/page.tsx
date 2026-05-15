@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server"
 import { centsToBRL, formatDate } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { BuyTicketForm } from "@/components/event/BuyTicketForm"
+import { AddToCartButton } from "@/components/event/AddToCartButton"
 import {
   Calendar,
   MapPin,
@@ -331,6 +331,134 @@ export default async function EventoPage({ params }: Props) {
               </section>
             )}
 
+            {/* Programação */}
+            <section className="axon-fade-up">
+              <h2
+                className="mb-4 flex items-center gap-2 text-lg font-semibold"
+                style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
+              >
+                <span
+                  className="h-4 w-1 rounded-full"
+                  style={{ backgroundColor: "var(--pulse)" }}
+                />
+                Programação
+              </h2>
+              <ol
+                className="relative space-y-3 border-l pl-5"
+                style={{ borderColor: "var(--rule)" }}
+              >
+                {[
+                  {
+                    time: "18:00",
+                    title: "Abertura dos portões",
+                    desc: "Triagem na entrada e credenciamento Frontstage.",
+                  },
+                  {
+                    time: "19:30",
+                    title: "Atração de abertura",
+                    desc: "Show de aquecimento com banda local.",
+                  },
+                  {
+                    time: "21:00",
+                    title: "Atração principal",
+                    desc: "Headliner do evento com show completo.",
+                  },
+                  {
+                    time: "23:30",
+                    title: "Pista livre",
+                    desc: "Discotecagem após o show até o encerramento.",
+                  },
+                ].map((slot) => (
+                  <li key={slot.time} className="relative">
+                    <span
+                      className="absolute top-1.5 -left-[27px] h-3 w-3 rounded-full ring-4"
+                      style={{
+                        backgroundColor: "var(--pulse)",
+                        boxShadow: "0 0 0 4px var(--paper)",
+                      }}
+                    />
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                      <span
+                        className="font-mono text-xs font-bold tabular-nums"
+                        style={{ color: "var(--pulse-deep)" }}
+                      >
+                        {slot.time}
+                      </span>
+                      <span className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
+                        {slot.title}
+                      </span>
+                    </div>
+                    <p className="text-xs" style={{ color: "var(--mute)" }}>
+                      {slot.desc}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-3 text-[11px] italic" style={{ color: "var(--mute-2)" }}>
+                * Programação sujeita a alteração pelo organizador.
+              </p>
+            </section>
+
+            {/* FAQ */}
+            <section className="axon-fade-up">
+              <h2
+                className="mb-4 flex items-center gap-2 text-lg font-semibold"
+                style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
+              >
+                <span
+                  className="h-4 w-1 rounded-full"
+                  style={{ backgroundColor: "var(--pulse)" }}
+                />
+                Perguntas frequentes
+              </h2>
+              <div className="space-y-2">
+                {[
+                  {
+                    q: "Como recebo meu ingresso?",
+                    a: "Após a compra, seu ingresso digital com QR Code fica disponível em Minha Conta · Ingressos. Você também recebe por e-mail.",
+                  },
+                  {
+                    q: "Meia-entrada precisa de comprovação?",
+                    a: "Sim. Estudante apresenta carteirinha válida; meia social entrega 1kg de alimento na entrada.",
+                  },
+                  {
+                    q: "Posso transferir meu ingresso?",
+                    a: "O ingresso é nominal. Em caso de transferência, contate o organizador com até 48h de antecedência.",
+                  },
+                  {
+                    q: "E se chover?",
+                    a: "O evento acontece com qualquer clima, salvo decisão oficial do órgão de segurança. Acompanhe nossas redes.",
+                  },
+                ].map((f) => (
+                  <details
+                    key={f.q}
+                    className="group rounded-xl border p-4 transition-colors open:bg-[var(--paper-pure)]"
+                    style={{ borderColor: "var(--rule)" }}
+                  >
+                    <summary
+                      className="flex cursor-pointer items-center justify-between text-sm font-semibold"
+                      style={{ color: "var(--ink)" }}
+                    >
+                      {f.q}
+                      <svg
+                        className="h-4 w-4 transition-transform group-open:rotate-180"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        style={{ color: "var(--mute)" }}
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </summary>
+                    <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--mute)" }}>
+                      {f.a}
+                    </p>
+                  </details>
+                ))}
+              </div>
+            </section>
+
             {/* Política de cancelamento */}
             {event.cover_policy &&
               typeof event.cover_policy === "object" &&
@@ -488,11 +616,8 @@ export default async function EventoPage({ params }: Props) {
                               </div>
                               {!isSoldOut && (
                                 <div className="mt-3">
-                                  <BuyTicketForm
+                                  <AddToCartButton
                                     lotId={lot.id}
-                                    lotName={lot.name}
-                                    typeName={type.name}
-                                    pricePerUnit={lot.price_cents}
                                     maxQuantity={avail}
                                     isAuthenticated={!!user}
                                     eventSlug={slug}
