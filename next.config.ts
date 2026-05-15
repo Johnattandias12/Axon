@@ -15,8 +15,11 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    optimizePackageImports: ["lucide-react", "date-fns"],
+    optimizePackageImports: ["lucide-react", "date-fns", "@base-ui/react", "sonner"],
   },
+  // Reduz tamanho do bundle no Vercel
+  poweredByHeader: false,
+  reactStrictMode: true,
 }
 
 export default nextConfig

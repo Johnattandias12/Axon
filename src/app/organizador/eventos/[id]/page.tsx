@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Pencil, Ticket, Users, Globe } from "lucide-react"
 import { PublishButton } from "./PublishButton"
+import { PageBackLink } from "@/components/shared/PageHeader"
 
 export const metadata: Metadata = { title: "Evento" }
 
@@ -65,7 +66,9 @@ export default async function EventoDetailPage({ params }: Props) {
   const style = statusStyle[event.status] ?? { bg: "var(--paper-soft)", text: "var(--mute)" }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      <PageBackLink href="/organizador/eventos" label="Meus eventos" />
+
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="mb-1 flex items-center gap-2">

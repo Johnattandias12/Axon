@@ -5,7 +5,6 @@ import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
 import { formatDate, centsToBRL } from "@/lib/utils"
 import {
-  ArrowLeft,
   Calendar,
   MapPin,
   Ticket,
@@ -18,6 +17,7 @@ import {
   Clock,
 } from "lucide-react"
 import { EventAdminActions } from "../EventAdminActions"
+import { PageBackLink } from "@/components/shared/PageHeader"
 
 export const metadata: Metadata = { title: "Detalhe do evento · AXON Admin" }
 
@@ -91,14 +91,7 @@ export default async function AdminEventoDetalhePage({
 
   return (
     <div className="space-y-6">
-      <Link
-        href="/admin/eventos"
-        className="inline-flex items-center gap-1.5 text-sm transition-colors hover:opacity-70"
-        style={{ color: "var(--mute)" }}
-      >
-        <ArrowLeft size={14} />
-        Voltar para eventos
-      </Link>
+      <PageBackLink href="/admin/eventos" label="Voltar para eventos" />
 
       {/* Hero */}
       <div

@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { redirect, notFound } from "next/navigation"
-import { ChevronLeft } from "lucide-react"
+import { PageBackLink } from "@/components/shared/PageHeader"
 import { LotsManager } from "./LotsManager"
 
 export const metadata: Metadata = { title: "Ingressos" }
@@ -45,14 +44,9 @@ export default async function LotesPage({ params }: Props) {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <Link
-          href={`/organizador/eventos/${id}`}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm"
-          style={{ color: "var(--mute)" }}
-        >
-          <ChevronLeft size={14} />
-          {event.title}
-        </Link>
+        <div className="mb-4">
+          <PageBackLink href={`/organizador/eventos/${id}`} label={event.title} />
+        </div>
         <h1
           className="text-2xl font-bold tracking-tight"
           style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}

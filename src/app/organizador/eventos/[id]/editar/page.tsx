@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { redirect, notFound } from "next/navigation"
-import { ChevronLeft } from "lucide-react"
+import { PageBackLink } from "@/components/shared/PageHeader"
 import { EditEventForm } from "./EditEventForm"
 
 export const metadata: Metadata = { title: "Editar evento" }
@@ -49,14 +48,9 @@ export default async function EditarEventoPage({ params }: Props) {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <Link
-          href={`/organizador/eventos/${id}`}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm"
-          style={{ color: "var(--mute)" }}
-        >
-          <ChevronLeft size={14} />
-          Voltar ao evento
-        </Link>
+        <div className="mb-4">
+          <PageBackLink href={`/organizador/eventos/${id}`} label="Voltar ao evento" />
+        </div>
         <h1
           className="text-2xl font-bold tracking-tight"
           style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}

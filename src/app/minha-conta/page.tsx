@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ProfileForm } from "./ProfileForm"
 import { AvatarUploader } from "@/components/shared/AvatarUploader"
 import { EventCard } from "@/components/event/EventCard"
+import { EventCountdown } from "@/components/event/EventCountdown"
 import { centsToBRL, formatDate } from "@/lib/utils"
 import {
   Ticket as TicketIcon,
@@ -263,7 +264,34 @@ export default async function MinhaContaPage() {
               cta={{ label: "Explorar eventos", href: "/eventos" }}
             />
           ) : (
-            <OrdersGrid orders={futureOrders} />
+            <div className="space-y-5">
+              {/* Countdown do próximo evento */}
+              {(() => {
+                const next = futureOrders
+                  .map((o) => {
+                    const e = Array.isArray(o.events) ? o.events[0] : o.events
+                    return e
+                  })
+                  .filter((e): e is NonNullable<typeof e> => !!e)
+                  .sort(
+                    (a, b) =>
+                      new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
+                  )[0]
+                if (!next) return null
+                return (
+                  <div className="space-y-2">
+                    <p
+                      className="text-[11px] font-semibold tracking-[0.12em] uppercase"
+                      style={{ color: "var(--mute)" }}
+                    >
+                      Próximo evento · {next.title}
+                    </p>
+                    <EventCountdown startsAt={next.starts_at} />
+                  </div>
+                )
+              })()}
+              <OrdersGrid orders={futureOrders} />
+            </div>
           )}
         </TabsContent>
 
