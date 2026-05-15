@@ -59,8 +59,6 @@ export function ticketConfirmationEmail({
                         <td style="vertical-align:middle;">
                           <svg width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display:block;">
                             <path d="M50 6 L94 94 L6 94 Z" fill="none" stroke="${paper}" stroke-width="10" />
-                            <path d="M26 64 L46 64 L52 56 L58 72 L64 64" fill="none" stroke="${pulse}" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" />
-                            <circle cx="72" cy="64" r="4.5" fill="${pulse}" />
                           </svg>
                         </td>
                         <td style="padding-left:10px;vertical-align:middle;">

@@ -1,12 +1,11 @@
 /**
  * AXON · Logo system
- * Triângulo monolítico (A) com pulso sináptico interno em LIME (--pulse)
+ * Triângulo monolítico (A). SEM detalhes/pulso/nodo dentro do triângulo.
  *
  * Variantes:
- *   <AxonSymbol />         → símbolo apenas (com pulso interno colorido)
- *   <AxonSymbolMono />     → símbolo monocromático (sem pulso)
- *   <AxonLogo />           → wordmark horizontal "AXON" + símbolo
- *   <AxonLogo variant="symbol" />   alias para AxonSymbol (compat)
+ *   <AxonSymbol />      → símbolo (triângulo) apenas
+ *   <AxonSymbolMono />  → alias do mesmo símbolo (compat)
+ *   <AxonLogo />        → wordmark horizontal "AXON" + triângulo
  */
 
 type Tone = "auto" | "ink" | "paper" | "pulse"
@@ -24,50 +23,7 @@ interface BaseProps {
   tone?: Tone
 }
 
-export function AxonSymbol({
-  size = 24,
-  className = "",
-  tone = "auto",
-  animated = false,
-}: BaseProps & { animated?: boolean }) {
-  const stroke = TONE_COLOR[tone]
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 100 100"
-      role="img"
-      aria-label="AXON"
-      className={className}
-    >
-      <title>AXON</title>
-      <g fill="none">
-        <path d="M50 6 L94 94 L6 94 Z" stroke={stroke} strokeWidth="10" strokeLinejoin="miter" />
-        <path
-          d="M26 64 L46 64 L52 56 L58 72 L64 64"
-          stroke="var(--pulse)"
-          strokeWidth="6"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          {...(animated
-            ? {
-                strokeDasharray: "80",
-                strokeDashoffset: "0",
-                style: { animation: "axon-pulse-draw 2.4s var(--ease-out) infinite" },
-              }
-            : {})}
-        />
-        <circle cx="72" cy="64" r="4.5" fill="var(--pulse)">
-          {animated && (
-            <animate attributeName="r" values="4.5;6;4.5" dur="1.6s" repeatCount="indefinite" />
-          )}
-        </circle>
-      </g>
-    </svg>
-  )
-}
-
-export function AxonSymbolMono({ size = 24, className = "", tone = "auto" }: BaseProps) {
+export function AxonSymbol({ size = 24, className = "", tone = "auto" }: BaseProps) {
   const stroke = TONE_COLOR[tone]
   return (
     <svg
@@ -90,9 +46,10 @@ export function AxonSymbolMono({ size = 24, className = "", tone = "auto" }: Bas
   )
 }
 
+export const AxonSymbolMono = AxonSymbol
+
 interface LogoProps extends BaseProps {
   variant?: "wordmark" | "symbol" | "mono"
-  animated?: boolean
 }
 
 export function AxonLogo({
@@ -100,12 +57,10 @@ export function AxonLogo({
   className = "",
   tone = "auto",
   variant = "symbol",
-  animated = false,
 }: LogoProps) {
-  if (variant === "mono") return <AxonSymbolMono size={size} className={className} tone={tone} />
-  if (variant === "symbol")
-    return <AxonSymbol size={size} className={className} tone={tone} animated={animated} />
-  // wordmark
+  if (variant === "mono" || variant === "symbol") {
+    return <AxonSymbol size={size} className={className} tone={tone} />
+  }
   const stroke = TONE_COLOR[tone]
   const h = size
   const w = size * (600 / 140)
@@ -119,16 +74,14 @@ export function AxonLogo({
       className={className}
     >
       <title>AXON</title>
-      <g transform="translate(10, 18) scale(1.04)" fill="none">
-        <path d="M50 6 L94 94 L6 94 Z" stroke={stroke} strokeWidth="10" strokeLinejoin="miter" />
+      <g transform="translate(10, 18) scale(1.04)">
         <path
-          d="M26 64 L46 64 L52 56 L58 72 L64 64"
-          stroke="var(--pulse)"
-          strokeWidth="6"
-          strokeLinejoin="round"
-          strokeLinecap="round"
+          d="M50 6 L94 94 L6 94 Z"
+          fill="none"
+          stroke={stroke}
+          strokeWidth="10"
+          strokeLinejoin="miter"
         />
-        <circle cx="72" cy="64" r="4.5" fill="var(--pulse)" />
       </g>
       <text
         x="140"
