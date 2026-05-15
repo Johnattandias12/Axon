@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { AxonSymbol } from "@/components/shared/AxonLogo"
+import { QrCameraScanner } from "@/components/shared/QrCameraScanner"
 import { validateQr, type ValidateResult } from "./actions"
 
 interface HistoryItem extends Extract<ValidateResult, { ok: true }> {
@@ -142,7 +143,7 @@ export default function ScanAppPage() {
               {/* Viewfinder frame */}
               <div className="relative z-10 p-8">
                 <div
-                  className="relative flex h-64 w-64 items-center justify-center rounded-3xl border-2 transition-colors duration-300"
+                  className="relative flex h-64 w-64 items-center justify-center overflow-hidden rounded-3xl border-2 transition-colors duration-300"
                   style={{
                     borderColor: !result
                       ? "rgba(200,255,0,0.25)"
@@ -160,6 +161,10 @@ export default function ScanAppPage() {
                           : "rgba(229,52,43,0.15)",
                   }}
                 >
+                  {/* Câmera (renderiza só na aba "scan" e quando não há resultado) */}
+                  {activeTab === "scan" && !result && !pending && (
+                    <QrCameraScanner onDetect={(v) => run(v)} paused={pending || !!result} />
+                  )}
                   {/* Corners */}
                   {(["t", "r", "b", "l"] as const).map((c) => (
                     <span
@@ -225,9 +230,9 @@ export default function ScanAppPage() {
                 className="px-6 text-center text-[11px]"
                 style={{ color: "rgba(250,250,247,0.5)" }}
               >
-                Cole o código do QR abaixo para validar.
+                Aponte a câmera para o QR Code do ingresso.
                 <br />
-                Suporte a câmera será habilitado em PWA dedicada.
+                Ou cole o código manualmente abaixo.
               </p>
             </div>
 

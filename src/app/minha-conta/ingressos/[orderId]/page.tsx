@@ -3,8 +3,9 @@ import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { TicketCard } from "@/components/event/TicketCard"
+import { TicketPdfButton } from "@/components/event/TicketPdfButton"
 import { centsToBRL, formatDate } from "@/lib/utils"
-import { ChevronLeft, Download, CheckCircle2, Sparkles } from "lucide-react"
+import { ChevronLeft, CheckCircle2, Sparkles } from "lucide-react"
 
 export const metadata: Metadata = { title: "Meu ingresso · AXON" }
 
@@ -99,16 +100,25 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
             >
               Ver evento
             </Link>
-            <button
-              type="button"
-              className="rounded-xl px-4 py-2 text-xs font-semibold transition-transform hover:scale-[1.02]"
-              style={{ backgroundColor: "var(--ink)", color: "var(--paper)" }}
-            >
-              <span className="inline-flex items-center gap-1.5">
-                <Download size={12} />
-                Salvar em PDF (imprima esta página)
-              </span>
-            </button>
+            <TicketPdfButton
+              eventTitle={event.title}
+              eventDate={formatDate(event.starts_at, { dateStyle: "full", timeStyle: "short" })}
+              eventLocation={[event.venue_name, event.city, event.state].filter(Boolean).join(" · ")}
+              orderId={order.id}
+              tickets={tickets.map((t) => {
+                const lot = Array.isArray(t.ticket_lots) ? t.ticket_lots[0] : t.ticket_lots
+                const tt = lot && Array.isArray(lot.ticket_types) ? lot.ticket_types[0] : lot?.ticket_types
+                return {
+                  id: t.id,
+                  qr_hash: t.qr_hash,
+                  holder_name: t.holder_name,
+                  holder_cpf: t.holder_cpf,
+                  type_name: tt?.name ?? "Ingresso",
+                  lot_name: lot?.name ?? "",
+                  is_half_price: t.is_half_price,
+                }
+              })}
+            />
           </div>
         </div>
       </div>

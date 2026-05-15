@@ -4,79 +4,183 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Eye, EyeOff } from "lucide-react"
+import { ArrowRight, Eye, EyeOff, MailCheck } from "lucide-react"
 
 const loginSchema = z.object({
-  email: z.string().email("E-mail inválido"),
+  email: z.string().min(1, "Informe seu e-mail").email("E-mail inválido"),
   password: z.string().min(6, "Mínimo 6 caracteres"),
 })
 
 const signupSchema = loginSchema.extend({
-  full_name: z.string().min(2, "Nome obrigatório"),
+  full_name: z
+    .string()
+    .min(2, "Informe seu nome completo")
+    .max(120, "Nome muito longo")
+    .regex(/\s/, "Inclua sobrenome"),
+})
+
+const resetSchema = z.object({
+  email: z.string().min(1, "Informe seu e-mail").email("E-mail inválido"),
 })
 
 type LoginData = z.infer<typeof loginSchema>
 type SignupData = z.infer<typeof signupSchema>
+type ResetData = z.infer<typeof resetSchema>
+
+function mapSupabaseError(message: string): string {
+  const m = message.toLowerCase()
+  if (m.includes("invalid login credentials")) return "E-mail ou senha incorretos."
+  if (m.includes("email not confirmed"))
+    return "Você ainda não confirmou seu e-mail. Verifique sua caixa de entrada."
+  if (m.includes("user already registered") || m.includes("already"))
+    return "Este e-mail já está cadastrado. Faça login."
+  if (m.includes("rate limit") || m.includes("too many"))
+    return "Muitas tentativas. Aguarde alguns minutos e tente de novo."
+  if (m.includes("password") && m.includes("short"))
+    return "Senha muito curta. Use ao menos 6 caracteres."
+  if (m.includes("network") || m.includes("fetch"))
+    return "Sem conexão. Verifique sua internet e tente novamente."
+  return "Não foi possível entrar agora. Tente novamente em instantes."
+}
 
 export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
   const router = useRouter()
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login")
   const [showPass, setShowPass] = useState(false)
-  const [globalError, setGlobalError] = useState("")
+  const [signupSuccessEmail, setSignupSuccessEmail] = useState<string | null>(null)
   const [resetSent, setResetSent] = useState(false)
 
-  const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) })
-  const signupForm = useForm<SignupData>({ resolver: zodResolver(signupSchema) })
-  const resetForm = useForm<{ email: string }>({
-    resolver: zodResolver(z.object({ email: z.string().email("E-mail inválido") })),
+  const loginForm = useForm<LoginData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  })
+  const signupForm = useForm<SignupData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: { email: "", password: "", full_name: "" },
+  })
+  const resetForm = useForm<ResetData>({
+    resolver: zodResolver(resetSchema),
+    defaultValues: { email: "" },
   })
 
   const handleLogin = async (data: LoginData) => {
-    setGlobalError("")
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    })
-    if (error) {
-      setGlobalError("E-mail ou senha incorretos.")
-      return
+    const loadingId = toast.loading("Entrando...")
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email.trim().toLowerCase(),
+        password: data.password,
+      })
+      toast.dismiss(loadingId)
+      if (error) {
+        toast.error(mapSupabaseError(error.message))
+        return
+      }
+      toast.success("Bem-vindo de volta!")
+      router.refresh()
+      router.push(redirectTo)
+    } catch {
+      toast.dismiss(loadingId)
+      toast.error("Erro inesperado. Tente novamente.")
     }
-    router.push(redirectTo)
-    router.refresh()
   }
 
   const handleSignup = async (data: SignupData) => {
-    setGlobalError("")
-    const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-      options: { data: { full_name: data.full_name } },
-    })
-    if (error) {
-      setGlobalError(
-        error.message.includes("already") ? "E-mail já cadastrado." : "Erro ao criar conta."
-      )
-      return
+    const loadingId = toast.loading("Criando sua conta...")
+    try {
+      const supabase = createClient()
+      const appUrl = process.env["NEXT_PUBLIC_APP_URL"] ?? window.location.origin
+      const { data: signupData, error } = await supabase.auth.signUp({
+        email: data.email.trim().toLowerCase(),
+        password: data.password,
+        options: {
+          data: { full_name: data.full_name.trim() },
+          emailRedirectTo: `${appUrl}/api/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+        },
+      })
+      toast.dismiss(loadingId)
+      if (error) {
+        toast.error(mapSupabaseError(error.message))
+        return
+      }
+      // Quando confirmação por e-mail está habilitada, session vem null
+      if (!signupData.session) {
+        setSignupSuccessEmail(data.email.trim().toLowerCase())
+        toast.success("Conta criada! Verifique seu e-mail para ativar.")
+        return
+      }
+      toast.success("Conta criada!")
+      router.refresh()
+      router.push(redirectTo)
+    } catch {
+      toast.dismiss(loadingId)
+      toast.error("Erro inesperado. Tente novamente.")
     }
-    router.push(redirectTo)
-    router.refresh()
   }
 
-  const handleReset = async (data: { email: string }) => {
-    setGlobalError("")
-    const supabase = createClient()
-    const appUrl = process.env["NEXT_PUBLIC_APP_URL"] ?? window.location.origin
-    await supabase.auth.resetPasswordForEmail(data.email, {
-      redirectTo: `${appUrl}/api/auth/callback?next=/minha-conta`,
-    })
-    setResetSent(true)
+  const handleReset = async (data: ResetData) => {
+    const loadingId = toast.loading("Enviando link...")
+    try {
+      const supabase = createClient()
+      const appUrl = process.env["NEXT_PUBLIC_APP_URL"] ?? window.location.origin
+      const { error } = await supabase.auth.resetPasswordForEmail(data.email.trim().toLowerCase(), {
+        redirectTo: `${appUrl}/api/auth/callback?next=/minha-conta`,
+      })
+      toast.dismiss(loadingId)
+      if (error) {
+        toast.error(mapSupabaseError(error.message))
+        return
+      }
+      setResetSent(true)
+      toast.success("Link enviado!")
+    } catch {
+      toast.dismiss(loadingId)
+      toast.error("Erro inesperado. Tente novamente.")
+    }
+  }
+
+  // Tela: signup com sucesso aguardando confirmação por e-mail
+  if (signupSuccessEmail) {
+    return (
+      <div className="space-y-5 text-center">
+        <div
+          className="mx-auto flex h-12 w-12 items-center justify-center rounded-full"
+          style={{ backgroundColor: "var(--success-soft)", color: "var(--success)" }}
+        >
+          <MailCheck size={22} />
+        </div>
+        <div className="space-y-1">
+          <h2 className="text-base font-semibold" style={{ color: "var(--ink)" }}>
+            Confirme seu e-mail
+          </h2>
+          <p className="text-sm" style={{ color: "var(--mute)" }}>
+            Enviamos um link para
+          </p>
+          <p className="font-mono text-sm font-semibold" style={{ color: "var(--ink)" }}>
+            {signupSuccessEmail}
+          </p>
+        </div>
+        <p className="text-xs" style={{ color: "var(--mute-2)" }}>
+          Clique no link recebido para ativar sua conta e entrar.
+        </p>
+        <button
+          onClick={() => {
+            setSignupSuccessEmail(null)
+            setMode("login")
+          }}
+          className="text-sm underline underline-offset-2"
+          style={{ color: "var(--mute)" }}
+        >
+          Voltar ao login
+        </button>
+      </div>
+    )
   }
 
   if (mode === "reset") {
@@ -91,53 +195,74 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
           </p>
         </div>
         {resetSent ? (
-          <p
-            className="rounded-xl border p-4 text-sm"
-            style={{
-              borderColor: "var(--success)",
-              color: "var(--success)",
-              backgroundColor: "var(--success-soft)",
-            }}
-          >
-            Link enviado. Verifique sua caixa de entrada.
-          </p>
-        ) : (
-          <form onSubmit={resetForm.handleSubmit(handleReset)} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label style={{ color: "var(--ink)" }}>E-mail</Label>
-              <Input
-                {...resetForm.register("email")}
-                type="email"
-                placeholder="seu@email.com"
-                autoFocus
-              />
-              {resetForm.formState.errors.email && (
-                <p className="text-xs" style={{ color: "var(--danger)" }}>
-                  {resetForm.formState.errors.email.message}
-                </p>
-              )}
-            </div>
-            <Button
-              type="submit"
-              disabled={resetForm.formState.isSubmitting}
-              className="w-full"
+          <div className="space-y-4">
+            <p
+              className="rounded-xl border p-4 text-sm"
               style={{
-                backgroundColor: "var(--pulse)",
-                color: "var(--pulse-ink)",
-                fontWeight: 600,
+                borderColor: "var(--success)",
+                color: "var(--success)",
+                backgroundColor: "var(--success-soft)",
               }}
+              role="status"
             >
-              {resetForm.formState.isSubmitting ? "Enviando..." : "Enviar link"}
-            </Button>
-          </form>
+              Link enviado. Verifique sua caixa de entrada (e o spam).
+            </p>
+            <button
+              onClick={() => {
+                setResetSent(false)
+                setMode("login")
+              }}
+              className="text-sm underline underline-offset-2"
+              style={{ color: "var(--mute)" }}
+            >
+              Voltar ao login
+            </button>
+          </div>
+        ) : (
+          <>
+            <form onSubmit={resetForm.handleSubmit(handleReset)} className="space-y-4" noValidate>
+              <div className="space-y-1.5">
+                <Label htmlFor="reset-email" style={{ color: "var(--ink)" }}>
+                  E-mail
+                </Label>
+                <Input
+                  id="reset-email"
+                  {...resetForm.register("email")}
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="seu@email.com"
+                  aria-invalid={!!resetForm.formState.errors.email}
+                  autoFocus
+                />
+                {resetForm.formState.errors.email && (
+                  <p className="text-xs" style={{ color: "var(--danger)" }} role="alert">
+                    {resetForm.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
+              <Button
+                type="submit"
+                disabled={resetForm.formState.isSubmitting}
+                className="w-full"
+                style={{
+                  backgroundColor: "var(--pulse)",
+                  color: "var(--pulse-ink)",
+                  fontWeight: 600,
+                }}
+              >
+                {resetForm.formState.isSubmitting ? "Enviando..." : "Enviar link"}
+              </Button>
+            </form>
+            <button
+              onClick={() => setMode("login")}
+              className="text-sm underline underline-offset-2"
+              style={{ color: "var(--mute)" }}
+            >
+              Voltar ao login
+            </button>
+          </>
         )}
-        <button
-          onClick={() => setMode("login")}
-          className="text-sm"
-          style={{ color: "var(--mute)" }}
-        >
-          Voltar ao login
-        </button>
       </div>
     )
   }
@@ -153,36 +278,61 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
             Gratuito. Sem cartão.
           </p>
         </div>
-        <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4">
+        <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4" noValidate>
           <div className="space-y-1.5">
-            <Label style={{ color: "var(--ink)" }}>Nome</Label>
-            <Input {...signupForm.register("full_name")} placeholder="Seu nome" autoFocus />
+            <Label htmlFor="signup-name" style={{ color: "var(--ink)" }}>
+              Nome completo
+            </Label>
+            <Input
+              id="signup-name"
+              {...signupForm.register("full_name")}
+              autoComplete="name"
+              placeholder="Seu nome"
+              aria-invalid={!!signupForm.formState.errors.full_name}
+              autoFocus
+            />
             {signupForm.formState.errors.full_name && (
-              <p className="text-xs" style={{ color: "var(--danger)" }}>
+              <p className="text-xs" style={{ color: "var(--danger)" }} role="alert">
                 {signupForm.formState.errors.full_name.message}
               </p>
             )}
           </div>
           <div className="space-y-1.5">
-            <Label style={{ color: "var(--ink)" }}>E-mail</Label>
-            <Input {...signupForm.register("email")} type="email" placeholder="seu@email.com" />
+            <Label htmlFor="signup-email" style={{ color: "var(--ink)" }}>
+              E-mail
+            </Label>
+            <Input
+              id="signup-email"
+              {...signupForm.register("email")}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder="seu@email.com"
+              aria-invalid={!!signupForm.formState.errors.email}
+            />
             {signupForm.formState.errors.email && (
-              <p className="text-xs" style={{ color: "var(--danger)" }}>
+              <p className="text-xs" style={{ color: "var(--danger)" }} role="alert">
                 {signupForm.formState.errors.email.message}
               </p>
             )}
           </div>
           <div className="space-y-1.5">
-            <Label style={{ color: "var(--ink)" }}>Senha</Label>
+            <Label htmlFor="signup-pass" style={{ color: "var(--ink)" }}>
+              Senha
+            </Label>
             <div className="relative">
               <Input
+                id="signup-pass"
                 {...signupForm.register("password")}
                 type={showPass ? "text" : "password"}
+                autoComplete="new-password"
                 placeholder="Mínimo 6 caracteres"
                 className="pr-10"
+                aria-invalid={!!signupForm.formState.errors.password}
               />
               <button
                 type="button"
+                aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
                 onClick={() => setShowPass(!showPass)}
                 className="absolute top-1/2 right-3 -translate-y-1/2"
                 style={{ color: "var(--mute)" }}
@@ -191,16 +341,11 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
               </button>
             </div>
             {signupForm.formState.errors.password && (
-              <p className="text-xs" style={{ color: "var(--danger)" }}>
+              <p className="text-xs" style={{ color: "var(--danger)" }} role="alert">
                 {signupForm.formState.errors.password.message}
               </p>
             )}
           </div>
-          {globalError && (
-            <p className="text-sm" style={{ color: "var(--danger)" }}>
-              {globalError}
-            </p>
-          )}
           <Button
             type="submit"
             disabled={signupForm.formState.isSubmitting}
@@ -240,24 +385,32 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
           Acesse sua conta AXON.
         </p>
       </div>
-      <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
+      <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4" noValidate>
         <div className="space-y-1.5">
-          <Label style={{ color: "var(--ink)" }}>E-mail</Label>
+          <Label htmlFor="login-email" style={{ color: "var(--ink)" }}>
+            E-mail
+          </Label>
           <Input
+            id="login-email"
             {...loginForm.register("email")}
             type="email"
+            inputMode="email"
+            autoComplete="email"
             placeholder="seu@email.com"
+            aria-invalid={!!loginForm.formState.errors.email}
             autoFocus
           />
           {loginForm.formState.errors.email && (
-            <p className="text-xs" style={{ color: "var(--danger)" }}>
+            <p className="text-xs" style={{ color: "var(--danger)" }} role="alert">
               {loginForm.formState.errors.email.message}
             </p>
           )}
         </div>
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <Label style={{ color: "var(--ink)" }}>Senha</Label>
+            <Label htmlFor="login-pass" style={{ color: "var(--ink)" }}>
+              Senha
+            </Label>
             <button
               type="button"
               onClick={() => setMode("reset")}
@@ -269,13 +422,17 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
           </div>
           <div className="relative">
             <Input
+              id="login-pass"
               {...loginForm.register("password")}
               type={showPass ? "text" : "password"}
+              autoComplete="current-password"
               placeholder="Sua senha"
               className="pr-10"
+              aria-invalid={!!loginForm.formState.errors.password}
             />
             <button
               type="button"
+              aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
               onClick={() => setShowPass(!showPass)}
               className="absolute top-1/2 right-3 -translate-y-1/2"
               style={{ color: "var(--mute)" }}
@@ -284,23 +441,11 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
             </button>
           </div>
           {loginForm.formState.errors.password && (
-            <p className="text-xs" style={{ color: "var(--danger)" }}>
+            <p className="text-xs" style={{ color: "var(--danger)" }} role="alert">
               {loginForm.formState.errors.password.message}
             </p>
           )}
         </div>
-        {globalError && (
-          <p
-            className="rounded-lg border p-3 text-sm"
-            style={{
-              borderColor: "var(--danger-soft)",
-              color: "var(--danger)",
-              backgroundColor: "var(--danger-soft)",
-            }}
-          >
-            {globalError}
-          </p>
-        )}
         <Button
           type="submit"
           disabled={loginForm.formState.isSubmitting}

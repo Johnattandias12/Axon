@@ -40,12 +40,17 @@ export async function TicketCard({
   index,
   total,
 }: TicketCardProps) {
-  const qrSvg = await QRCode.toString(ticket.qr_hash, {
+  const qrSvgRaw = await QRCode.toString(ticket.qr_hash, {
     type: "svg",
     errorCorrectionLevel: "M",
-    margin: 0,
+    margin: 1,
     color: { dark: "#0a0a0b", light: "#00000000" },
   })
+  // Substitui atributos width/height por 100% e garante xmlns para inline
+  const qrSvg = qrSvgRaw
+    .replace(/<svg([^>]*)\swidth="[^"]*"/i, "<svg$1")
+    .replace(/<svg([^>]*)\sheight="[^"]*"/i, "<svg$1")
+    .replace(/<svg([^>]*?)>/i, '<svg$1 width="100%" height="100%" preserveAspectRatio="xMidYMid meet">')
 
   const statusLabel: Record<string, { label: string; color: string; bg: string }> = {
     valid: { label: "Válido", color: "var(--success)", bg: "var(--success-soft)" },
@@ -213,8 +218,8 @@ export async function TicketCard({
             }}
           >
             <div
-              className="h-32 w-32"
-              dangerouslySetInnerHTML={{ __html: qrSvg.replace(/width="\d+"|height="\d+"/g, "") }}
+              className="flex h-32 w-32 items-center justify-center"
+              dangerouslySetInnerHTML={{ __html: qrSvg }}
             />
           </div>
           <p

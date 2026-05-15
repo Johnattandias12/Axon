@@ -42,3 +42,8 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+# Vercel env pull temp
+.env.check
+.env.production.check
+.env.production.local

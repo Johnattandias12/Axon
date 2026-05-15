@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { LayoutDashboard, Calendar, LogOut } from "lucide-react"
+import { LayoutDashboard, Calendar, Wallet, LogOut } from "lucide-react"
 import { AxonLogo } from "@/components/shared/AxonLogo"
 
 export default async function OrganizadorLayout({ children }: { children: ReactNode }) {
@@ -32,6 +32,7 @@ export default async function OrganizadorLayout({ children }: { children: ReactN
         <nav className="flex-1 space-y-0.5 p-3">
           <NavItem href="/organizador" icon={<LayoutDashboard size={15} />} label="Dashboard" />
           <NavItem href="/organizador/eventos" icon={<Calendar size={15} />} label="Eventos" />
+          <NavItem href="/organizador/financeiro" icon={<Wallet size={15} />} label="Financeiro" />
         </nav>
 
         <div className="border-t p-3" style={{ borderColor: "var(--rule)" }}>

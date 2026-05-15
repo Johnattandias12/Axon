@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Geist, JetBrains_Mono } from "next/font/google"
+import { Toaster } from "@/components/ui/sonner"
+import { ThemeProvider } from "@/components/shared/ThemeProvider"
 import "./globals.css"
 
 const geist = Geist({
@@ -94,7 +96,15 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col bg-[var(--paper)] text-[var(--ink)]">
-        {children}
+        <ThemeProvider
+          attribute="data-theme"
+          defaultTheme="system"
+          enableSystem
+          storageKey="axon-theme"
+        >
+          {children}
+          <Toaster position="top-center" richColors closeButton />
+        </ThemeProvider>
       </body>
     </html>
   )
