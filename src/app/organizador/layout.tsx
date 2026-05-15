@@ -24,16 +24,8 @@ export default async function OrganizadorLayout({ children }: { children: ReactN
           className="flex h-14 items-center border-b px-4"
           style={{ borderColor: "var(--rule)" }}
         >
-          <Link href="/" className="flex items-center gap-2">
-            <div
-              className="flex h-6 w-6 items-center justify-center rounded-md"
-              style={{ backgroundColor: "var(--ink)" }}
-            >
-              <AxonLogo size={12} className="text-[var(--paper)]" />
-            </div>
-            <span className="text-sm font-black tracking-[-0.04em]" style={{ color: "var(--ink)" }}>
-              AXON
-            </span>
+          <Link href="/" className="flex items-center">
+            <AxonLogo size={16} tone="ink" />
           </Link>
         </div>
 
@@ -62,16 +54,11 @@ export default async function OrganizadorLayout({ children }: { children: ReactN
           className="flex h-14 items-center border-b px-4 md:hidden"
           style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
         >
-          <Link href="/" className="flex items-center gap-2">
-            <div
-              className="flex h-6 w-6 items-center justify-center rounded-md"
-              style={{ backgroundColor: "var(--ink)" }}
-            >
-              <AxonLogo size={12} className="text-[var(--paper)]" />
-            </div>
+          <Link href="/" className="flex items-center">
+            <AxonLogo size={16} tone="ink" />
           </Link>
-          <span className="ml-3 text-sm font-semibold" style={{ color: "var(--ink)" }}>
-            Painel
+          <span className="ml-3 text-sm font-semibold" style={{ color: "var(--mute)" }}>
+            · Painel
           </span>
         </header>
 

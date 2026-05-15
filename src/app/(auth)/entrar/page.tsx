@@ -22,16 +22,8 @@ export default async function EntrarPage({
       style={{ backgroundColor: "var(--paper)" }}
     >
       <div className="w-full max-w-sm">
-        <Link href="/" className="mb-8 flex items-center justify-center gap-3">
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl"
-            style={{ backgroundColor: "var(--ink)" }}
-          >
-            <AxonLogo size={18} className="text-[var(--paper)]" />
-          </div>
-          <span className="text-lg font-black tracking-[-0.04em]" style={{ color: "var(--ink)" }}>
-            AXON
-          </span>
+        <Link href="/" className="mb-8 flex items-center justify-center">
+          <AxonLogo size={28} tone="ink" />
         </Link>
 
         <div

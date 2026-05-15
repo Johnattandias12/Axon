@@ -1,11 +1,19 @@
 /**
- * AXON · Logo system
- * Triângulo monolítico (A). SEM detalhes/pulso/nodo dentro do triângulo.
+ * AXON · Logo system (v2)
+ * Triângulo equilátero aberto (stroke fino) + wordmark "AXON" ao lado.
+ * Inspirado na arte oficial: triângulo limpo, sem nenhum detalhe interno.
  *
  * Variantes:
- *   <AxonSymbol />      → símbolo (triângulo) apenas
- *   <AxonSymbolMono />  → alias do mesmo símbolo (compat)
- *   <AxonLogo />        → wordmark horizontal "AXON" + triângulo
+ *   <AxonSymbol />              → só o triângulo (quadrado 1:1)
+ *   <AxonSymbolMono />          → alias para AxonSymbol (compat)
+ *   <AxonLogo />                → padrão: triângulo + AXON inline (wordmark)
+ *   <AxonLogo variant="symbol"/>→ força só o símbolo
+ *
+ * Tones:
+ *   "auto"  → currentColor (default; herda do contexto)
+ *   "ink"   → var(--ink) — preto sobre fundo claro
+ *   "paper" → var(--paper) — branco sobre fundo escuro
+ *   "pulse" → var(--pulse) — verde lime sobre fundo escuro
  */
 
 type Tone = "auto" | "ink" | "paper" | "pulse"
@@ -23,6 +31,7 @@ interface BaseProps {
   tone?: Tone
 }
 
+/** Apenas o triângulo, sem texto. Sempre 1:1. */
 export function AxonSymbol({ size = 24, className = "", tone = "auto" }: BaseProps) {
   const stroke = TONE_COLOR[tone]
   return (
@@ -36,10 +45,10 @@ export function AxonSymbol({ size = 24, className = "", tone = "auto" }: BasePro
     >
       <title>AXON</title>
       <path
-        d="M50 6 L94 94 L6 94 Z"
+        d="M50 13 L92 86 L8 86 Z"
         fill="none"
         stroke={stroke}
-        strokeWidth="10"
+        strokeWidth="7"
         strokeLinejoin="miter"
       />
     </svg>
@@ -49,47 +58,55 @@ export function AxonSymbol({ size = 24, className = "", tone = "auto" }: BasePro
 export const AxonSymbolMono = AxonSymbol
 
 interface LogoProps extends BaseProps {
+  /** "symbol" = só o triângulo · "wordmark" = triângulo + AXON (padrão) */
   variant?: "wordmark" | "symbol" | "mono"
 }
 
+/**
+ * Wordmark padrão: triângulo + "AXON" inline, alinhados pelo cap-height.
+ * `size` é a altura do conjunto. Largura cresce proporcional.
+ */
 export function AxonLogo({
   size = 24,
   className = "",
   tone = "auto",
-  variant = "symbol",
+  variant = "wordmark",
 }: LogoProps) {
   if (variant === "mono" || variant === "symbol") {
     return <AxonSymbol size={size} className={className} tone={tone} />
   }
+
   const stroke = TONE_COLOR[tone]
+  // ViewBox proporcional. Altura = 100, largura ≈ 380 (triângulo 100 + gap 16 + texto ~264).
   const h = size
-  const w = size * (600 / 140)
+  const w = (size * 380) / 100
+
   return (
     <svg
       width={w}
       height={h}
-      viewBox="0 0 600 140"
+      viewBox="0 0 380 100"
       role="img"
       aria-label="AXON"
       className={className}
     >
       <title>AXON</title>
-      <g transform="translate(10, 18) scale(1.04)">
-        <path
-          d="M50 6 L94 94 L6 94 Z"
-          fill="none"
-          stroke={stroke}
-          strokeWidth="10"
-          strokeLinejoin="miter"
-        />
-      </g>
+      {/* Triângulo */}
+      <path
+        d="M50 13 L92 86 L8 86 Z"
+        fill="none"
+        stroke={stroke}
+        strokeWidth="7"
+        strokeLinejoin="miter"
+      />
+      {/* Wordmark — alinhado pelo cap-height do triângulo */}
       <text
-        x="140"
-        y="100"
-        fontFamily="Geist, Inter, system-ui, sans-serif"
-        fontWeight="800"
-        fontSize="110"
-        letterSpacing="-0.05em"
+        x="116"
+        y="83"
+        fontFamily="Geist, 'Helvetica Neue', Inter, system-ui, sans-serif"
+        fontWeight="900"
+        fontSize="92"
+        letterSpacing="-2"
         fill={stroke}
       >
         AXON

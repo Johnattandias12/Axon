@@ -16,19 +16,33 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "AXON — Ingressos Online",
+    default: "AXON — Compre, valide e aproveite",
     template: "%s · AXON",
   },
   description:
-    "Ingressos online em segundos. QR Code assinado, validação na porta e acesso verificado.",
-  metadataBase: new URL(process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"),
+    "Ingressos online sem complicação. Pix instantâneo, QR Code assinado e validação na porta. Tudo no seu celular.",
+  metadataBase: new URL(process.env["NEXT_PUBLIC_APP_URL"] || "https://axonia.vercel.app"),
+  applicationName: "AXON",
+  keywords: ["ingressos", "eventos", "shows", "pix", "qr code", "axon", "axonia"],
+  authors: [{ name: "AXON" }],
   openGraph: {
     type: "website",
     locale: "pt_BR",
     siteName: "AXON",
+    title: "AXON — Compre, valide e aproveite",
+    description:
+      "Pix instantâneo, QR Code assinado e validação na porta. Os melhores eventos perto de você.",
+    url: "https://axonia.vercel.app",
   },
   twitter: {
     card: "summary_large_image",
+    title: "AXON — Compre, valide e aproveite",
+    description:
+      "Pix instantâneo, QR Code assinado e validação na porta. Os melhores eventos perto de você.",
+  },
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: "/icon.svg",
   },
 }
 

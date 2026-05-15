@@ -22,11 +22,8 @@ export default function HomePage() {
         }}
       >
         <div className="mx-auto flex h-[58px] max-w-[1200px] items-center justify-between gap-4 px-5 md:gap-6 md:px-8">
-          <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="AXON">
-            <AxonLogo size={24} className="text-[var(--ink)]" />
-            <span className="text-xl font-black tracking-tight" style={{ color: "var(--ink)" }}>
-              AXON
-            </span>
+          <Link href="/" className="flex shrink-0 items-center" aria-label="AXON">
+            <AxonLogo size={22} tone="ink" />
           </Link>
 
           <nav className="hidden items-center gap-7 md:flex">
@@ -541,14 +538,8 @@ export default function HomePage() {
         <div className="mx-auto max-w-[1200px] px-5 md:px-8">
           <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
             <div className="col-span-2 md:col-span-1">
-              <Link href="/" className="mb-4 flex items-center gap-2.5">
-                <AxonLogo size={22} tone="ink" />
-                <span
-                  className="text-[17px] font-black tracking-tight"
-                  style={{ color: "var(--ink)" }}
-                >
-                  AXON
-                </span>
+              <Link href="/" className="mb-4 inline-flex items-center">
+                <AxonLogo size={20} tone="ink" />
               </Link>
               <p className="mb-5 text-[13px] leading-relaxed" style={{ color: "var(--mute)" }}>
                 Ingressos digitais para os melhores eventos.

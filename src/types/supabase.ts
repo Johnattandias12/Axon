@@ -15,6 +15,7 @@ export type Database = {
           full_name: string | null
           cpf: string | null
           phone: string | null
+          avatar_url: string | null
           role: "buyer" | "organizer" | "validator" | "admin"
           marketing_consent: boolean
           created_at: string
@@ -25,6 +26,7 @@ export type Database = {
           full_name?: string | null
           cpf?: string | null
           phone?: string | null
+          avatar_url?: string | null
           role?: "buyer" | "organizer" | "validator" | "admin"
           marketing_consent?: boolean
           created_at?: string
@@ -35,11 +37,54 @@ export type Database = {
           full_name?: string | null
           cpf?: string | null
           phone?: string | null
+          avatar_url?: string | null
           role?: "buyer" | "organizer" | "validator" | "admin"
           marketing_consent?: boolean
           updated_at?: string
         }
         Relationships: []
+      }
+      cart_items: {
+        Row: {
+          id: string
+          user_id: string
+          ticket_lot_id: string
+          quantity: number
+          holder_name: string | null
+          holder_cpf: string | null
+          added_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          ticket_lot_id: string
+          quantity?: number
+          holder_name?: string | null
+          holder_cpf?: string | null
+        }
+        Update: {
+          quantity?: number
+          holder_name?: string | null
+          holder_cpf?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cart_items_ticket_lot_id_fkey"
+            columns: ["ticket_lot_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_lots"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       organizers: {
         Row: {

@@ -30,16 +30,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           className="flex h-14 items-center gap-2 border-b px-4"
           style={{ borderColor: "var(--rule)" }}
         >
-          <Link href="/" className="flex items-center gap-2">
-            <div
-              className="flex h-6 w-6 items-center justify-center rounded-md"
-              style={{ backgroundColor: "var(--ink)" }}
-            >
-              <AxonLogo size={12} className="text-[var(--pulse)]" />
-            </div>
-            <span className="text-sm font-black tracking-[-0.04em]" style={{ color: "var(--ink)" }}>
-              AXON
-            </span>
+          <Link href="/" className="flex items-center">
+            <AxonLogo size={16} tone="ink" />
           </Link>
           <span className="ml-auto flex items-center gap-1 rounded-full bg-[var(--danger-soft)] px-2 py-0.5 text-[10px] font-bold text-[var(--danger)]">
             <Shield size={9} />
@@ -85,16 +77,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           className="flex h-14 items-center border-b px-4 md:hidden"
           style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
         >
-          <Link href="/" className="flex items-center gap-2">
-            <div
-              className="flex h-6 w-6 items-center justify-center rounded-md"
-              style={{ backgroundColor: "var(--ink)" }}
-            >
-              <AxonLogo size={12} className="text-[var(--pulse)]" />
-            </div>
+          <Link href="/" className="flex items-center">
+            <AxonLogo size={16} tone="ink" />
           </Link>
-          <span className="ml-3 text-sm font-bold" style={{ color: "var(--ink)" }}>
-            Admin
+          <span className="ml-3 text-sm font-bold" style={{ color: "var(--mute)" }}>
+            · Admin
           </span>
         </header>
 
