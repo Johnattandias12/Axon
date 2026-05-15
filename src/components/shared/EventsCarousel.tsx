@@ -4,6 +4,15 @@ import { useRef, useState } from "react"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
+// Paleta AXON: variações de gradiente em torno de ink + pulse.
+// Cada card escolhe um "tom" diferente mas todos pertencem à mesma família visual.
+const GRADIENTS = {
+  vivid: "linear-gradient(135deg, #1a2200 0%, #0d1500 50%, #050b00 100%)", // pulse-forte
+  deep: "linear-gradient(135deg, #0a0a0b 0%, #14140d 50%, #1f1e08 100%)", // pulse-sutil
+  glow: "linear-gradient(160deg, #0a0a0b 0%, #1c2400 60%, #0a0a0b 100%)", // pulse intenso
+  noir: "linear-gradient(135deg, #16161a 0%, #0a0a0b 50%, #050507 100%)", // monocromático
+} as const
+
 const events = [
   {
     id: "carnaxelita-2026",
@@ -12,10 +21,8 @@ const events = [
     date: "12 a 15 Out 2026",
     location: "Currais Novos, RN",
     price: "A partir de R$ 120",
-    badge: "Lote 2 restrito",
     urgent: true,
-    gradient: "linear-gradient(135deg, #0d1a00 0%, #081000 50%, #050B00 100%)",
-    accent: "#c8ff00",
+    gradient: GRADIENTS.vivid,
   },
   {
     id: "festa-santana-caico-2026",
@@ -24,10 +31,8 @@ const events = [
     date: "25 a 30 Jul 2026",
     location: "Caicó, RN",
     price: "Gratuito a R$ 180",
-    badge: "Inscrições abertas",
     urgent: false,
-    gradient: "linear-gradient(135deg, #1c0a3d 0%, #0e0520 50%, #0A0A0B 100%)",
-    accent: "#7C3AED",
+    gradient: GRADIENTS.deep,
   },
   {
     id: "carnatal-2026",
@@ -36,10 +41,8 @@ const events = [
     date: "Dez 2026",
     location: "Natal, RN",
     price: "A partir de R$ 200",
-    badge: "Em breve",
     urgent: false,
-    gradient: "linear-gradient(135deg, #021a3d 0%, #000e20 50%, #0A0A0B 100%)",
-    accent: "#2D7AF6",
+    gradient: GRADIENTS.glow,
   },
   {
     id: "vaquejada-currais-novos-2026",
@@ -48,10 +51,8 @@ const events = [
     date: "04 a 07 Ago 2026",
     location: "Currais Novos, RN",
     price: "R$ 80 a R$ 300",
-    badge: "Lote 1 disponível",
     urgent: false,
-    gradient: "linear-gradient(135deg, #0d1a00 0%, #081000 50%, #050B00 100%)",
-    accent: "#c8ff00",
+    gradient: GRADIENTS.vivid,
   },
   {
     id: "gospel-rn-2026",
@@ -60,10 +61,8 @@ const events = [
     date: "28 e 29 Jun 2026",
     location: "Natal, RN",
     price: "Gratuito e VIP R$ 80",
-    badge: "Abertas",
     urgent: false,
-    gradient: "linear-gradient(135deg, #002a1a 0%, #00150d 50%, #0A0A0B 100%)",
-    accent: "#10B981",
+    gradient: GRADIENTS.noir,
   },
   {
     id: "vaquejada-mossoro-2026",
@@ -72,12 +71,12 @@ const events = [
     date: "Set 2026",
     location: "Mossoró, RN",
     price: "R$ 90 a R$ 250",
-    badge: "Em breve",
     urgent: false,
-    gradient: "linear-gradient(135deg, #001a2a 0%, #000d15 50%, #0A0A0B 100%)",
-    accent: "#2D7AF6",
+    gradient: GRADIENTS.deep,
   },
 ]
+
+const PULSE = "#c8ff00"
 
 export function EventsCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -147,21 +146,32 @@ export function EventsCarousel() {
           <Link
             key={event.id}
             href={`/eventos/${event.id}`}
-            className="group shrink-0 overflow-hidden rounded-2xl transition-transform hover:-translate-y-1"
+            className="group relative shrink-0 overflow-hidden rounded-2xl transition-all hover:-translate-y-1 hover:shadow-[0_20px_50px_-15px_rgba(200,255,0,0.25)]"
             style={{
               width: "300px",
               scrollSnapAlign: "start",
               background: event.gradient,
-              border: "1px solid rgba(255,255,255,0.06)",
+              border: "1px solid rgba(200,255,0,0.08)",
             }}
           >
+            {/* Pulse line top */}
+            <div
+              className="pointer-events-none absolute top-0 right-0 left-0 h-[2px] opacity-60 transition-opacity group-hover:opacity-100"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent 0%, var(--pulse) 50%, transparent 100%)",
+              }}
+              aria-hidden="true"
+            />
+
             {/* Card image area */}
             <div className="relative p-5 pb-0" style={{ height: "180px" }}>
-              {/* Accent glow */}
+              {/* Accent glow (pulse) */}
               <div
-                className="pointer-events-none absolute inset-0 opacity-25"
+                className="pointer-events-none absolute inset-0 opacity-40 transition-opacity group-hover:opacity-60"
                 style={{
-                  background: `radial-gradient(circle at 20% 30%, ${event.accent}60 0%, transparent 60%)`,
+                  background:
+                    "radial-gradient(circle at 20% 30%, rgba(200,255,0,0.35) 0%, transparent 55%)",
                 }}
               />
 
@@ -169,9 +179,9 @@ export function EventsCarousel() {
               <span
                 className="relative z-10 inline-flex items-center rounded-lg border px-2.5 py-1 text-[10px] font-semibold tracking-wider uppercase"
                 style={{
-                  borderColor: `${event.accent}40`,
-                  backgroundColor: `${event.accent}18`,
-                  color: event.accent,
+                  borderColor: "rgba(200,255,0,0.3)",
+                  backgroundColor: "rgba(200,255,0,0.1)",
+                  color: PULSE,
                 }}
               >
                 {event.category}
@@ -181,14 +191,14 @@ export function EventsCarousel() {
                 <span
                   className="absolute top-5 right-5 z-10 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold"
                   style={{
-                    backgroundColor: `${event.accent}20`,
-                    color: event.accent,
-                    border: `1px solid ${event.accent}30`,
+                    backgroundColor: "rgba(200,255,0,0.12)",
+                    color: PULSE,
+                    border: "1px solid rgba(200,255,0,0.3)",
                   }}
                 >
                   <span
                     className="h-1.5 w-1.5 animate-pulse rounded-full"
-                    style={{ backgroundColor: event.accent }}
+                    style={{ backgroundColor: PULSE, boxShadow: `0 0 8px ${PULSE}` }}
                   />
                   LIMITADO
                 </span>
@@ -196,24 +206,25 @@ export function EventsCarousel() {
             </div>
 
             {/* Card content */}
-            <div className="p-5">
+            <div className="relative p-5">
               <h3 className="mb-1.5 text-[17px] leading-tight font-bold tracking-[-0.02em] text-white">
                 {event.title}
               </h3>
-              <p className="mb-4 text-[13px] text-white/40">
+              <p className="mb-4 text-[13px] text-white/50">
                 {event.date} · {event.location}
               </p>
 
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="text-[11px] tracking-wider text-white/30 uppercase">A partir de</p>
+                  <p className="text-[11px] tracking-wider text-white/40 uppercase">A partir de</p>
                   <p className="text-[15px] font-bold text-white">{event.price}</p>
                 </div>
                 <span
-                  className="rounded-xl px-3 py-1.5 text-[11px] font-bold transition-all group-hover:opacity-90"
+                  className="rounded-xl px-3 py-1.5 text-[11px] font-bold transition-all group-hover:scale-105"
                   style={{
-                    backgroundColor: event.accent,
-                    color: event.accent === "#c8ff00" ? "#0A0A0B" : "#0A0A0B",
+                    backgroundColor: PULSE,
+                    color: "#0A0A0B",
+                    boxShadow: "0 4px 16px -4px rgba(200,255,0,0.4)",
                   }}
                 >
                   Ver ingresso
