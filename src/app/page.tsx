@@ -149,7 +149,12 @@ export default function HomePage() {
               </span>
               <span className="block">
                 só se vive uma{" "}
-                <span style={{ color: "var(--pulse)", textShadow: "0 0 40px var(--pulse)" }}>
+                <span
+                  style={{
+                    color: "var(--pulse)",
+                    textShadow: "0 0 20px color-mix(in srgb, var(--pulse) 35%, transparent)",
+                  }}
+                >
                   vez...
                 </span>
               </span>
@@ -422,7 +427,12 @@ export default function HomePage() {
                 </div>
                 <h2 className="mb-5 text-[clamp(26px,3.5vw,46px)] leading-[1.05] font-black tracking-[-0.04em] text-white">
                   Você cria. A AXON{" "}
-                  <span style={{ color: "var(--pulse)", textShadow: "0 0 40px var(--pulse)" }}>
+                  <span
+                    style={{
+                      color: "var(--pulse)",
+                      textShadow: "0 0 20px color-mix(in srgb, var(--pulse) 30%, transparent)",
+                    }}
+                  >
                     transmite.
                   </span>
                 </h2>

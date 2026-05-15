@@ -115,63 +115,132 @@ export default async function MinhaContaPage() {
     suggestions = (data ?? []) as SuggestionEvent[]
   }
 
+  const hora = new Date().getHours()
+  const saudacao = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite"
+  const firstName = profile?.full_name?.split(" ")[0]
+  const roleConfig = {
+    admin: { label: "Admin", bg: "var(--danger-soft)", color: "var(--danger)" },
+    organizer: { label: "Organizador", bg: "var(--pulse-soft)", color: "var(--pulse-deep)" },
+    validator: { label: "Validador", bg: "var(--warning-soft)", color: "var(--warning)" },
+    buyer: { label: "Comprador", bg: "var(--info-soft)", color: "var(--info)" },
+  } as const
+  const rk = (profile?.role ?? "buyer") as keyof typeof roleConfig
+  const role = roleConfig[rk] ?? roleConfig.buyer
+
   return (
     <div className="space-y-8">
       {/* Hero do perfil */}
       <div
-        className="relative overflow-hidden rounded-3xl border p-6 sm:p-8"
-        style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
+        className="relative overflow-hidden rounded-3xl border p-6 sm:p-10"
+        style={{
+          borderColor: "var(--rule)",
+          backgroundColor: "var(--paper-pure)",
+          backgroundImage:
+            "linear-gradient(135deg, var(--paper-pure) 0%, color-mix(in srgb, var(--pulse) 4%, var(--paper-pure)) 100%)",
+        }}
       >
+        {/* Glow decorativo */}
         <div
-          className="pointer-events-none absolute -top-24 -right-24 h-60 w-60 rounded-full opacity-20 blur-3xl"
+          className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full opacity-15 blur-3xl"
           style={{ backgroundColor: "var(--pulse)" }}
           aria-hidden="true"
         />
-        <div className="relative flex flex-wrap items-center gap-6">
-          <Avatar className="h-16 w-16">
-            {profile?.avatar_url ? (
-              <AvatarImage src={profile.avatar_url} alt={profile.full_name ?? "Avatar"} />
-            ) : null}
-            <AvatarFallback
-              className="text-xl font-bold"
-              style={{ backgroundColor: "var(--ink)", color: "var(--pulse)" }}
-            >
-              {profile?.full_name
-                ? profile.full_name
-                    .split(" ")
-                    .slice(0, 2)
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()
-                : (user.email?.[0]?.toUpperCase() ?? "U")}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p
-              className="text-[11px] font-semibold tracking-[0.12em] uppercase"
-              style={{ color: "var(--mute)" }}
-            >
-              Minha conta
-            </p>
+        <div
+          className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full opacity-8 blur-3xl"
+          style={{ backgroundColor: "var(--pulse-deep)" }}
+          aria-hidden="true"
+        />
+
+        <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+          {/* Avatar grande */}
+          <div className="relative">
+            <Avatar className="h-20 w-20 sm:h-24 sm:w-24">
+              {profile?.avatar_url ? (
+                <AvatarImage src={profile.avatar_url} alt={profile.full_name ?? "Avatar"} />
+              ) : null}
+              <AvatarFallback
+                className="text-2xl font-bold sm:text-3xl"
+                style={{ backgroundColor: "var(--ink)", color: "var(--pulse)" }}
+              >
+                {profile?.full_name
+                  ? profile.full_name
+                      .split(" ")
+                      .slice(0, 2)
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()
+                  : (user.email?.[0]?.toUpperCase() ?? "U")}
+              </AvatarFallback>
+            </Avatar>
+            {/* Pulse ring sutil */}
+            <div
+              className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-offset-2"
+              style={
+                {
+                  "--tw-ring-color": "color-mix(in srgb, var(--pulse) 50%, transparent)",
+                  "--tw-ring-offset-color": "var(--paper-pure)",
+                } as React.CSSProperties
+              }
+            />
+          </div>
+
+          <div className="flex-1 space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span
+                className="h-px w-6"
+                style={{ background: "linear-gradient(90deg, transparent, var(--pulse))" }}
+              />
+              <span
+                className="rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase"
+                style={{ backgroundColor: role.bg, color: role.color }}
+              >
+                {role.label}
+              </span>
+            </div>
             <h1
-              className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl"
-              style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}
+              className="text-3xl font-bold tracking-tight sm:text-4xl"
+              style={{ color: "var(--ink)", letterSpacing: "-0.035em" }}
             >
-              {profile?.full_name ? `Olá, ${profile.full_name.split(" ")[0]}` : "Bem-vindo"}
+              {saudacao}, {firstName ?? "amigo"}
+              <span style={{ color: "var(--pulse-deep)" }}>.</span>
             </h1>
-            <p className="mt-1 text-sm" style={{ color: "var(--mute)" }}>
+            <p className="text-sm" style={{ color: "var(--mute)" }}>
               {user.email}
             </p>
           </div>
-          <div className="ml-auto flex flex-wrap gap-3">
-            <Mini label="Próximos" value={futureOrders.length.toString()} />
-            <Mini label="Histórico" value={pastOrders.length.toString()} />
-            <Mini
-              label="Sugestões"
-              value={suggestions.length.toString()}
-              accent="var(--pulse-deep)"
-            />
+
+          <div className="flex w-full gap-2 sm:w-auto sm:flex-col">
+            <Link
+              href="/eventos"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-bold transition-transform hover:scale-[1.03] sm:flex-initial"
+              style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+            >
+              <Calendar size={14} />
+              Explorar eventos
+            </Link>
+            <Link
+              href="/carrinho"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-black/5 sm:flex-initial"
+              style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
+            >
+              <TicketIcon size={14} />
+              Meu carrinho
+            </Link>
           </div>
+        </div>
+
+        {/* Stats em linha */}
+        <div
+          className="relative mt-6 grid grid-cols-3 gap-3 border-t pt-5"
+          style={{ borderColor: "var(--rule)" }}
+        >
+          <Mini
+            label="Próximos"
+            value={futureOrders.length.toString()}
+            accent="var(--pulse-deep)"
+          />
+          <Mini label="Histórico" value={pastOrders.length.toString()} />
+          <Mini label="Sugestões" value={suggestions.length.toString()} accent="var(--info)" />
         </div>
       </div>
 
@@ -289,16 +358,19 @@ export default async function MinhaContaPage() {
 function Mini({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
     <div
-      className="rounded-xl border px-3 py-2 text-center"
+      className="rounded-2xl border px-3 py-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)]"
       style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}
     >
       <p
-        className="font-mono text-lg leading-none font-bold"
-        style={{ color: accent ?? "var(--ink)" }}
+        className="font-mono text-2xl leading-none font-bold"
+        style={{ color: accent ?? "var(--ink)", letterSpacing: "-0.02em" }}
       >
         {value}
       </p>
-      <p className="mt-1 text-[10px] tracking-wider uppercase" style={{ color: "var(--mute)" }}>
+      <p
+        className="mt-1.5 text-[10px] font-medium tracking-wider uppercase"
+        style={{ color: "var(--mute)" }}
+      >
         {label}
       </p>
     </div>
@@ -337,26 +409,41 @@ function EmptyState({
 }) {
   return (
     <div
-      className="rounded-2xl border border-dashed p-12 text-center"
-      style={{ borderColor: "var(--rule)" }}
+      className="relative overflow-hidden rounded-3xl border border-dashed p-14 text-center"
+      style={{ borderColor: "var(--rule-strong)" }}
     >
-      <TicketIcon size={28} className="mx-auto" style={{ color: "var(--mute-2)" }} />
-      <p className="mt-3 text-sm font-medium" style={{ color: "var(--ink)" }}>
-        {title}
-      </p>
-      <p className="mt-1 text-xs" style={{ color: "var(--mute)" }}>
-        {desc}
-      </p>
-      {cta && (
-        <Link
-          href={cta.href}
-          className="mt-4 inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold"
-          style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+      <div
+        className="pointer-events-none absolute -top-24 -right-24 h-60 w-60 rounded-full opacity-10 blur-3xl"
+        style={{ backgroundColor: "var(--pulse)" }}
+        aria-hidden="true"
+      />
+      <div className="relative">
+        <div
+          className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+          style={{ backgroundColor: "var(--pulse-soft)", color: "var(--pulse-deep)" }}
         >
-          {cta.label}
-          <ArrowUpRight size={14} />
-        </Link>
-      )}
+          <TicketIcon size={26} />
+        </div>
+        <p
+          className="mt-4 text-lg font-bold tracking-tight"
+          style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
+        >
+          {title}
+        </p>
+        <p className="mx-auto mt-1.5 max-w-sm text-sm" style={{ color: "var(--mute)" }}>
+          {desc}
+        </p>
+        {cta && (
+          <Link
+            href={cta.href}
+            className="mt-5 inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.03]"
+            style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+          >
+            {cta.label}
+            <ArrowUpRight size={14} />
+          </Link>
+        )}
+      </div>
     </div>
   )
 }

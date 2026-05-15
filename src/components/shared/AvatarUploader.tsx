@@ -2,9 +2,10 @@
 
 import { useRef, useState, useTransition } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { createClient } from "@/lib/supabase/client"
 import { Camera, Loader2, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { uploadAvatar, removeAvatar } from "@/app/minha-conta/actions"
 
 interface Props {
   userId: string
@@ -13,11 +14,8 @@ interface Props {
   email: string | null
 }
 
-const MAX_BYTES = 2 * 1024 * 1024 // 2MB
-
-export function AvatarUploader({ userId, initialUrl, fullName, email }: Props) {
+export function AvatarUploader({ initialUrl, fullName, email }: Props) {
   const [url, setUrl] = useState<string | null>(initialUrl)
-  const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
   const fileRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
@@ -31,63 +29,35 @@ export function AvatarUploader({ userId, initialUrl, fullName, email }: Props) {
         .toUpperCase()
     : (email?.[0]?.toUpperCase() ?? "U")
 
-  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    setError(null)
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    if (file.size > MAX_BYTES) {
-      setError("Arquivo muito grande (máx 2 MB).")
-      return
-    }
-    if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) {
-      setError("Formato inválido. Use PNG, JPG, WEBP ou GIF.")
-      return
-    }
-
+    const fd = new FormData()
+    fd.set("file", file)
     startTransition(async () => {
-      const supabase = createClient()
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "png"
-      const path = `${userId}/avatar-${Date.now()}.${ext}`
-
-      const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, {
-        cacheControl: "3600",
-        upsert: false,
-      })
-      if (upErr) {
-        setError(upErr.message)
-        return
+      const r = await uploadAvatar(null, fd)
+      if (r.ok) {
+        setUrl(r.url)
+        toast.success("Foto atualizada")
+        router.refresh()
+      } else {
+        toast.error(r.error)
       }
-      const { data } = supabase.storage.from("avatars").getPublicUrl(path)
-      const publicUrl = data.publicUrl
-
-      const { error: updErr } = await supabase
-        .from("profiles")
-        .update({ avatar_url: publicUrl })
-        .eq("id", userId)
-      if (updErr) {
-        setError(updErr.message)
-        return
-      }
-
-      setUrl(publicUrl)
-      router.refresh()
     })
+    // Limpa input pra permitir re-upload do mesmo arquivo
+    e.target.value = ""
   }
 
-  async function removeAvatar() {
-    setError(null)
+  function handleRemove() {
     startTransition(async () => {
-      const supabase = createClient()
-      const { error: updErr } = await supabase
-        .from("profiles")
-        .update({ avatar_url: null })
-        .eq("id", userId)
-      if (updErr) {
-        setError(updErr.message)
-        return
+      const r = await removeAvatar()
+      if (r.ok) {
+        setUrl(null)
+        toast.success("Foto removida")
+        router.refresh()
+      } else {
+        toast.error(r.error)
       }
-      setUrl(null)
-      router.refresh()
     })
   }
 
@@ -128,7 +98,7 @@ export function AvatarUploader({ userId, initialUrl, fullName, email }: Props) {
           {url && (
             <button
               type="button"
-              onClick={removeAvatar}
+              onClick={handleRemove}
               disabled={pending}
               className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-[var(--danger-soft)] disabled:opacity-50"
               style={{ borderColor: "var(--rule)", color: "var(--danger)" }}
@@ -141,11 +111,6 @@ export function AvatarUploader({ userId, initialUrl, fullName, email }: Props) {
         <p className="text-[11px]" style={{ color: "var(--mute)" }}>
           PNG, JPG, WEBP ou GIF · até 2 MB
         </p>
-        {error && (
-          <p className="text-[11px]" style={{ color: "var(--danger)" }}>
-            {error}
-          </p>
-        )}
         <input
           ref={fileRef}
           type="file"

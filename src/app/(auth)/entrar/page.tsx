@@ -14,7 +14,7 @@ export default async function EntrarPage({
   searchParams: Promise<{ redirectTo?: string; erro?: string }>
 }) {
   const params = await searchParams
-  const redirectTo = params.redirectTo ?? "/"
+  const redirectTo = params.redirectTo ?? "/eventos"
 
   return (
     <div

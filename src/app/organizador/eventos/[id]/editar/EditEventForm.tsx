@@ -29,7 +29,7 @@ type FormData = z.infer<typeof schema>
 
 interface Props {
   eventId: string
-  organizerId: string
+  organizerId?: string
   bannerUrl: string | null
   initial: FormData
 }
@@ -42,7 +42,7 @@ const categories = [
   { value: "outro", label: "Outro" },
 ]
 
-export function EditEventForm({ eventId, organizerId, bannerUrl, initial }: Props) {
+export function EditEventForm({ eventId, bannerUrl, initial }: Props) {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
@@ -97,7 +97,11 @@ export function EditEventForm({ eventId, organizerId, bannerUrl, initial }: Prop
         <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
           Imagem de capa
         </p>
-        <EventBannerUploader eventId={eventId} organizerId={organizerId} initialUrl={bannerUrl} />
+        <EventBannerUploader
+          eventId={eventId}
+          initialUrl={bannerUrl}
+          category={form.watch("category")}
+        />
       </div>
 
       <div

@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
 import { ArrowRight, Eye, EyeOff, MailCheck } from "lucide-react"
 
 const loginSchema = z.object({
@@ -50,7 +49,6 @@ function mapSupabaseError(message: string): string {
 }
 
 export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
-  const router = useRouter()
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login")
   const [showPass, setShowPass] = useState(false)
   const [signupSuccessEmail, setSignupSuccessEmail] = useState<string | null>(null)
@@ -82,9 +80,9 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
         toast.error(mapSupabaseError(error.message))
         return
       }
-      toast.success("Bem-vindo de volta!")
-      router.refresh()
-      router.push(redirectTo)
+      toast.success("Bem-vindo de volta! Bora encher o carrinho.", { duration: 2200 })
+      // Hard navigation pra garantir que o header server-side reflita o login
+      window.location.href = redirectTo
     } catch {
       toast.dismiss(loadingId)
       toast.error("Erro inesperado. Tente novamente.")
@@ -115,9 +113,8 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
         toast.success("Conta criada! Verifique seu e-mail para ativar.")
         return
       }
-      toast.success("Conta criada!")
-      router.refresh()
-      router.push(redirectTo)
+      toast.success("Conta criada! Bora explorar.", { duration: 2200 })
+      window.location.href = redirectTo
     } catch {
       toast.dismiss(loadingId)
       toast.error("Erro inesperado. Tente novamente.")

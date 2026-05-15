@@ -1,17 +1,17 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Image from "next/image"
-import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { centsToBRL, formatDate } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { AddToCartButton } from "@/components/event/AddToCartButton"
+import { EventBannerPlaceholder } from "@/components/event/EventBannerPlaceholder"
+import { PageBackLink } from "@/components/shared/PageHeader"
 import {
   Calendar,
   MapPin,
   Shield,
-  ChevronLeft,
   Ticket as TicketIcon,
   Sparkles,
   Clock,
@@ -50,14 +50,6 @@ const categoryLabel: Record<string, string> = {
   religioso: "Religioso",
   curso: "Curso",
   outro: "Evento",
-}
-
-const categoryGradient: Record<string, string> = {
-  show: "linear-gradient(135deg, #c8ff00 0%, #3d4a00 100%)",
-  esporte: "linear-gradient(135deg, #2d7af6 0%, #0a1f3d 100%)",
-  religioso: "linear-gradient(135deg, #e89400 0%, #3d2700 100%)",
-  curso: "linear-gradient(135deg, #00b96b 0%, #003319 100%)",
-  outro: "linear-gradient(135deg, #4a4a52 0%, #0a0a0b 100%)",
 }
 
 function getCountdown(date: string) {
@@ -126,9 +118,9 @@ export default async function EventoPage({ params }: Props) {
         {event.banner_url ? (
           <Image src={event.banner_url} alt={event.title} fill className="object-cover" priority />
         ) : (
-          <div
-            className="absolute inset-0"
-            style={{ background: categoryGradient[event.category] ?? categoryGradient["outro"] }}
+          <EventBannerPlaceholder
+            category={event.category}
+            className="absolute inset-0 h-full w-full"
           />
         )}
 
@@ -158,13 +150,9 @@ export default async function EventoPage({ params }: Props) {
         {/* Hero content */}
         <div className="absolute right-0 bottom-0 left-0">
           <div className="mx-auto max-w-6xl px-4 pb-8 sm:px-6 sm:pb-12">
-            <Link
-              href="/eventos"
-              className="mb-4 inline-flex items-center gap-1.5 text-xs text-white/70 transition-colors hover:text-white"
-            >
-              <ChevronLeft size={14} />
-              Todos os eventos
-            </Link>
+            <div className="mb-4">
+              <PageBackLink href="/eventos" label="Todos os eventos" />
+            </div>
             <Badge
               className="mb-3 text-[10px] font-bold tracking-wider uppercase"
               style={{

@@ -1,125 +1,90 @@
 "use client"
 
 import { useRef, useState, useTransition } from "react"
-import { createClient } from "@/lib/supabase/client"
+import Image from "next/image"
 import { Camera, Loader2, Trash2, ImagePlus } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { uploadEventBanner, removeEventBanner } from "@/app/organizador/eventos/[id]/editar/actions"
+import { EventBannerPlaceholder } from "./EventBannerPlaceholder"
 
 interface Props {
-  eventId?: string
-  organizerId: string
+  eventId: string
   initialUrl: string | null
-  onUpload?: (url: string) => void
+  category?: string
 }
 
-const MAX_BYTES = 5 * 1024 * 1024 // 5MB
-
-export function EventBannerUploader({ eventId, organizerId, initialUrl, onUpload }: Props) {
+export function EventBannerUploader({ eventId, initialUrl, category = "outro" }: Props) {
   const [url, setUrl] = useState<string | null>(initialUrl)
-  const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
   const fileRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    setError(null)
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    if (file.size > MAX_BYTES) {
-      setError("Imagem muito grande (máx 5 MB).")
-      return
-    }
-    if (!/^image\/(png|jpeg|webp)$/.test(file.type)) {
-      setError("Formato inválido. Use PNG, JPG ou WEBP.")
-      return
-    }
-
+    const fd = new FormData()
+    fd.set("eventId", eventId)
+    fd.set("file", file)
     startTransition(async () => {
-      const supabase = createClient()
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "png"
-      const path = `${organizerId}/${eventId ?? "draft"}-${Date.now()}.${ext}`
-
-      const { error: upErr } = await supabase.storage.from("event-banners").upload(path, file, {
-        cacheControl: "3600",
-        upsert: false,
-      })
-      if (upErr) {
-        setError(upErr.message)
-        return
+      const r = await uploadEventBanner(null, fd)
+      if (r.ok) {
+        setUrl(r.url)
+        toast.success("Banner atualizado")
+        router.refresh()
+      } else {
+        toast.error(r.error)
       }
-      const { data } = supabase.storage.from("event-banners").getPublicUrl(path)
-      const publicUrl = data.publicUrl
-
-      if (eventId) {
-        const { error: updErr } = await supabase
-          .from("events")
-          .update({ banner_url: publicUrl })
-          .eq("id", eventId)
-        if (updErr) {
-          setError(updErr.message)
-          return
-        }
-      }
-
-      setUrl(publicUrl)
-      onUpload?.(publicUrl)
-      router.refresh()
     })
+    e.target.value = ""
   }
 
-  async function removeBanner() {
-    setError(null)
-    if (!eventId) {
-      setUrl(null)
-      onUpload?.("")
-      return
-    }
+  function handleRemove() {
     startTransition(async () => {
-      const supabase = createClient()
-      const { error: updErr } = await supabase
-        .from("events")
-        .update({ banner_url: null })
-        .eq("id", eventId)
-      if (updErr) {
-        setError(updErr.message)
-        return
+      const r = await removeEventBanner(eventId)
+      if (r.ok) {
+        setUrl(null)
+        toast.success("Banner removido")
+        router.refresh()
+      } else {
+        toast.error(r.error)
       }
-      setUrl(null)
-      onUpload?.("")
-      router.refresh()
     })
   }
 
   return (
     <div className="space-y-3">
       <div
-        className="relative overflow-hidden rounded-2xl border-2 border-dashed transition-colors"
+        className="relative overflow-hidden rounded-2xl border transition-colors"
         style={{
           borderColor: url ? "var(--rule)" : "var(--rule-strong)",
-          backgroundColor: "var(--paper-soft)",
           aspectRatio: "21 / 9",
         }}
       >
         {url ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={url} alt="Banner" className="absolute inset-0 h-full w-full object-cover" />
+          <Image
+            src={url}
+            alt="Banner do evento"
+            fill
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-cover"
+          />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
-            <ImagePlus size={28} style={{ color: "var(--mute-2)" }} />
-            <p className="text-xs font-medium" style={{ color: "var(--mute)" }}>
-              Clique no botão abaixo para enviar o banner
-            </p>
-            <p className="text-[10px]" style={{ color: "var(--mute-2)" }}>
-              PNG, JPG ou WEBP · até 5 MB · 21:9 recomendado
-            </p>
-          </div>
+          <EventBannerPlaceholder category={category} className="absolute inset-0" />
         )}
         {pending && (
           <div
             className="absolute inset-0 flex items-center justify-center backdrop-blur-sm"
-            style={{ backgroundColor: "rgba(10,10,11,0.4)" }}
+            style={{ backgroundColor: "rgba(10,10,11,0.45)" }}
           >
-            <Loader2 size={24} className="animate-spin" style={{ color: "var(--pulse)" }} />
+            <Loader2 size={26} className="animate-spin" style={{ color: "var(--pulse)" }} />
+          </div>
+        )}
+        {!url && !pending && (
+          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-center text-white/85">
+            <ImagePlus size={26} />
+            <p className="text-sm font-semibold">Sem imagem ainda</p>
+            <p className="text-[10px] opacity-80">PNG, JPG ou WEBP · até 5 MB · 21:9</p>
           </div>
         )}
       </div>
@@ -138,7 +103,7 @@ export function EventBannerUploader({ eventId, organizerId, initialUrl, onUpload
         {url && (
           <button
             type="button"
-            onClick={removeBanner}
+            onClick={handleRemove}
             disabled={pending}
             className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-[var(--danger-soft)] disabled:opacity-50"
             style={{ borderColor: "var(--rule)", color: "var(--danger)" }}
@@ -148,11 +113,6 @@ export function EventBannerUploader({ eventId, organizerId, initialUrl, onUpload
           </button>
         )}
       </div>
-      {error && (
-        <p className="text-[11px]" style={{ color: "var(--danger)" }}>
-          {error}
-        </p>
-      )}
       <input
         ref={fileRef}
         type="file"

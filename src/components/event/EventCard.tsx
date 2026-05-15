@@ -3,6 +3,7 @@ import Image from "next/image"
 import { Calendar, MapPin } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { centsToBRL, formatDate } from "@/lib/utils"
+import { EventBannerPlaceholder } from "./EventBannerPlaceholder"
 import type { Tables } from "@/types/supabase"
 
 interface EventCardProps {
@@ -57,19 +58,7 @@ export function EventCard({ event }: EventCardProps) {
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div
-            className="absolute inset-0 flex items-end p-4"
-            style={{
-              background: "linear-gradient(135deg, var(--ink-2) 0%, var(--ink-3) 100%)",
-            }}
-          >
-            <span
-              className="text-xs font-medium tracking-widest uppercase"
-              style={{ color: "var(--mute-2)", letterSpacing: "0.12em" }}
-            >
-              {categoryLabel[event.category] ?? "Evento"}
-            </span>
-          </div>
+          <EventBannerPlaceholder category={event.category} className="absolute inset-0" />
         )}
         <div className="absolute top-3 left-3 flex gap-1.5">
           <Badge
