@@ -210,7 +210,7 @@ export default async function MinhaContaPage() {
             </p>
           </div>
 
-          <div className="flex w-full gap-2 sm:w-auto sm:flex-col">
+          <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:flex-col">
             <Link
               href="/eventos"
               className="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-bold transition-transform hover:scale-[1.03] sm:flex-initial"
@@ -226,6 +226,14 @@ export default async function MinhaContaPage() {
             >
               <TicketIcon size={14} />
               Meu carrinho
+            </Link>
+            <Link
+              href="/minha-conta/afiliados"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-black/5 sm:flex-initial"
+              style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
+            >
+              <Sparkles size={14} />
+              Programa de afiliados
             </Link>
           </div>
         </div>
@@ -274,8 +282,7 @@ export default async function MinhaContaPage() {
                   })
                   .filter((e): e is NonNullable<typeof e> => !!e)
                   .sort(
-                    (a, b) =>
-                      new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
+                    (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
                   )[0]
                 if (!next) return null
                 return (

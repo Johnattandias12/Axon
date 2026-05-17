@@ -7,12 +7,22 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { generateQrPayload } from "@/lib/qr/hmac"
 import { sendTicketConfirmation } from "@/lib/email/send"
 import { formatDate } from "@/lib/utils"
+import {
+  getAffiliateByCode,
+  insertReferral,
+  updateAffiliateStats,
+} from "@/lib/supabase/affiliates-admin"
 
 const buyDemoSchema = z.object({
   lotId: z.string().uuid(),
   quantity: z.coerce.number().int().min(1).max(6),
   holderName: z.string().min(2, "Informe seu nome").max(120),
   holderCpf: z.string().min(3, "Informe seu documento").max(20),
+  affiliateCode: z
+    .string()
+    .regex(/^[A-Z0-9]{4,12}$/)
+    .optional()
+    .or(z.literal("")),
 })
 
 export type BuyDemoState = { ok: true; orderId: string } | { ok: false; error: string } | null
@@ -32,6 +42,7 @@ export async function buyDemo(_prev: BuyDemoState, formData: FormData): Promise<
     quantity: formData.get("quantity"),
     holderName: formData.get("holderName"),
     holderCpf: formData.get("holderCpf"),
+    affiliateCode: formData.get("affiliateCode") ?? "",
   })
 
   if (!parsed.success) {
@@ -124,6 +135,32 @@ export async function buyDemo(_prev: BuyDemoState, formData: FormData): Promise<
     .from("ticket_lots")
     .update({ quantity_sold: lot.quantity_sold + parsed.data.quantity })
     .eq("id", lot.id)
+
+  // Credita comissão de afiliado (silencioso se a tabela ainda não existir)
+  if (parsed.data.affiliateCode) {
+    try {
+      const affiliate = await getAffiliateByCode(admin, parsed.data.affiliateCode)
+      // Não credita auto-indicação
+      if (affiliate && affiliate.user_id !== user.id) {
+        const commissionCents = Math.round((subtotal * Number(affiliate.commission_pct)) / 100)
+        const { error: refErr } = await insertReferral(admin, {
+          affiliate_id: affiliate.id,
+          order_id: order.id,
+          event_id: event.id,
+          commission_cents: commissionCents,
+          status: "pending",
+        })
+        if (!refErr) {
+          await updateAffiliateStats(admin, affiliate.id, {
+            total_referrals: affiliate.total_referrals + 1,
+            total_commission_cents: affiliate.total_commission_cents + commissionCents,
+          })
+        }
+      }
+    } catch {
+      // Migração 008 pode não estar aplicada — ignora silenciosamente
+    }
+  }
 
   // Envia email de confirmação (silencioso se sem RESEND_API_KEY)
   if (user.email) {

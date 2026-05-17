@@ -1,4 +1,4 @@
-import { ticketConfirmationEmail } from "./templates"
+import { ticketConfirmationEmail, ticketTransferredEmail, refundProcessedEmail } from "./templates"
 
 /**
  * Envia email via Resend se RESEND_API_KEY estiver configurado.
@@ -59,5 +59,33 @@ interface SendTicketConfirmationArgs {
 
 export async function sendTicketConfirmation(args: SendTicketConfirmationArgs) {
   const { subject, html, text } = ticketConfirmationEmail(args)
+  return sendEmail({ to: args.to, subject, html, text })
+}
+
+interface SendTicketTransferredArgs {
+  to: string
+  fromName: string
+  eventTitle: string
+  eventDate: string
+  eventLocation: string
+  acceptUrl: string
+}
+
+export async function sendTicketTransferred(args: SendTicketTransferredArgs) {
+  const { subject, html, text } = ticketTransferredEmail(args)
+  return sendEmail({ to: args.to, subject, html, text })
+}
+
+interface SendRefundProcessedArgs {
+  to: string
+  buyerName: string
+  eventTitle: string
+  decision: "approved" | "rejected"
+  amountCents: number
+  reason?: string | null
+}
+
+export async function sendRefundProcessed(args: SendRefundProcessedArgs) {
+  const { subject, html, text } = refundProcessedEmail(args)
   return sendEmail({ to: args.to, subject, html, text })
 }

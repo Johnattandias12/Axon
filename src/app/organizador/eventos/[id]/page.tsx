@@ -6,9 +6,10 @@ import { formatDate, centsToBRL } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Pencil, Ticket, Users, Globe } from "lucide-react"
+import { Pencil, Ticket, Users, Globe, Gift } from "lucide-react"
 import { PublishButton } from "./PublishButton"
 import { PageBackLink } from "@/components/shared/PageHeader"
+import { EventAnalyticsCard } from "@/components/organizer/EventAnalyticsCard"
 
 export const metadata: Metadata = { title: "Evento" }
 
@@ -114,6 +115,9 @@ export default async function EventoDetailPage({ params }: Props) {
 
       <Separator style={{ backgroundColor: "var(--rule)" }} />
 
+      {/* Analytics */}
+      {event.status === "published" && <EventAnalyticsCard eventId={id} />}
+
       {/* Ações rápidas */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <ActionCard
@@ -127,6 +131,12 @@ export default async function EventoDetailPage({ params }: Props) {
           icon={<Users size={16} />}
           label="Equipe"
           sub="Validadores"
+        />
+        <ActionCard
+          href={`/organizador/eventos/${id}/cortesia`}
+          icon={<Gift size={16} />}
+          label="Cortesias"
+          sub="Lista VIP"
         />
       </div>
 

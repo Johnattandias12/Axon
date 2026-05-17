@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { AddToCartButton } from "@/components/event/AddToCartButton"
 import { EventBannerPlaceholder } from "@/components/event/EventBannerPlaceholder"
+import { ShareEventButtons } from "@/components/event/ShareEventButtons"
 import { PageBackLink } from "@/components/shared/PageHeader"
 import {
   Calendar,
@@ -92,6 +93,18 @@ export default async function EventoPage({ params }: Props) {
 
   if (!event) notFound()
 
+  // Código de afiliado do user logado (silencioso se tabela não existir)
+  let viewerAffiliateCode: string | null = null
+  if (user) {
+    try {
+      const { getAffiliateByUserId } = await import("@/lib/supabase/affiliates-admin")
+      const aff = await getAffiliateByUserId(supabase, user.id)
+      viewerAffiliateCode = aff?.code ?? null
+    } catch {
+      // migração 008 pode não estar aplicada
+    }
+  }
+
   const now = new Date()
   const types = (event.ticket_types ?? []).sort((a, b) => a.position - b.position)
 
@@ -150,8 +163,14 @@ export default async function EventoPage({ params }: Props) {
         {/* Hero content */}
         <div className="absolute right-0 bottom-0 left-0">
           <div className="mx-auto max-w-6xl px-4 pb-8 sm:px-6 sm:pb-12">
-            <div className="mb-4">
+            <div className="mb-4 flex items-center justify-between gap-2">
               <PageBackLink href="/eventos" label="Todos os eventos" />
+              <ShareEventButtons
+                eventTitle={event.title}
+                eventSlug={slug}
+                affiliateCode={viewerAffiliateCode}
+                variant="solid"
+              />
             </div>
             <Badge
               className="mb-3 text-[10px] font-bold tracking-wider uppercase"

@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useState, useTransition } from "react"
+import { useActionState, useEffect, useState, useTransition } from "react"
 import { Loader2, ShieldCheck, Ticket, Minus, Plus, X } from "lucide-react"
 import { buyDemo, type BuyDemoState } from "@/app/checkout/actions"
 import { centsToBRL } from "@/lib/utils"
@@ -31,6 +31,20 @@ export function BuyTicketForm({
   const [holderCpf, setHolderCpf] = useState("")
   const [state, formAction] = useActionState<BuyDemoState, FormData>(buyDemo, null)
   const [pending, startTransition] = useTransition()
+  const [affiliateCode, setAffiliateCode] = useState("")
+
+  // Captura ?via= do URL no mount (persiste em sessionStorage)
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search)
+    const via = sp.get("via")
+    if (via && /^[A-Z0-9]{4,12}$/.test(via)) {
+      sessionStorage.setItem("axon_ref", via)
+      setAffiliateCode(via)
+      return
+    }
+    const stored = sessionStorage.getItem("axon_ref")
+    if (stored && /^[A-Z0-9]{4,12}$/.test(stored)) setAffiliateCode(stored)
+  }, [])
 
   const subtotal = pricePerUnit * qty
   const fee = Math.round(subtotal * 0.1)
@@ -107,6 +121,7 @@ export function BuyTicketForm({
             <form action={submit} className="space-y-4 p-5">
               <input type="hidden" name="lotId" value={lotId} />
               <input type="hidden" name="quantity" value={qty} />
+              {affiliateCode && <input type="hidden" name="affiliateCode" value={affiliateCode} />}
 
               {/* Quantity */}
               <div>

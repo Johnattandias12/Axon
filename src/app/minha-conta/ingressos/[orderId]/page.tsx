@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { TicketCard } from "@/components/event/TicketCard"
 import { TicketActions } from "@/components/event/TicketActions"
 import { TicketPdfButton } from "@/components/event/TicketPdfButton"
+import { ShareEventButtons } from "@/components/event/ShareEventButtons"
 import { CelebrateOnMount } from "@/components/shared/CelebrateOnMount"
 import { PageBackLink } from "@/components/shared/PageHeader"
 import { EventCountdown } from "@/components/event/EventCountdown"
@@ -127,6 +128,11 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
                   is_half_price: t.is_half_price,
                 }
               })}
+            />
+            <ShareEventButtons
+              eventTitle={event.title}
+              eventSlug={event.slug}
+              buyerName={tickets[0]?.holder_name ?? null}
             />
           </div>
         </div>
