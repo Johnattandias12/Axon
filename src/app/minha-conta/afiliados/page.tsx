@@ -119,7 +119,7 @@ export default async function AfiliadosPage() {
                 style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
               >
                 <div
-                  className="grid grid-cols-[1.5fr_1fr_0.8fr_0.7fr] gap-3 border-b px-4 py-2 text-[10px] font-semibold tracking-wider uppercase"
+                  className="hidden grid-cols-[1.5fr_1fr_0.8fr_0.7fr] gap-3 border-b px-4 py-2 text-[10px] font-semibold tracking-wider uppercase sm:grid"
                   style={{ borderColor: "var(--rule)", color: "var(--mute)" }}
                 >
                   <span>Evento</span>
@@ -130,37 +130,64 @@ export default async function AfiliadosPage() {
                 {referrals.map((r) => {
                   const order = Array.isArray(r.orders) ? r.orders[0] : r.orders
                   const evt = order && Array.isArray(order.events) ? order.events[0] : order?.events
+                  const statusLabel =
+                    r.status === "paid" ? "Pago" : r.status === "pending" ? "Pendente" : "Cancelado"
+                  const statusColor =
+                    r.status === "paid"
+                      ? "var(--success)"
+                      : r.status === "pending"
+                        ? "var(--warning)"
+                        : "var(--mute)"
                   return (
                     <div
                       key={r.id}
-                      className="grid grid-cols-[1.5fr_1fr_0.8fr_0.7fr] gap-3 border-b px-4 py-3 text-xs last:border-b-0"
+                      className="border-b px-4 py-3 last:border-b-0 sm:grid sm:grid-cols-[1.5fr_1fr_0.8fr_0.7fr] sm:gap-3 sm:text-xs"
                       style={{ borderColor: "var(--rule)" }}
                     >
-                      <span className="truncate" style={{ color: "var(--ink)" }}>
+                      {/* Mobile: card */}
+                      <div className="space-y-1.5 sm:hidden">
+                        <div className="flex items-start justify-between gap-2">
+                          <p
+                            className="line-clamp-2 text-sm font-semibold"
+                            style={{ color: "var(--ink)" }}
+                          >
+                            {evt?.title ?? "—"}
+                          </p>
+                          <span
+                            className="shrink-0 text-[10px] font-bold tracking-wider uppercase"
+                            style={{ color: statusColor }}
+                          >
+                            {statusLabel}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span style={{ color: "var(--mute)" }}>
+                            {formatDate(r.created_at, { dateStyle: "short" })}
+                          </span>
+                          <span className="font-mono font-bold" style={{ color: "var(--ink)" }}>
+                            {centsToBRL(r.commission_cents)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Desktop: linha da grid */}
+                      <span className="hidden truncate sm:inline" style={{ color: "var(--ink)" }}>
                         {evt?.title ?? "—"}
                       </span>
-                      <span style={{ color: "var(--mute)" }}>
+                      <span className="hidden sm:inline" style={{ color: "var(--mute)" }}>
                         {formatDate(r.created_at, { dateStyle: "short" })}
                       </span>
-                      <span className="font-mono font-semibold" style={{ color: "var(--ink)" }}>
+                      <span
+                        className="hidden font-mono font-semibold sm:inline"
+                        style={{ color: "var(--ink)" }}
+                      >
                         {centsToBRL(r.commission_cents)}
                       </span>
                       <span
-                        className="text-right text-[10px] font-bold tracking-wider uppercase"
-                        style={{
-                          color:
-                            r.status === "paid"
-                              ? "var(--success)"
-                              : r.status === "pending"
-                                ? "var(--warning)"
-                                : "var(--mute)",
-                        }}
+                        className="hidden text-right text-[10px] font-bold tracking-wider uppercase sm:inline"
+                        style={{ color: statusColor }}
                       >
-                        {r.status === "paid"
-                          ? "Pago"
-                          : r.status === "pending"
-                            ? "Pendente"
-                            : "Cancelado"}
+                        {statusLabel}
                       </span>
                     </div>
                   )

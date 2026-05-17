@@ -40,8 +40,8 @@ export function AffiliateCodeCard({ code, commissionPct }: Props) {
           "linear-gradient(135deg, var(--paper-pure) 0%, color-mix(in srgb, var(--pulse) 4%, var(--paper-pure)) 100%)",
       }}
     >
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
           <p
             className="text-[11px] font-semibold tracking-wider uppercase"
             style={{ color: "var(--mute)" }}
@@ -49,14 +49,14 @@ export function AffiliateCodeCard({ code, commissionPct }: Props) {
             Seu código
           </p>
           <p
-            className="mt-1 font-mono text-3xl font-bold tracking-tight"
+            className="mt-1 font-mono text-2xl font-bold tracking-tight sm:text-3xl"
             style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
           >
             {code}
           </p>
         </div>
         <div
-          className="rounded-full px-3 py-1.5 text-xs font-bold"
+          className="shrink-0 rounded-full px-3 py-1.5 text-xs font-bold"
           style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
         >
           {commissionPct}% por venda

@@ -131,7 +131,7 @@ export default async function CortesiaPage({ params }: Props) {
             style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
           >
             <div
-              className="grid grid-cols-[1.5fr_1.2fr_1fr_0.8fr_0.6fr] gap-3 border-b px-4 py-2 text-[10px] font-semibold tracking-wider uppercase"
+              className="hidden grid-cols-[1.5fr_1.2fr_1fr_0.8fr_0.6fr] gap-3 border-b px-4 py-2 text-[10px] font-semibold tracking-wider uppercase sm:grid"
               style={{ borderColor: "var(--rule)", color: "var(--mute)" }}
             >
               <span>Convidado</span>
@@ -140,51 +140,94 @@ export default async function CortesiaPage({ params }: Props) {
               <span>Emitida</span>
               <span className="text-right">Status</span>
             </div>
-            {courtesyRows.map((r) => (
-              <div
-                key={r.ticketId}
-                className="grid grid-cols-[1.5fr_1.2fr_1fr_0.8fr_0.6fr] gap-3 border-b px-4 py-3 text-xs last:border-b-0"
-                style={{ borderColor: "var(--rule)" }}
-              >
-                <div className="min-w-0">
-                  <p className="truncate font-medium" style={{ color: "var(--ink)" }}>
-                    {r.holderName}
-                  </p>
-                  <p className="truncate font-mono text-[10px]" style={{ color: "var(--mute)" }}>
-                    {r.holderCpf}
-                  </p>
+            {courtesyRows.map((r) => {
+              const statusNode =
+                r.status === "used" ? (
+                  <span className="flex items-center gap-1" style={{ color: "var(--success)" }}>
+                    <CheckCircle2 size={12} />
+                    Compareceu
+                  </span>
+                ) : r.status === "cancelled" || r.status === "refunded" ? (
+                  <span className="flex items-center gap-1" style={{ color: "var(--danger)" }}>
+                    <X size={12} />
+                    Cancelada
+                  </span>
+                ) : (
+                  <span style={{ color: "var(--mute)" }}>Pendente</span>
+                )
+              return (
+                <div
+                  key={r.ticketId}
+                  className="border-b px-4 py-3 last:border-b-0 sm:grid sm:grid-cols-[1.5fr_1.2fr_1fr_0.8fr_0.6fr] sm:gap-3 sm:text-xs"
+                  style={{ borderColor: "var(--rule)" }}
+                >
+                  {/* Mobile card */}
+                  <div className="space-y-2 sm:hidden">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p
+                          className="truncate text-sm font-semibold"
+                          style={{ color: "var(--ink)" }}
+                        >
+                          {r.holderName}
+                        </p>
+                        <p
+                          className="truncate font-mono text-[10px]"
+                          style={{ color: "var(--mute)" }}
+                        >
+                          {r.holderCpf}
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-[10px] font-bold tracking-wider uppercase">
+                        {statusNode}
+                      </div>
+                    </div>
+                    <div
+                      className="flex flex-wrap items-center justify-between gap-x-3 text-[11px]"
+                      style={{ color: "var(--mute)" }}
+                    >
+                      <span>
+                        {r.typeName}
+                        {r.lotName ? ` · ${r.lotName}` : ""}
+                      </span>
+                      <span>{r.paidAt ? new Date(r.paidAt).toLocaleDateString("pt-BR") : "—"}</span>
+                    </div>
+                    {r.email && (
+                      <p className="truncate text-[11px]" style={{ color: "var(--ink-4)" }}>
+                        {r.email}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Desktop linha */}
+                  <div className="hidden min-w-0 sm:block">
+                    <p className="truncate font-medium" style={{ color: "var(--ink)" }}>
+                      {r.holderName}
+                    </p>
+                    <p className="truncate font-mono text-[10px]" style={{ color: "var(--mute)" }}>
+                      {r.holderCpf}
+                    </p>
+                  </div>
+                  <span className="hidden truncate sm:inline" style={{ color: "var(--ink-4)" }}>
+                    {r.email ?? "—"}
+                  </span>
+                  <div className="hidden min-w-0 sm:block">
+                    <p className="truncate" style={{ color: "var(--ink-4)" }}>
+                      {r.typeName}
+                    </p>
+                    <p className="truncate text-[10px]" style={{ color: "var(--mute)" }}>
+                      {r.lotName}
+                    </p>
+                  </div>
+                  <span className="hidden sm:inline" style={{ color: "var(--mute)" }}>
+                    {r.paidAt ? new Date(r.paidAt).toLocaleDateString("pt-BR") : "—"}
+                  </span>
+                  <span className="hidden items-center justify-end gap-1 sm:flex">
+                    {statusNode}
+                  </span>
                 </div>
-                <span className="truncate" style={{ color: "var(--ink-4)" }}>
-                  {r.email ?? "—"}
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate" style={{ color: "var(--ink-4)" }}>
-                    {r.typeName}
-                  </p>
-                  <p className="truncate text-[10px]" style={{ color: "var(--mute)" }}>
-                    {r.lotName}
-                  </p>
-                </div>
-                <span style={{ color: "var(--mute)" }}>
-                  {r.paidAt ? new Date(r.paidAt).toLocaleDateString("pt-BR") : "—"}
-                </span>
-                <span className="flex items-center justify-end gap-1">
-                  {r.status === "used" ? (
-                    <>
-                      <CheckCircle2 size={12} style={{ color: "var(--success)" }} />
-                      <span style={{ color: "var(--success)" }}>Compareceu</span>
-                    </>
-                  ) : r.status === "cancelled" || r.status === "refunded" ? (
-                    <>
-                      <X size={12} style={{ color: "var(--danger)" }} />
-                      <span style={{ color: "var(--danger)" }}>Cancelada</span>
-                    </>
-                  ) : (
-                    <span style={{ color: "var(--mute)" }}>Pendente</span>
-                  )}
-                </span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </section>

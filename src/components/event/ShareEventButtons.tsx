@@ -105,7 +105,7 @@ export function ShareEventButtons({
 
       {open && (
         <div
-          className="absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl border shadow-2xl"
+          className="absolute right-0 z-50 mt-2 w-[min(16rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border shadow-2xl"
           style={{
             borderColor: "var(--rule)",
             backgroundColor: "var(--paper-pure)",
