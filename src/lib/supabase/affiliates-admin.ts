@@ -114,3 +114,67 @@ export async function generateAffiliateCode(
   ).rpc("generate_affiliate_code", { p_user_id: userId })
   return typeof data === "string" && data.length > 0 ? data : null
 }
+
+export interface AffiliateWithProfile extends Affiliate {
+  profiles: { email: string | null; full_name: string | null } | null
+}
+
+/**
+ * Lista todos os afiliados (admin only) com info do user e stats agregados.
+ */
+export async function listAllAffiliates(client: AnyClient): Promise<AffiliateWithProfile[]> {
+  const { data } = await table(client, "affiliates")
+    .select("*, profiles(email, full_name)")
+    .order("total_commission_cents", { ascending: false })
+  return (data as unknown as AffiliateWithProfile[] | null) ?? []
+}
+
+export interface ReferralWithContext extends AffiliateReferral {
+  affiliates: {
+    code: string
+    profiles: { email: string | null; full_name: string | null } | null
+  } | null
+  orders: {
+    id: string
+    total_cents: number
+    events: { title: string; slug: string } | { title: string; slug: string }[] | null
+  } | null
+}
+
+export async function listAllReferrals(
+  client: AnyClient,
+  status?: "pending" | "paid" | "cancelled",
+  limit = 200
+): Promise<ReferralWithContext[]> {
+  let q = table(client, "affiliate_referrals")
+    .select(
+      "*, affiliates(code, profiles(email, full_name)), orders(id, total_cents, events(title, slug))"
+    )
+    .order("created_at", { ascending: false })
+    .limit(limit)
+  if (status) q = q.eq("status", status)
+  const { data } = await q
+  return (data as unknown as ReferralWithContext[] | null) ?? []
+}
+
+export async function markReferralPaid(
+  client: AnyClient,
+  referralId: string
+): Promise<{ error: string | null }> {
+  const { error } = await table(client, "affiliate_referrals")
+    .update({ status: "paid" })
+    .eq("id", referralId)
+  return { error: error?.message ?? null }
+}
+
+export async function payAllPendingForAffiliate(
+  client: AnyClient,
+  affiliateId: string
+): Promise<{ error: string | null; updated: number }> {
+  const { data, error } = await table(client, "affiliate_referrals")
+    .update({ status: "paid" })
+    .eq("affiliate_id", affiliateId)
+    .eq("status", "pending")
+    .select("id")
+  return { error: error?.message ?? null, updated: (data as unknown[] | null)?.length ?? 0 }
+}

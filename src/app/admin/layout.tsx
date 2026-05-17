@@ -2,7 +2,15 @@ import type { ReactNode } from "react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { LayoutDashboard, Users, Calendar, Building2, LogOut, Shield } from "lucide-react"
+import {
+  LayoutDashboard,
+  Users,
+  Calendar,
+  Building2,
+  LogOut,
+  Shield,
+  DollarSign,
+} from "lucide-react"
 import { AxonLogo } from "@/components/shared/AxonLogo"
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
@@ -48,6 +56,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             icon={<Building2 size={15} />}
             label="Organizadores"
           />
+          <NavItem href="/admin/afiliados" icon={<DollarSign size={15} />} label="Afiliados" />
         </nav>
 
         <div className="border-t p-3" style={{ borderColor: "var(--rule)" }}>

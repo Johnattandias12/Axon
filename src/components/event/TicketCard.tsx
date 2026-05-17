@@ -1,5 +1,6 @@
 import { AxonSymbol } from "@/components/shared/AxonLogo"
 import { TicketQrCode } from "./TicketQrCode"
+import { QrFullscreen } from "./QrFullscreen"
 import { centsToBRL, formatDate } from "@/lib/utils"
 
 interface TicketCardProps {
@@ -185,7 +186,7 @@ export function TicketCard({
 
         {/* Perforation + QR */}
         <div
-          className="relative flex flex-col items-center justify-center gap-2 sm:border-l sm:border-dashed sm:pl-4"
+          className="relative flex flex-col items-center justify-center gap-3 sm:border-l sm:border-dashed sm:pl-4"
           style={{ borderColor: "var(--rule-strong)" }}
         >
           <span
@@ -198,21 +199,49 @@ export function TicketCard({
             style={{ backgroundColor: "var(--paper)" }}
             aria-hidden="true"
           />
-          <div
-            className="rounded-lg border-2 p-2"
-            style={{
-              borderColor: "var(--pulse)",
-              backgroundColor: "#ffffff",
-              boxShadow: "0 0 0 4px var(--pulse-soft)",
-            }}
-          >
-            <TicketQrCode payload={ticket.qr_hash} size={144} />
+          <div className="relative">
+            <div
+              className="rounded-lg border-2 p-2"
+              style={{
+                borderColor: "var(--pulse)",
+                backgroundColor: "#ffffff",
+                boxShadow: "0 0 0 4px var(--pulse-soft), 0 0 24px -4px rgba(200,255,0,0.25)",
+              }}
+            >
+              <TicketQrCode payload={ticket.qr_hash} size={144} />
+            </div>
+            {/* corner brackets decorativos */}
+            <span
+              className="pointer-events-none absolute -top-1 -left-1 h-3 w-3 border-t-2 border-l-2"
+              style={{ borderColor: "var(--ink)" }}
+              aria-hidden="true"
+            />
+            <span
+              className="pointer-events-none absolute -top-1 -right-1 h-3 w-3 border-t-2 border-r-2"
+              style={{ borderColor: "var(--ink)" }}
+              aria-hidden="true"
+            />
+            <span
+              className="pointer-events-none absolute -bottom-1 -left-1 h-3 w-3 border-b-2 border-l-2"
+              style={{ borderColor: "var(--ink)" }}
+              aria-hidden="true"
+            />
+            <span
+              className="pointer-events-none absolute -right-1 -bottom-1 h-3 w-3 border-r-2 border-b-2"
+              style={{ borderColor: "var(--ink)" }}
+              aria-hidden="true"
+            />
           </div>
+          <QrFullscreen
+            payload={ticket.qr_hash}
+            holderName={ticket.holder_name}
+            eventTitle={event.title}
+          />
           <p
             className="text-center font-mono text-[9px] leading-tight break-all"
-            style={{ color: "var(--mute)" }}
+            style={{ color: "var(--mute-2)" }}
           >
-            {ticket.qr_hash}
+            {ticket.qr_hash.length > 32 ? `${ticket.qr_hash.slice(0, 24)}…` : ticket.qr_hash}
           </p>
         </div>
       </div>
