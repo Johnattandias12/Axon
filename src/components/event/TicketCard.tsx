@@ -45,6 +45,7 @@ export function TicketCard({
     used: { label: "Utilizado", color: "var(--mute)", bg: "var(--paper-soft)" },
     cancelled: { label: "Cancelado", color: "var(--danger)", bg: "var(--danger-soft)" },
     refunded: { label: "Reembolsado", color: "var(--warning)", bg: "var(--warning-soft)" },
+    paused: { label: "Pausado", color: "var(--warning)", bg: "var(--warning-soft)" },
   }
   const st = statusLabel[ticket.status] ?? statusLabel["valid"]!
 

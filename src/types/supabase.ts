@@ -428,11 +428,17 @@ export type Database = {
             | "professor"
             | null
           half_price_doc_url: string | null
-          status: "valid" | "used" | "cancelled" | "refunded"
+          status: "valid" | "used" | "cancelled" | "refunded" | "paused"
           used_at: string | null
           used_by: string | null
           gate: string | null
           created_at: string
+          transfer_token: string | null
+          transfer_expires_at: string | null
+          transferred_from: string | null
+          transferred_at: string | null
+          refund_requested_at: string | null
+          refund_reason: string | null
         }
         Insert: {
           id?: string
@@ -452,13 +458,27 @@ export type Database = {
             | "professor"
             | null
           half_price_doc_url?: string | null
-          status?: "valid" | "used" | "cancelled" | "refunded"
+          status?: "valid" | "used" | "cancelled" | "refunded" | "paused"
+          transfer_token?: string | null
+          transfer_expires_at?: string | null
+          transferred_from?: string | null
+          transferred_at?: string | null
+          refund_requested_at?: string | null
+          refund_reason?: string | null
         }
         Update: {
-          status?: "valid" | "used" | "cancelled" | "refunded"
+          status?: "valid" | "used" | "cancelled" | "refunded" | "paused"
           used_at?: string | null
           used_by?: string | null
           gate?: string | null
+          holder_name?: string
+          holder_cpf?: string
+          transfer_token?: string | null
+          transfer_expires_at?: string | null
+          transferred_from?: string | null
+          transferred_at?: string | null
+          refund_requested_at?: string | null
+          refund_reason?: string | null
         }
         Relationships: [
           {
@@ -516,6 +536,7 @@ export type Database = {
             | "invalid_hmac"
             | "cancelled"
             | "refunded"
+            | "paused"
             | "not_found"
             | "wrong_event"
           scanned_at: string
@@ -534,6 +555,7 @@ export type Database = {
             | "invalid_hmac"
             | "cancelled"
             | "refunded"
+            | "paused"
             | "not_found"
             | "wrong_event"
           gate?: string | null

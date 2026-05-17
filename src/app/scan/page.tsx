@@ -399,7 +399,9 @@ function FeedbackWarn({ r }: { r: Extract<ValidateResult, { ok: true }> }) {
       ? "JÁ UTILIZADO"
       : r.status === "cancelled"
         ? "CANCELADO"
-        : "REEMBOLSADO"
+        : r.status === "paused"
+          ? "PAUSADO"
+          : "REEMBOLSADO"
   return (
     <div className="text-center">
       <Clock size={48} className="mx-auto" style={{ color: "var(--warning)" }} />

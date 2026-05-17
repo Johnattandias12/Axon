@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { TicketCard } from "@/components/event/TicketCard"
+import { TicketActions } from "@/components/event/TicketActions"
 import { TicketPdfButton } from "@/components/event/TicketPdfButton"
 import { CelebrateOnMount } from "@/components/shared/CelebrateOnMount"
 import { PageBackLink } from "@/components/shared/PageHeader"
@@ -30,6 +31,7 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
          ticket_lots(name, ticket_type_id, ticket_types(name))
        ),
        tickets(id, qr_hash, holder_name, holder_cpf, is_half_price, status, ticket_lot_id,
+         transfer_token, refund_requested_at,
          ticket_lots(name, price_cents, ticket_types(name))
        )`
     )
@@ -45,16 +47,12 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
   const tickets = order.tickets ?? []
 
   // Confete só quando comprou agora há pouco (últimos 2 min)
-  const justBought =
-    order.paid_at && Date.now() - new Date(order.paid_at).getTime() < 2 * 60 * 1000
+  const justBought = order.paid_at && Date.now() - new Date(order.paid_at).getTime() < 2 * 60 * 1000
 
   return (
     <div className="space-y-8">
       {justBought && (
-        <CelebrateOnMount
-          id={order.id}
-          message="🎉 Compra confirmada — bora pro evento!"
-        />
+        <CelebrateOnMount id={order.id} message="🎉 Compra confirmada — bora pro evento!" />
       )}
       <PageBackLink href="/minha-conta" label="Minha conta" />
 
@@ -109,11 +107,14 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
             <TicketPdfButton
               eventTitle={event.title}
               eventDate={formatDate(event.starts_at, { dateStyle: "full", timeStyle: "short" })}
-              eventLocation={[event.venue_name, event.city, event.state].filter(Boolean).join(" · ")}
+              eventLocation={[event.venue_name, event.city, event.state]
+                .filter(Boolean)
+                .join(" · ")}
               orderId={order.id}
               tickets={tickets.map((t) => {
                 const lot = Array.isArray(t.ticket_lots) ? t.ticket_lots[0] : t.ticket_lots
-                const tt = lot && Array.isArray(lot.ticket_types) ? lot.ticket_types[0] : lot?.ticket_types
+                const tt =
+                  lot && Array.isArray(lot.ticket_types) ? lot.ticket_types[0] : lot?.ticket_types
                 return {
                   id: t.id,
                   qr_hash: t.qr_hash,
@@ -150,17 +151,36 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
               : ticket.ticket_lots
             const ticketType =
               lot && Array.isArray(lot.ticket_types) ? lot.ticket_types[0] : lot?.ticket_types
+            const t = ticket as typeof ticket & {
+              transfer_token: string | null
+              refund_requested_at: string | null
+            }
             return (
-              <TicketCard
-                key={ticket.id}
-                ticket={ticket}
-                event={event}
-                typeName={ticketType?.name ?? "Ingresso"}
-                lotName={lot?.name ?? ""}
-                pricePaidCents={lot?.price_cents ?? 0}
-                index={idx}
-                total={tickets.length}
-              />
+              <div key={ticket.id} className="space-y-2">
+                <TicketCard
+                  ticket={ticket}
+                  event={event}
+                  typeName={ticketType?.name ?? "Ingresso"}
+                  lotName={lot?.name ?? ""}
+                  pricePaidCents={lot?.price_cents ?? 0}
+                  index={idx}
+                  total={tickets.length}
+                />
+                <div
+                  className="rounded-xl border p-3"
+                  style={{
+                    borderColor: "var(--rule)",
+                    backgroundColor: "var(--paper-pure)",
+                  }}
+                >
+                  <TicketActions
+                    ticketId={ticket.id}
+                    status={ticket.status}
+                    hasTransferToken={!!t.transfer_token}
+                    hasRefundRequest={!!t.refund_requested_at}
+                  />
+                </div>
+              </div>
             )
           })}
         </div>

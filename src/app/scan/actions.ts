@@ -12,7 +12,7 @@ const payloadSchema = z.object({
 export type ValidateResult =
   | {
       ok: true
-      status: "valid" | "already_used" | "cancelled" | "refunded"
+      status: "valid" | "already_used" | "cancelled" | "refunded" | "paused"
       holderName: string
       typeName: string
       lotName: string
@@ -77,19 +77,23 @@ export async function validateQr(payload: string): Promise<ValidateResult> {
   const tt = lot && Array.isArray(lot.ticket_types) ? lot.ticket_types[0] : lot?.ticket_types
   const event = Array.isArray(ticket.events) ? ticket.events[0] : ticket.events
 
-  const previousStatus = ticket.status as "valid" | "used" | "cancelled" | "refunded"
+  const previousStatus = ticket.status as "valid" | "used" | "cancelled" | "refunded" | "paused"
 
-  // Se já usado/cancelado/reembolsado, retorna sem marcar
+  // Se já usado/cancelado/reembolsado/pausado, retorna sem marcar
   if (previousStatus !== "valid") {
+    const outStatus =
+      previousStatus === "used"
+        ? ("already_used" as const)
+        : (previousStatus as "cancelled" | "refunded" | "paused")
     await admin.from("check_ins").insert({
       ticket_id: ticket.id,
       event_id: ticket.event_id,
       validator_id: user.id,
-      result: previousStatus === "used" ? "already_used" : previousStatus,
+      result: outStatus,
     })
     return {
       ok: true,
-      status: previousStatus === "used" ? "already_used" : previousStatus,
+      status: outStatus,
       holderName: ticket.holder_name,
       typeName: tt?.name ?? "Ingresso",
       lotName: lot?.name ?? "",
