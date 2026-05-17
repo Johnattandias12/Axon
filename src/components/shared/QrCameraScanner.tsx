@@ -26,15 +26,19 @@ interface Props {
   paused?: boolean
 }
 
-/** Leitor contínuo de QR via câmera. Usa BarcodeDetector quando disponível. */
+/**
+ * Leitor de QR via câmera.
+ * Prefere a API nativa BarcodeDetector (Chrome/Android). No iOS Safari (sem BarcodeDetector),
+ * cai pro `jsqr` rodando em canvas a ~10fps — funciona em iPhone moderno.
+ */
 export function QrCameraScanner({ onDetect, paused = false }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const onDetectRef = useRef(onDetect)
   const pausedRef = useRef(paused)
   const [status, setStatus] = useState<Status>("idle")
   const [errorMsg, setErrorMsg] = useState<string>("")
 
-  // Mantém callbacks sempre atualizados sem reiniciar o efeito
   onDetectRef.current = onDetect
   pausedRef.current = paused
 
@@ -42,11 +46,20 @@ export function QrCameraScanner({ onDetect, paused = false }: Props) {
     let cancelled = false
     let stream: MediaStream | null = null
     let rafId: number | null = null
+    let timerId: number | null = null
     let lastValue: { value: string; at: number } | null = null
+
+    function emit(v: string) {
+      const now = Date.now()
+      if (!lastValue || lastValue.value !== v || now - lastValue.at > 2000) {
+        lastValue = { value: v, at: now }
+        onDetectRef.current(v)
+      }
+    }
 
     async function start() {
       if (typeof window === "undefined") return
-      if (!window.BarcodeDetector || !navigator.mediaDevices?.getUserMedia) {
+      if (!navigator.mediaDevices?.getUserMedia) {
         setStatus("unsupported")
         return
       }
@@ -68,35 +81,72 @@ export function QrCameraScanner({ onDetect, paused = false }: Props) {
         }
         video.srcObject = stream
         video.setAttribute("playsinline", "true")
+        video.setAttribute("muted", "true")
+        video.muted = true
         await video.play()
         setStatus("running")
 
-        const detector = new window.BarcodeDetector!({ formats: ["qr_code"] })
-
-        const tick = async () => {
-          if (cancelled) return
-          if (!pausedRef.current && video.readyState >= 2) {
-            try {
-              const codes = await detector.detect(video)
-              if (codes[0]?.rawValue) {
-                const v = codes[0].rawValue
-                const now = Date.now()
-                if (!lastValue || lastValue.value !== v || now - lastValue.at > 2000) {
-                  lastValue = { value: v, at: now }
-                  onDetectRef.current(v)
-                }
+        // Caminho rápido: BarcodeDetector nativo (Android Chrome, Desktop Chrome/Edge)
+        if (window.BarcodeDetector) {
+          const detector = new window.BarcodeDetector({ formats: ["qr_code"] })
+          const tick = async () => {
+            if (cancelled) return
+            if (!pausedRef.current && video.readyState >= 2) {
+              try {
+                const codes = await detector.detect(video)
+                if (codes[0]?.rawValue) emit(codes[0].rawValue)
+              } catch {
+                // frames ruins acontecem
               }
-            } catch {
-              // Frames ruins acontecem — ignorar
             }
+            rafId = requestAnimationFrame(tick)
           }
           rafId = requestAnimationFrame(tick)
+          return
         }
-        rafId = requestAnimationFrame(tick)
+
+        // Fallback iOS Safari: jsqr a ~10fps via canvas
+        const jsQR = (await import("jsqr")).default
+        if (cancelled) return
+        const canvas = canvasRef.current ?? document.createElement("canvas")
+        const ctx = canvas.getContext("2d", { willReadFrequently: true })
+        if (!ctx) {
+          setStatus("error")
+          setErrorMsg("Canvas indisponível")
+          return
+        }
+
+        const loop = () => {
+          if (cancelled) return
+          if (!pausedRef.current && video.readyState >= 2 && video.videoWidth > 0) {
+            const vw = video.videoWidth
+            const vh = video.videoHeight
+            // Downscale pra performance no celular — máx 480px no lado maior
+            const scale = Math.min(1, 480 / Math.max(vw, vh))
+            const w = Math.floor(vw * scale)
+            const h = Math.floor(vh * scale)
+            if (canvas.width !== w || canvas.height !== h) {
+              canvas.width = w
+              canvas.height = h
+            }
+            ctx.drawImage(video, 0, 0, w, h)
+            try {
+              const img = ctx.getImageData(0, 0, w, h)
+              const code = jsQR(img.data, w, h, { inversionAttempts: "dontInvert" })
+              if (code?.data) emit(code.data)
+            } catch {
+              // ignora frame ruim
+            }
+          }
+          timerId = window.setTimeout(loop, 100)
+        }
+        timerId = window.setTimeout(loop, 200)
       } catch (err) {
         const e = err as Error
         if (e.name === "NotAllowedError" || e.name === "PermissionDeniedError") {
           setStatus("denied")
+        } else if (e.name === "NotFoundError" || e.name === "DevicesNotFoundError") {
+          setStatus("unsupported")
         } else {
           setStatus("error")
           setErrorMsg(e.message)
@@ -109,6 +159,7 @@ export function QrCameraScanner({ onDetect, paused = false }: Props) {
     return () => {
       cancelled = true
       if (rafId !== null) cancelAnimationFrame(rafId)
+      if (timerId !== null) clearTimeout(timerId)
       stream?.getTracks().forEach((t) => t.stop())
     }
   }, [])
@@ -120,9 +171,11 @@ export function QrCameraScanner({ onDetect, paused = false }: Props) {
         className="h-full w-full object-cover"
         playsInline
         muted
+        autoPlay
         aria-hidden={status !== "running"}
         style={{ display: status === "running" ? "block" : "none" }}
       />
+      <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
       {status !== "running" && (
         <div
           className="flex h-full w-full flex-col items-center justify-center gap-2 px-4 text-center"
@@ -141,6 +194,9 @@ export function QrCameraScanner({ onDetect, paused = false }: Props) {
                 Câmera bloqueada
               </p>
               <p className="text-[10px]">Libere o acesso nas configurações do navegador.</p>
+              <p className="text-[10px]" style={{ color: "rgba(250,250,247,0.5)" }}>
+                iPhone: Ajustes · Safari · Câmera. Android: cadeado da URL · Permissões · Câmera.
+              </p>
             </>
           )}
           {status === "unsupported" && (

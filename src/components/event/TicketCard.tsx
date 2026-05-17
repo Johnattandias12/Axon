@@ -202,11 +202,11 @@ export function TicketCard({
             className="rounded-lg border-2 p-2"
             style={{
               borderColor: "var(--pulse)",
-              backgroundColor: "var(--paper-pure)",
+              backgroundColor: "#ffffff",
               boxShadow: "0 0 0 4px var(--pulse-soft)",
             }}
           >
-            <TicketQrCode payload={ticket.qr_hash} size={128} />
+            <TicketQrCode payload={ticket.qr_hash} size={144} />
           </div>
           <p
             className="text-center font-mono text-[9px] leading-tight break-all"

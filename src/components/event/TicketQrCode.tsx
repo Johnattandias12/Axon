@@ -26,9 +26,9 @@ export function TicketQrCode({ payload, size = 256 }: Props) {
         if (cancelled || !canvasRef.current) return
         await QRCode.toCanvas(canvasRef.current, payload, {
           errorCorrectionLevel: "M",
-          margin: 1,
+          margin: 2,
           width: size,
-          color: { dark: "#0a0a0b", light: "#ffffff00" },
+          color: { dark: "#0a0a0b", light: "#ffffff" },
         })
         setReady(true)
       } catch (e) {

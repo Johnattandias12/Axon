@@ -164,7 +164,7 @@ export function TicketActions({ ticketId, status, hasTransferToken, hasRefundReq
         >
           <AlertTriangle size={11} className="mt-0.5 shrink-0" />
           <span>
-            Pedido de reembolso em análise. O organizador vai te procurar. Ingresso pausado até lá.
+            Problema reportado. O organizador vai te procurar. Ingresso pausado até resolver.
           </span>
         </div>
         <button
@@ -175,7 +175,7 @@ export function TicketActions({ ticketId, status, hasTransferToken, hasRefundReq
           style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
         >
           {pending ? <Loader2 size={11} className="animate-spin" /> : <RotateCcw size={11} />}
-          Desistir e voltar a usar
+          Resolvi sozinho, voltar a usar
         </button>
       </div>
     )
@@ -186,10 +186,16 @@ export function TicketActions({ ticketId, status, hasTransferToken, hasRefundReq
     <div className="space-y-2">
       {showRefundReason ? (
         <div className="space-y-2">
+          <p
+            className="text-[10px] font-semibold tracking-wider uppercase"
+            style={{ color: "var(--mute)" }}
+          >
+            Tive um problema com este ingresso
+          </p>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="Conta o que aconteceu (opcional)"
+            placeholder="Conta o que aconteceu — o organizador vai te procurar pra resolver"
             rows={3}
             maxLength={500}
             className="w-full rounded-lg border px-3 py-2 text-xs outline-none focus:border-[var(--pulse)]"
@@ -199,6 +205,10 @@ export function TicketActions({ ticketId, status, hasTransferToken, hasRefundReq
               color: "var(--ink)",
             }}
           />
+          <p className="text-[10px]" style={{ color: "var(--mute-2)" }}>
+            O ingresso fica pausado até o organizador retornar. Você pode desfazer a qualquer
+            momento.
+          </p>
           <div className="flex gap-2">
             <button
               type="button"
@@ -221,7 +231,7 @@ export function TicketActions({ ticketId, status, hasTransferToken, hasRefundReq
               ) : (
                 <AlertTriangle size={11} />
               )}
-              Confirmar pedido
+              Enviar para o organizador
             </button>
           </div>
         </div>
@@ -299,7 +309,7 @@ export function TicketActions({ ticketId, status, hasTransferToken, hasRefundReq
             style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
           >
             <AlertTriangle size={11} />
-            Pedir reembolso
+            Tive um problema
           </button>
         </div>
       )}
