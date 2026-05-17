@@ -10,9 +10,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ChevronDown, ShoppingBag, Shield, Building2, User as UserIcon } from "lucide-react"
+import { ChevronDown, Shield, Building2, User as UserIcon } from "lucide-react"
 import { SiteMobileNav } from "./SiteMobileNav"
 import { ThemeToggle } from "./ThemeToggle"
+import { HeaderCartButton } from "@/components/cart/HeaderCartButton"
 
 export async function SiteHeader() {
   const supabase = await createClient()
@@ -122,24 +123,7 @@ export async function SiteHeader() {
 
         <div className="flex items-center gap-1.5 sm:gap-2">
           <ThemeToggle />
-          {user && (
-            <Link
-              href="/carrinho"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full border transition-colors hover:bg-black/5"
-              style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
-              aria-label="Carrinho"
-            >
-              <ShoppingBag size={15} />
-              {cartCount > 0 && (
-                <span
-                  className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 font-mono text-[9px] font-bold"
-                  style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
-                >
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-          )}
+          {user && <HeaderCartButton cartCount={cartCount} />}
 
           {user ? (
             <>

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist, JetBrains_Mono } from "next/font/google"
 import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/shared/ThemeProvider"
+import { CartShell } from "@/components/cart/CartShell"
 import "./globals.css"
 
 const geist = Geist({
@@ -100,7 +101,7 @@ export default function RootLayout({
           enableSystem
           storageKey="axon-theme"
         >
-          {children}
+          <CartShell>{children}</CartShell>
           <Toaster position="top-center" richColors closeButton />
         </ThemeProvider>
       </body>
