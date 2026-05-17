@@ -2,8 +2,6 @@ import Link from "next/link"
 import { AxonLogo } from "@/components/shared/AxonLogo"
 import { EventsCarousel } from "@/components/shared/EventsCarousel"
 import { CategoriesCarousel } from "@/components/shared/CategoriesCarousel"
-import { ThemeToggle } from "@/components/shared/ThemeToggle"
-import { MobileMenu } from "@/components/shared/MobileMenu"
 import { NeuronAnimation } from "@/components/shared/NeuronAnimation"
 
 export default function HomePage() {
@@ -12,68 +10,6 @@ export default function HomePage() {
       className="min-h-screen w-full"
       style={{ backgroundColor: "var(--paper)", color: "var(--ink)" }}
     >
-      {/* Header */}
-      <header
-        className="sticky top-0 z-50 border-b"
-        style={{
-          borderColor: "var(--rule)",
-          backgroundColor: "color-mix(in srgb, var(--paper) 85%, transparent)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-        }}
-      >
-        <div className="mx-auto flex h-[58px] max-w-[1200px] items-center justify-between gap-4 px-5 md:gap-6 md:px-8">
-          <Link href="/" className="flex shrink-0 items-center" aria-label="AXON">
-            <AxonLogo size={22} tone="ink" />
-          </Link>
-
-          <nav className="hidden items-center gap-7 md:flex">
-            <Link
-              href="/eventos"
-              className="text-sm font-medium transition-colors hover:opacity-70"
-              style={{ color: "var(--mute)" }}
-            >
-              Eventos
-            </Link>
-            <a
-              href="#organizadores"
-              className="text-sm font-medium transition-colors hover:opacity-70"
-              style={{ color: "var(--mute)" }}
-            >
-              Organizadores
-            </a>
-            <a
-              href={`https://wa.me/5584981235396?text=${encodeURIComponent("Olá! Preciso de ajuda com a AXON.")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium transition-colors hover:opacity-70"
-              style={{ color: "var(--mute)" }}
-            >
-              Suporte
-            </a>
-          </nav>
-
-          <div className="flex shrink-0 items-center gap-2">
-            <ThemeToggle />
-            <Link
-              href="/entrar"
-              className="hidden px-3 py-2 text-sm font-medium transition-colors sm:inline-flex"
-              style={{ color: "var(--mute)" }}
-            >
-              Entrar
-            </Link>
-            <Link
-              href="/entrar"
-              className="hidden rounded-xl px-4 py-2 text-sm font-bold transition-colors sm:inline-flex"
-              style={{ backgroundColor: "var(--ink)", color: "var(--paper)" }}
-            >
-              Criar conta
-            </Link>
-            <MobileMenu />
-          </div>
-        </div>
-      </header>
-
       <main>
         {/* Hero */}
         <section

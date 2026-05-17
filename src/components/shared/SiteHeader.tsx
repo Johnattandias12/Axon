@@ -10,14 +10,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  ChevronDown,
-  ShoppingBag,
-  Shield,
-  Building2,
-  User as UserIcon,
-} from "lucide-react"
+import { ChevronDown, ShoppingBag, Shield, Building2, User as UserIcon } from "lucide-react"
 import { SiteMobileNav } from "./SiteMobileNav"
+import { ThemeToggle } from "./ThemeToggle"
 
 export async function SiteHeader() {
   const supabase = await createClient()
@@ -126,6 +121,7 @@ export async function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
+          <ThemeToggle />
           {user && (
             <Link
               href="/carrinho"
@@ -154,7 +150,10 @@ export async function SiteHeader() {
                     <div className="relative">
                       <Avatar className="h-8 w-8">
                         {profile?.avatar_url ? (
-                          <AvatarImage src={profile.avatar_url} alt={profile.full_name ?? "Avatar"} />
+                          <AvatarImage
+                            src={profile.avatar_url}
+                            alt={profile.full_name ?? "Avatar"}
+                          />
                         ) : null}
                         <AvatarFallback
                           className="text-[11px] font-bold"
@@ -181,29 +180,17 @@ export async function SiteHeader() {
                         )}
                       </span>
                     </div>
-                    <span
-                      className="text-xs font-semibold"
-                      style={{ color: "var(--ink)" }}
-                    >
+                    <span className="text-xs font-semibold" style={{ color: "var(--ink)" }}>
                       {profile?.full_name?.split(" ")[0] ?? user.email?.split("@")[0]}
                     </span>
                     <ChevronDown size={13} style={{ color: "var(--mute)" }} />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-60">
-                    <div
-                      className="px-3 py-2.5"
-                      style={{ borderBottom: "1px solid var(--rule)" }}
-                    >
-                      <p
-                        className="truncate text-sm font-semibold"
-                        style={{ color: "var(--ink)" }}
-                      >
+                    <div className="px-3 py-2.5" style={{ borderBottom: "1px solid var(--rule)" }}>
+                      <p className="truncate text-sm font-semibold" style={{ color: "var(--ink)" }}>
                         {profile?.full_name ?? user.email}
                       </p>
-                      <p
-                        className="mt-0.5 truncate text-[11px]"
-                        style={{ color: "var(--mute)" }}
-                      >
+                      <p className="mt-0.5 truncate text-[11px]" style={{ color: "var(--mute)" }}>
                         {user.email}
                       </p>
                       <span

@@ -144,15 +144,10 @@ html {
 }
 
 /* ─────────────── MOBILE / iOS OPTIMIZATIONS ─────────────── */
-@supports (-webkit-touch-callout: none) {
-  /* Safe area insets for iPhone notch */
-  body {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-  }
-}
+/* Safe-area é aplicado nos componentes que precisam (header sticky, drawers,
+   botões flutuantes). NÃO aplicar padding global no <body>: quebra position:
+   sticky no iOS quando o body é flex container, e duplica padding em
+   componentes que já consomem env(safe-area-inset-*). */
 
 /* Prevent iOS tap highlight */
 * {
