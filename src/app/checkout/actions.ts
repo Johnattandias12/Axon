@@ -9,6 +9,7 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { generateQrPayload } from "@/lib/qr/hmac"
 import { sendTicketConfirmation } from "@/lib/email/send"
 import { formatDate } from "@/lib/utils"
+import { validateCPF } from "@/lib/utils/validators"
 import {
   getAffiliateByCode,
   insertReferral,
@@ -19,7 +20,7 @@ const buyDemoSchema = z.object({
   lotId: z.string().uuid(),
   quantity: z.coerce.number().int().min(1).max(6),
   holderName: z.string().min(2, "Informe seu nome").max(120),
-  holderCpf: z.string().min(3, "Informe seu documento").max(20),
+  holderCpf: z.string().refine((v) => validateCPF(v), "CPF inválido."),
   affiliateCode: z
     .string()
     .regex(/^[A-Z0-9]{4,12}$/)
@@ -56,9 +57,11 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
   const parsed = buyDemoSchema.safeParse({
     lotId: formData.get("lotId"),
     quantity: formData.get("quantity"),
-    holderName: formData.get("holderName"),
-    holderCpf: formData.get("holderCpf"),
-    affiliateCode: formData.get("affiliateCode") ?? "",
+    holderName: String(formData.get("holderName") ?? "").trim(),
+    holderCpf: String(formData.get("holderCpf") ?? "").replace(/\D/g, ""),
+    affiliateCode: String(formData.get("affiliateCode") ?? "")
+      .toUpperCase()
+      .trim(),
   })
 
   if (!parsed.success) {
@@ -96,9 +99,29 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
     return { ok: false, error: `Apenas ${available} ingressos disponíveis neste lote.` }
   }
 
+  // Reserva atômica: condicional na disponibilidade atual no banco.
+  // Se outra compra concorrente esgotou, .select() volta vazio e abortamos.
+  const newSold = lot.quantity_sold + parsed.data.quantity
+  const { data: lockedLot, error: lockErr } = await admin
+    .from("ticket_lots")
+    .update({ quantity_sold: newSold })
+    .eq("id", lot.id)
+    .lte("quantity_sold", lot.quantity_total - lot.quantity_reserved - parsed.data.quantity)
+    .select("id, quantity_sold")
+    .maybeSingle()
+
+  if (lockErr) return { ok: false, error: lockErr.message }
+  if (!lockedLot) {
+    return { ok: false, error: "Ingressos esgotaram enquanto você finalizava. Tente outro lote." }
+  }
+
   const subtotal = lot.price_cents * parsed.data.quantity
   const fee = Math.round(subtotal * 0.1)
   const total = subtotal + fee
+
+  const rollbackStock = async () => {
+    await admin.from("ticket_lots").update({ quantity_sold: lot.quantity_sold }).eq("id", lot.id)
+  }
 
   const { data: order, error: orderErr } = await admin
     .from("orders")
@@ -117,15 +140,22 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
     .single()
 
   if (orderErr || !order) {
+    await rollbackStock()
     return { ok: false, error: orderErr?.message ?? "Falha ao criar pedido." }
   }
 
-  await admin.from("order_items").insert({
+  const { error: orderItemsErr } = await admin.from("order_items").insert({
     order_id: order.id,
     ticket_lot_id: lot.id,
     quantity: parsed.data.quantity,
     unit_price_cents: lot.price_cents,
   })
+
+  if (orderItemsErr) {
+    await admin.from("orders").delete().eq("id", order.id)
+    await rollbackStock()
+    return { ok: false, error: orderItemsErr.message }
+  }
 
   const ticketsToInsert = Array.from({ length: parsed.data.quantity }, () => {
     const ticketId = crypto.randomUUID()
@@ -144,13 +174,11 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
 
   const { error: ticketsErr } = await admin.from("tickets").insert(ticketsToInsert)
   if (ticketsErr) {
+    await admin.from("order_items").delete().eq("order_id", order.id)
+    await admin.from("orders").delete().eq("id", order.id)
+    await rollbackStock()
     return { ok: false, error: ticketsErr.message }
   }
-
-  await admin
-    .from("ticket_lots")
-    .update({ quantity_sold: lot.quantity_sold + parsed.data.quantity })
-    .eq("id", lot.id)
 
   // Credita comissão de afiliado (silencioso se a tabela ainda não existir)
   if (parsed.data.affiliateCode) {

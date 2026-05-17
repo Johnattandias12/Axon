@@ -8,6 +8,7 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { generateQrPayload } from "@/lib/qr/hmac"
 import { sendTicketConfirmation } from "@/lib/email/send"
 import { formatDate } from "@/lib/utils"
+import { validateCPF } from "@/lib/utils/validators"
 
 // ─── Schemas ─────────────────────────────────────────────────
 const addSchema = z.object({
@@ -47,14 +48,19 @@ export async function addToCart(
 
   const admin = createAdminClient()
 
-  // Verifica disponibilidade
+  // Verifica disponibilidade + status do evento.
+  // !inner garante que o evento existe e join não devolve null;
+  // o filtro de status no events bloqueia lotes de eventos draft/cancelled.
   const { data: lot } = await admin
     .from("ticket_lots")
-    .select("quantity_total, quantity_sold, quantity_reserved")
+    .select("quantity_total, quantity_sold, quantity_reserved, events!inner(status)")
     .eq("id", parsed.data.lotId)
-    .single()
+    .eq("events.status", "published")
+    .maybeSingle()
 
-  if (!lot) return { ok: false, error: "Lote não encontrado." }
+  if (!lot) {
+    return { ok: false, error: "Lote indisponível para compra." }
+  }
 
   const avail = lot.quantity_total - lot.quantity_sold - lot.quantity_reserved
   if (avail < parsed.data.quantity) {
@@ -166,16 +172,13 @@ export async function checkoutDemo(
   const holderCpf = holderCpfRaw.replace(/\D/g, "")
   const saveToProfile = formData.get("saveToProfile") === "1"
   if (holderName.length < 2) return { ok: false, error: "Informe o nome do titular." }
-  if (holderCpf.length < 3) return { ok: false, error: "Informe o documento." }
+  if (!validateCPF(holderCpf)) return { ok: false, error: "CPF inválido." }
 
   const admin = createAdminClient()
 
   // Salva dados no perfil pra próxima compra ser mais rápida
   if (saveToProfile) {
-    await admin
-      .from("profiles")
-      .update({ full_name: holderName, cpf: holderCpf })
-      .eq("id", user.id)
+    await admin.from("profiles").update({ full_name: holderName, cpf: holderCpf }).eq("id", user.id)
   }
 
   const { data: items } = await admin
@@ -292,6 +295,44 @@ export async function checkoutDemo(
   const fee = Math.round(subtotal * 0.1)
   const total = subtotal + fee
 
+  // Reserva atômica de estoque por lote. Se algum lote esgotar entre o read e
+  // o update, o WHERE condicional faz o update afetar 0 rows; nesse caso
+  // revertemos os lotes já incrementados e abortamos.
+  const stockRollback: Array<{ lotId: string; previousSold: number }> = []
+  for (const t of ticketsToCreate) {
+    const newSold = t.lot.quantity_sold + t.qty
+    const { data: locked, error: lockErr } = await admin
+      .from("ticket_lots")
+      .update({ quantity_sold: newSold })
+      .eq("id", t.lotId)
+      .lte("quantity_sold", t.lot.quantity_total - t.lot.quantity_reserved - t.qty)
+      .select("id")
+      .maybeSingle()
+
+    if (lockErr || !locked) {
+      // Reverte os lotes que já tinham sido incrementados antes desse
+      for (const r of stockRollback) {
+        await admin.from("ticket_lots").update({ quantity_sold: r.previousSold }).eq("id", r.lotId)
+      }
+      return {
+        ok: false,
+        error: `Ingressos do lote "${t.lot.name}" esgotaram enquanto você finalizava.`,
+      }
+    }
+    stockRollback.push({ lotId: t.lotId, previousSold: t.lot.quantity_sold })
+  }
+
+  const rollbackEverything = async (orderId?: string) => {
+    if (orderId) {
+      await admin.from("tickets").delete().eq("order_id", orderId)
+      await admin.from("order_items").delete().eq("order_id", orderId)
+      await admin.from("orders").delete().eq("id", orderId)
+    }
+    for (const r of stockRollback) {
+      await admin.from("ticket_lots").update({ quantity_sold: r.previousSold }).eq("id", r.lotId)
+    }
+  }
+
   // Cria a order
   const { data: order, error: orderErr } = await admin
     .from("orders")
@@ -309,17 +350,24 @@ export async function checkoutDemo(
     .select("id")
     .single()
 
-  if (orderErr || !order) return { ok: false, error: orderErr?.message ?? "Falha ao criar pedido." }
+  if (orderErr || !order) {
+    await rollbackEverything()
+    return { ok: false, error: orderErr?.message ?? "Falha ao criar pedido." }
+  }
 
   // Order items + tickets
   const allQrs: string[] = []
   for (const t of ticketsToCreate) {
-    await admin.from("order_items").insert({
+    const { error: itemErr } = await admin.from("order_items").insert({
       order_id: order.id,
       ticket_lot_id: t.lotId,
       quantity: t.qty,
       unit_price_cents: t.pricePerUnit,
     })
+    if (itemErr) {
+      await rollbackEverything(order.id)
+      return { ok: false, error: itemErr.message }
+    }
 
     const ticketRows = Array.from({ length: t.qty }, () => {
       const ticketId = crypto.randomUUID()
@@ -338,16 +386,19 @@ export async function checkoutDemo(
       }
     })
 
-    await admin.from("tickets").insert(ticketRows)
-
-    await admin
-      .from("ticket_lots")
-      .update({ quantity_sold: t.lot.quantity_sold + t.qty })
-      .eq("id", t.lotId)
+    const { error: ticketsErr } = await admin.from("tickets").insert(ticketRows)
+    if (ticketsErr) {
+      await rollbackEverything(order.id)
+      return { ok: false, error: ticketsErr.message }
+    }
   }
 
-  // Esvazia carrinho
-  await admin.from("cart_items").delete().eq("user_id", user.id)
+  // Esvazia carrinho (não bloqueia o sucesso se falhar — items órfãos não
+  // dão problema, e a próxima leitura do carrinho ignora itens já comprados)
+  const { error: clearErr } = await admin.from("cart_items").delete().eq("user_id", user.id)
+  if (clearErr) {
+    console.error("[checkoutDemo] falha ao limpar carrinho:", clearErr)
+  }
 
   // Email de confirmação (silencioso se sem Resend)
   const appUrl = process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"
