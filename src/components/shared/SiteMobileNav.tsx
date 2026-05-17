@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { createPortal } from "react-dom"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -38,6 +39,11 @@ export function SiteMobileNav({
   cartCount = 0,
 }: Props) {
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     if (open) {
@@ -57,7 +63,7 @@ export function SiteMobileNav({
         .map((n) => n[0])
         .join("")
         .toUpperCase()
-    : email?.[0]?.toUpperCase() ?? "U"
+    : (email?.[0]?.toUpperCase() ?? "U")
 
   const roleConfig = {
     admin: { label: "Admin", bg: "var(--danger-soft)", color: "var(--danger)", icon: Shield },
@@ -75,33 +81,23 @@ export function SiteMobileNav({
     },
     buyer: { label: "Comprador", bg: "var(--info-soft)", color: "var(--info)", icon: UserIcon },
   } as const
-  const rk = (role as keyof typeof roleConfig) in roleConfig
-    ? (role as keyof typeof roleConfig)
-    : "buyer"
+  const rk =
+    (role as keyof typeof roleConfig) in roleConfig ? (role as keyof typeof roleConfig) : "buyer"
   const r = roleConfig[rk]
   const RoleIcon = r.icon
 
-  return (
+  const drawer = (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="flex h-9 w-9 items-center justify-center rounded-full border md:hidden"
-        style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
-        aria-label="Abrir menu"
-      >
-        <Menu size={16} />
-      </button>
-
       {open && (
         <div
-          className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm md:hidden"
           onClick={() => setOpen(false)}
           aria-hidden="true"
         />
       )}
 
       <aside
-        className="fixed top-0 right-0 z-[70] flex h-full w-[300px] max-w-[85vw] flex-col overflow-y-auto border-l transition-transform duration-300 ease-out md:hidden"
+        className="fixed top-0 right-0 z-[1001] flex h-full w-[300px] max-w-[85vw] flex-col overflow-y-auto border-l shadow-2xl transition-transform duration-300 ease-out md:hidden"
         style={{
           backgroundColor: "var(--paper)",
           borderColor: "var(--rule)",
@@ -143,9 +139,7 @@ export function SiteMobileNav({
           >
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
-                {avatarUrl ? (
-                  <AvatarImage src={avatarUrl} alt={fullName ?? "Avatar"} />
-                ) : null}
+                {avatarUrl ? <AvatarImage src={avatarUrl} alt={fullName ?? "Avatar"} /> : null}
                 <AvatarFallback
                   className="text-base font-bold"
                   style={{ backgroundColor: "var(--ink)", color: "var(--pulse)" }}
@@ -154,10 +148,7 @@ export function SiteMobileNav({
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
-                <p
-                  className="truncate text-sm font-semibold"
-                  style={{ color: "var(--ink)" }}
-                >
+                <p className="truncate text-sm font-semibold" style={{ color: "var(--ink)" }}>
                   {fullName ?? email}
                 </p>
                 <p className="truncate text-[10px]" style={{ color: "var(--mute)" }}>
@@ -243,14 +234,25 @@ export function SiteMobileNav({
               </button>
             </form>
           )}
-          <p
-            className="mt-3 text-center text-[10px]"
-            style={{ color: "var(--mute-2)" }}
-          >
+          <p className="mt-3 text-center text-[10px]" style={{ color: "var(--mute-2)" }}>
             AXON · axonia.vercel.app
           </p>
         </div>
       </aside>
+    </>
+  )
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="flex h-9 w-9 items-center justify-center rounded-full border md:hidden"
+        style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
+        aria-label="Abrir menu"
+      >
+        <Menu size={16} />
+      </button>
+      {mounted && createPortal(drawer, document.body)}
     </>
   )
 }

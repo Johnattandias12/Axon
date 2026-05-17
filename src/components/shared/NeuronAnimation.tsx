@@ -38,19 +38,24 @@ export function NeuronAnimation({ className = "" }: { className?: string }) {
         style={{ animation: "neuron-core-pulse 4s var(--ease-in-out, ease-in-out) infinite" }}
       />
 
-      {/* Galhos principais — 6 raios saindo do centro */}
+      {/* Galhos principais — 6 raios saindo do centro com impulso viajando */}
       {Array.from({ length: 6 }).map((_, i) => {
         const angle = (i * Math.PI * 2) / 6
         const len = 280 + (i % 2) * 80
         const x2 = 700 + Math.cos(angle) * len
         const y2 = 300 + Math.sin(angle) * len * 0.55
-        // Curva: control point com leve desvio
         const cx = 700 + Math.cos(angle) * len * 0.55 + Math.sin(angle) * 40
         const cy = 300 + Math.sin(angle) * len * 0.3 - Math.cos(angle) * 30
+        const pathId = `axon-path-${i}`
+        const pathD = `M 700 300 Q ${cx} ${cy} ${x2} ${y2}`
+        const impulseDur = 3 + (i % 3) * 0.5
+        const impulseDelay = i * 0.5
         return (
           <g key={`branch-${i}`}>
+            {/* Axônio (path base) */}
             <path
-              d={`M 700 300 Q ${cx} ${cy} ${x2} ${y2}`}
+              id={pathId}
+              d={pathD}
               stroke="rgba(200,255,0,0.5)"
               strokeWidth="1.2"
               fill="none"
@@ -62,7 +67,55 @@ export function NeuronAnimation({ className = "" }: { className?: string }) {
                 animationDelay: `${i * 0.3}s`,
               }}
             />
-            {/* Nodo terminal */}
+            {/* Impulso elétrico viajando ao longo do axônio */}
+            <circle r="3" fill="rgba(220,255,80,1)" filter="url(#neuron-glow)" opacity="0.95">
+              <animateMotion
+                dur={`${impulseDur}s`}
+                begin={`${impulseDelay}s`}
+                repeatCount="indefinite"
+                rotate="auto"
+                keyTimes="0;0.85;1"
+                keySplines="0.25 0.1 0.25 1; 0.4 0 1 1"
+                calcMode="spline"
+              >
+                <mpath href={`#${pathId}`} />
+              </animateMotion>
+              <animate
+                attributeName="opacity"
+                values="0;1;1;0"
+                keyTimes="0;0.15;0.8;1"
+                dur={`${impulseDur}s`}
+                begin={`${impulseDelay}s`}
+                repeatCount="indefinite"
+              />
+              <animate
+                attributeName="r"
+                values="1.5;3.5;3;1"
+                keyTimes="0;0.2;0.8;1"
+                dur={`${impulseDur}s`}
+                begin={`${impulseDelay}s`}
+                repeatCount="indefinite"
+              />
+            </circle>
+            {/* Trilha curta atrás do impulso */}
+            <circle r="2" fill="rgba(200,255,0,0.5)" filter="url(#neuron-glow)">
+              <animateMotion
+                dur={`${impulseDur}s`}
+                begin={`${impulseDelay + 0.15}s`}
+                repeatCount="indefinite"
+              >
+                <mpath href={`#${pathId}`} />
+              </animateMotion>
+              <animate
+                attributeName="opacity"
+                values="0;0.6;0"
+                keyTimes="0;0.5;1"
+                dur={`${impulseDur}s`}
+                begin={`${impulseDelay + 0.15}s`}
+                repeatCount="indefinite"
+              />
+            </circle>
+            {/* Nodo terminal — acende ao receber o impulso */}
             <circle
               cx={x2}
               cy={y2}
@@ -70,8 +123,8 @@ export function NeuronAnimation({ className = "" }: { className?: string }) {
               fill="rgba(200,255,0,0.9)"
               filter="url(#neuron-glow)"
               style={{
-                animation: `neuron-node ${5 + i * 0.4}s var(--ease-in-out) infinite`,
-                animationDelay: `${i * 0.3 + 0.8}s`,
+                animation: `neuron-node ${impulseDur}s var(--ease-in-out) infinite`,
+                animationDelay: `${impulseDelay + impulseDur * 0.85}s`,
               }}
             />
             {/* Sub-ramificação pequena no meio do galho */}

@@ -16,34 +16,26 @@ export default function HomePage() {
           className="relative overflow-hidden border-b px-5 pt-[100px] pb-[80px] md:px-8"
           style={{ borderColor: "var(--rule)", backgroundColor: "#08080A" }}
         >
-          {/* Gradient orbs */}
+          {/* Gradient orbs — leves no mobile, plenas no desktop */}
           <div
-            className="pointer-events-none absolute top-[-120px] left-[-80px] h-[500px] w-[500px] rounded-full opacity-20"
+            className="pointer-events-none absolute top-[-120px] left-[-80px] h-[300px] w-[300px] rounded-full opacity-25 md:h-[500px] md:w-[500px] md:opacity-20"
             style={{
               background: "radial-gradient(circle, rgba(200,255,0,0.3) 0%, transparent 70%)",
-              filter: "blur(80px)",
+              filter: "blur(40px)",
             }}
             aria-hidden="true"
           />
           <div
-            className="pointer-events-none absolute right-[-80px] bottom-[-80px] h-[400px] w-[400px] rounded-full opacity-15"
+            className="pointer-events-none absolute right-[-80px] bottom-[-80px] hidden h-[400px] w-[400px] rounded-full opacity-15 md:block"
             style={{
               background: "radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%)",
               filter: "blur(80px)",
             }}
             aria-hidden="true"
           />
-          <div
-            className="pointer-events-none absolute top-1/2 left-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-8"
-            style={{
-              background: "radial-gradient(circle, rgba(200,255,0,0.2) 0%, transparent 70%)",
-              filter: "blur(60px)",
-            }}
-            aria-hidden="true"
-          />
 
-          {/* Neuron — sinapses se ramificando */}
-          <NeuronAnimation className="absolute inset-0 h-full w-full opacity-40" />
+          {/* Neuron — sinapses + impulso elétrico viajando */}
+          <NeuronAnimation className="absolute inset-0 h-full w-full opacity-30 md:opacity-40" />
 
           <div className="animate-in fade-in slide-in-from-bottom-8 relative mx-auto max-w-[1200px] duration-1000">
             {/* Eyebrow */}
@@ -62,21 +54,6 @@ export default function HomePage() {
                 AXON Ingressos
               </span>
             </div>
-
-            {/* Decorative SVG Line */}
-            <svg
-              className="absolute top-20 -left-10 h-32 w-32 animate-pulse text-[var(--pulse)] opacity-20"
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M0 50 Q 25 25, 50 50 T 100 50"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-              />
-            </svg>
 
             {/* Headline */}
             <h1 className="relative z-10 mb-6 max-w-[820px] text-[clamp(44px,8vw,106px)] leading-[0.95] font-black tracking-[-0.055em] text-white">

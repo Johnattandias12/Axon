@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { TicketCard } from "@/components/event/TicketCard"
 import { TicketActions } from "@/components/event/TicketActions"
 import { TicketPdfButton } from "@/components/event/TicketPdfButton"
@@ -22,7 +23,8 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
   } = await supabase.auth.getUser()
   if (!user) redirect(`/entrar?redirectTo=/minha-conta/ingressos/${orderId}`)
 
-  const { data: order } = await supabase
+  const admin = createAdminClient()
+  const { data: order } = await admin
     .from("orders")
     .select(
       `id, status, subtotal_cents, service_fee_cents, total_cents, paid_at, created_at,

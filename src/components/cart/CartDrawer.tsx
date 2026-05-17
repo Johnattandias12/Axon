@@ -84,8 +84,12 @@ export function CartDrawer() {
   return (
     <Drawer open={isOpen} onOpenChange={(o) => (o ? null : close())}>
       <DrawerContent
-        className="max-h-[88vh]"
-        style={{ backgroundColor: "var(--paper-pure)", color: "var(--ink)" }}
+        className="max-h-[92vh]"
+        style={{
+          backgroundColor: "var(--paper-pure)",
+          color: "var(--ink)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
       >
         <div
           className="pointer-events-none absolute top-0 right-0 left-0 h-[2px]"
@@ -125,7 +129,7 @@ export function CartDrawer() {
           </DrawerDescription>
         </DrawerHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 py-3">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-3 sm:px-4">
           {loading && !data ? (
             <LoadingState />
           ) : !data || !data.authenticated ? (
@@ -379,82 +383,89 @@ function MiniRow({ item, bumpRefresh }: { item: Item; bumpRefresh: () => void })
   }
 
   return (
-    <div className="flex items-center gap-3 p-3">
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span
-            className="text-[9px] font-semibold tracking-wider uppercase"
-            style={{ color: "var(--mute)" }}
-          >
-            {item.typeName}
-          </span>
-          {item.lot.isHalfPrice && (
+    <div className="p-3">
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-1.5">
             <span
-              className="rounded px-1 py-0.5 text-[8px] font-bold"
-              style={{ backgroundColor: "var(--warning-soft)", color: "var(--warning)" }}
+              className="text-[10px] font-semibold tracking-wider uppercase"
+              style={{ color: "var(--mute)" }}
             >
-              MEIA
+              {item.typeName}
             </span>
-          )}
+            {item.lot.isHalfPrice && (
+              <span
+                className="rounded px-1.5 py-0.5 text-[9px] font-bold"
+                style={{ backgroundColor: "var(--warning-soft)", color: "var(--warning)" }}
+              >
+                MEIA
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-sm font-semibold" style={{ color: "var(--ink)" }}>
+            {item.lot.name}
+          </p>
+          <p className="mt-0.5 font-mono text-[11px]" style={{ color: "var(--mute)" }}>
+            {centsToBRL(item.lot.priceCents)} cada
+          </p>
         </div>
-        <p className="mt-0.5 text-xs font-semibold" style={{ color: "var(--ink)" }}>
-          {item.lot.name}
-        </p>
-        <p className="mt-0.5 font-mono text-[10px]" style={{ color: "var(--mute)" }}>
-          {centsToBRL(item.lot.priceCents)} cada
-        </p>
+
+        <div className="text-right">
+          <p className="font-mono text-sm font-bold tabular-nums" style={{ color: "var(--ink)" }}>
+            {centsToBRL(item.lineTotalCents)}
+          </p>
+          <button
+            type="button"
+            onClick={remove}
+            disabled={pending}
+            className="mt-1 inline-flex h-7 items-center gap-1 rounded-md px-2 text-[10px] font-semibold transition-colors hover:bg-[var(--danger-soft)] hover:text-[var(--danger)]"
+            style={{ color: "var(--mute)" }}
+            aria-label="Remover"
+          >
+            <Trash2 size={11} />
+            Remover
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <div
+          className="inline-flex items-center rounded-xl border"
+          style={{ borderColor: "var(--rule)" }}
+        >
+          <button
+            type="button"
+            onClick={() => changeQty(item.quantity - 1)}
+            disabled={pending || item.quantity <= 1}
+            className="flex h-10 w-10 items-center justify-center rounded-l-xl transition-colors hover:bg-black/5 disabled:opacity-40"
+            style={{ color: "var(--ink-4)" }}
+            aria-label="Diminuir"
+          >
+            <Minus size={14} />
+          </button>
+          <span
+            className="flex h-10 min-w-[2.25rem] items-center justify-center font-mono text-sm font-bold"
+            style={{ color: "var(--ink)" }}
+          >
+            {pending ? <Loader2 size={12} className="animate-spin" /> : item.quantity}
+          </span>
+          <button
+            type="button"
+            onClick={() => changeQty(item.quantity + 1)}
+            disabled={pending || item.quantity >= 10}
+            className="flex h-10 w-10 items-center justify-center rounded-r-xl transition-colors hover:bg-black/5 disabled:opacity-40"
+            style={{ color: "var(--ink-4)" }}
+            aria-label="Aumentar"
+          >
+            <Plus size={14} />
+          </button>
+        </div>
         {error && (
-          <p className="mt-1 text-[10px]" style={{ color: "var(--danger)" }}>
+          <p className="text-[10px]" style={{ color: "var(--danger)" }}>
             {error}
           </p>
         )}
       </div>
-
-      <div className="flex items-center gap-0.5">
-        <button
-          type="button"
-          onClick={() => changeQty(item.quantity - 1)}
-          disabled={pending || item.quantity <= 1}
-          className="flex h-7 w-7 items-center justify-center rounded-md border transition-colors hover:bg-black/5 disabled:opacity-40"
-          style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
-          aria-label="Diminuir"
-        >
-          <Minus size={10} />
-        </button>
-        <span
-          className="min-w-[1.5rem] text-center font-mono text-xs font-bold"
-          style={{ color: "var(--ink)" }}
-        >
-          {pending ? <Loader2 size={10} className="mx-auto animate-spin" /> : item.quantity}
-        </span>
-        <button
-          type="button"
-          onClick={() => changeQty(item.quantity + 1)}
-          disabled={pending || item.quantity >= 10}
-          className="flex h-7 w-7 items-center justify-center rounded-md border transition-colors hover:bg-black/5 disabled:opacity-40"
-          style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
-          aria-label="Aumentar"
-        >
-          <Plus size={10} />
-        </button>
-      </div>
-
-      <div className="hidden text-right sm:block">
-        <p className="font-mono text-xs font-bold tabular-nums" style={{ color: "var(--ink)" }}>
-          {centsToBRL(item.lineTotalCents)}
-        </p>
-      </div>
-
-      <button
-        type="button"
-        onClick={remove}
-        disabled={pending}
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors hover:bg-[var(--danger-soft)]"
-        style={{ color: "var(--mute)" }}
-        aria-label="Remover"
-      >
-        <Trash2 size={11} />
-      </button>
     </div>
   )
 }
