@@ -305,16 +305,32 @@ export default async function EventoPage({ params }: Props) {
                     </g>
                   </svg>
                 </div>
-                <div className="space-y-1 border-t p-4" style={{ borderColor: "var(--rule)" }}>
-                  <div className="flex items-center gap-2">
-                    <MapPin size={14} style={{ color: "var(--pulse)" }} />
-                    <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
-                      {event.venue_name ?? "Local do evento"}
+                <div className="space-y-3 border-t p-4" style={{ borderColor: "var(--rule)" }}>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <MapPin size={14} style={{ color: "var(--pulse)" }} />
+                      <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
+                        {event.venue_name ?? "Local do evento"}
+                      </p>
+                    </div>
+                    <p className="mt-1 text-xs" style={{ color: "var(--mute)" }}>
+                      {[event.address, event.city, event.state].filter(Boolean).join(" · ")}
                     </p>
                   </div>
-                  <p className="text-xs" style={{ color: "var(--mute)" }}>
-                    {[event.address, event.city, event.state].filter(Boolean).join(" · ")}
-                  </p>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      [event.venue_name, event.address, event.city, event.state]
+                        .filter(Boolean)
+                        .join(", ")
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-xs font-bold transition-transform hover:scale-[1.01]"
+                    style={{ backgroundColor: "var(--ink)", color: "var(--paper)" }}
+                  >
+                    <MapPin size={12} />
+                    Como chegar
+                  </a>
                 </div>
               </section>
             )}

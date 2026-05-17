@@ -108,14 +108,14 @@ export default function HomePage() {
                 style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
               >
                 <div className="absolute inset-0 translate-y-full bg-white/20 transition-transform duration-300 ease-out group-hover:translate-y-0" />
-                <span className="relative z-10">Explorar eventos</span>
+                <span className="relative z-10">Bora ver</span>
               </Link>
               <Link
                 href="/entrar"
                 className="inline-flex items-center gap-2 rounded-xl border px-8 py-4 text-[16px] font-semibold text-white transition-all hover:border-white/30 hover:bg-white/10"
                 style={{ borderColor: "rgba(255,255,255,0.15)" }}
               >
-                Criar conta grátis
+                Criar conta
               </Link>
             </div>
 
@@ -125,10 +125,10 @@ export default function HomePage() {
               style={{ borderColor: "rgba(255,255,255,0.08)" }}
             >
               {[
-                { v: "Pix", d: "Aprovação instantânea" },
+                { v: "Pix", d: "Cai na hora" },
                 { v: "QR Code", d: "Ingresso no celular" },
-                { v: "D+1", d: "Repasse ao organizador" },
-                { v: "Offline", d: "Validação sem internet" },
+                { v: "D+1", d: "Repasse pro organizador" },
+                { v: "Offline", d: "Valida sem 4G" },
               ].map(({ v, d }) => (
                 <div key={v} className="group flex flex-col items-start gap-1">
                   <p className="text-xl font-black text-white transition-colors group-hover:text-[var(--pulse)]">
@@ -156,7 +156,7 @@ export default function HomePage() {
                   className="text-[clamp(22px,3vw,34px)] font-bold tracking-tight"
                   style={{ color: "var(--ink)" }}
                 >
-                  Eventos que valem a experiência
+                  Eventos que valem a saída de casa
                 </h2>
               </div>
               <Link
@@ -197,24 +197,24 @@ export default function HomePage() {
               {[
                 {
                   n: "01",
-                  title: "Escolha o evento",
-                  desc: "Navegue por shows, vaquejadas, festivais e muito mais. Filtre por categoria, cidade ou data.",
+                  title: "Acha a sua noite",
+                  desc: "Shows, vaquejadas, festivais, futsal. Filtra por cidade, categoria, data.",
                   badgeBg: "var(--pulse)",
                   badgeColor: "var(--pulse-ink)",
                   glow: "rgba(200,255,0,0.6)",
                 },
                 {
                   n: "02",
-                  title: "Pague pelo Pix",
-                  desc: "Aprovação em segundos. Sem precisar sair do celular, sem taxa surpresa, sem burocracia.",
+                  title: "Paga no Pix",
+                  desc: "Cai na hora. Sem taxa surpresa, sem boleto, sem espera.",
                   badgeBg: "linear-gradient(135deg, var(--pulse) 0%, var(--pulse-deep) 100%)",
                   badgeColor: "var(--pulse-ink)",
                   glow: "rgba(162,217,0,0.5)",
                 },
                 {
                   n: "03",
-                  title: "Entre pelo QR Code",
-                  desc: "Seu ingresso digital aparece na tela. Mostre na entrada e aproveite. Funciona até offline.",
+                  title: "Entra pelo QR",
+                  desc: "Ingresso no celular. Mostra na porta e some pra dentro. Funciona offline.",
                   badgeBg: "var(--ink)",
                   badgeColor: "var(--pulse)",
                   glow: "rgba(10,10,11,0.6)",
