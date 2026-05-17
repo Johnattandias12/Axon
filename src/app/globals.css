@@ -189,7 +189,8 @@ body {
 
 main,
 [data-axon-page] {
-  animation: axon-page-in 280ms var(--ease-out) both;
+  animation: axon-page-in 180ms var(--ease-out) both;
+  will-change: opacity, transform;
 }
 
 /* Reduz transitions em mobile para perceber mais rápido */
@@ -198,6 +199,49 @@ main,
   [data-axon-page] {
     animation: none;
   }
+}
+
+/* ─── Cursor + feedback de pressão pra tudo que é clicável ─── */
+button:not(:disabled),
+a[href],
+[role="button"]:not([aria-disabled="true"]),
+summary,
+label[for],
+select,
+input[type="submit"],
+input[type="button"],
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"],
+[disabled] {
+  cursor: not-allowed;
+}
+
+/* Tap highlight no iOS — usar pulse */
+button,
+a,
+[role="button"] {
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--pulse) 28%, transparent);
+}
+
+/* Press effect padrão em botões sem estilo custom */
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active {
+  transform: scale(0.97);
+}
+
+button,
+[role="button"] {
+  transition:
+    transform 120ms var(--ease-out),
+    background-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out),
+    border-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
 }
 
 /* ─── AXON animations ─── */

@@ -1,6 +1,8 @@
 "use server"
 
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
+import { isRedirectError } from "next/dist/client/components/redirect-error"
 import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
@@ -37,6 +39,20 @@ export type BuyDemoState = { ok: true; orderId: string } | { ok: false; error: s
  *  5. Redireciona para /minha-conta/ingressos/[orderId]
  */
 export async function buyDemo(_prev: BuyDemoState, formData: FormData): Promise<BuyDemoState> {
+  try {
+    return await buyDemoInner(formData)
+  } catch (err) {
+    // redirect() lança NEXT_REDIRECT — deixa subir
+    if (isRedirectError(err)) throw err
+    console.error("[buyDemo] erro inesperado:", err)
+    return {
+      ok: false,
+      error: "Não foi possível finalizar a compra. Tente novamente em alguns segundos.",
+    }
+  }
+}
+
+async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
   const parsed = buyDemoSchema.safeParse({
     lotId: formData.get("lotId"),
     quantity: formData.get("quantity"),
@@ -185,5 +201,7 @@ export async function buyDemo(_prev: BuyDemoState, formData: FormData): Promise<
     })
   }
 
+  revalidatePath("/minha-conta", "layout")
+  revalidatePath(`/minha-conta/ingressos/${order.id}`)
   redirect(`/minha-conta/ingressos/${order.id}`)
 }

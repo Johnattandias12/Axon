@@ -35,7 +35,7 @@ export default function HomePage() {
           />
 
           {/* Neuron — sinapses + impulso elétrico viajando */}
-          <NeuronAnimation className="absolute inset-0 h-full w-full opacity-30 md:opacity-40" />
+          <NeuronAnimation className="absolute inset-0 h-full w-full opacity-60 md:opacity-80" />
 
           <div className="animate-in fade-in slide-in-from-bottom-8 relative mx-auto max-w-[1200px] duration-1000">
             {/* Eyebrow */}

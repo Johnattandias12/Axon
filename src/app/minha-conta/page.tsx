@@ -240,7 +240,7 @@ export default async function MinhaContaPage() {
 
         {/* Stats em linha */}
         <div
-          className="relative mt-6 grid grid-cols-3 gap-3 border-t pt-5"
+          className="relative mt-6 grid grid-cols-3 gap-2 border-t pt-5 sm:gap-3"
           style={{ borderColor: "var(--rule)" }}
         >
           <Mini
@@ -254,15 +254,17 @@ export default async function MinhaContaPage() {
       </div>
 
       <Tabs defaultValue="proximos">
-        <TabsList
-          className="h-auto w-full justify-start gap-0 rounded-none border-b p-0"
-          style={{ backgroundColor: "transparent", borderColor: "var(--rule)" }}
-        >
-          <TabTrigger value="proximos" icon={<Calendar size={13} />} label="Próximos" />
-          <TabTrigger value="historico" icon={<History size={13} />} label="Histórico" />
-          <TabTrigger value="sugestoes" icon={<Lightbulb size={13} />} label="Sugestões" />
-          <TabTrigger value="dados" icon={<TicketIcon size={13} />} label="Dados" />
-        </TabsList>
+        <div className="-mx-1 [scrollbar-width:none] overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden">
+          <TabsList
+            className="h-auto w-max min-w-full justify-start gap-0 rounded-none border-b p-0"
+            style={{ backgroundColor: "transparent", borderColor: "var(--rule)" }}
+          >
+            <TabTrigger value="proximos" icon={<Calendar size={13} />} label="Próximos" />
+            <TabTrigger value="historico" icon={<History size={13} />} label="Histórico" />
+            <TabTrigger value="sugestoes" icon={<Lightbulb size={13} />} label="Sugestões" />
+            <TabTrigger value="dados" icon={<TicketIcon size={13} />} label="Dados" />
+          </TabsList>
+        </div>
 
         <TabsContent value="proximos" className="pt-6">
           {futureOrders.length === 0 ? (
@@ -393,11 +395,11 @@ export default async function MinhaContaPage() {
 function Mini({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
     <div
-      className="rounded-2xl border px-3 py-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)]"
+      className="rounded-2xl border px-2 py-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)] sm:px-3"
       style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}
     >
       <p
-        className="font-mono text-2xl leading-none font-bold"
+        className="font-mono text-xl leading-none font-bold sm:text-2xl"
         style={{ color: accent ?? "var(--ink)", letterSpacing: "-0.02em" }}
       >
         {value}
@@ -424,7 +426,7 @@ function TabTrigger({
   return (
     <TabsTrigger
       value={value}
-      className="flex items-center gap-1.5 rounded-none border-b-2 border-transparent px-4 py-2.5 text-sm data-[state=active]:border-current"
+      className="flex shrink-0 items-center gap-1.5 rounded-none border-b-2 border-transparent px-3 py-2.5 text-xs whitespace-nowrap data-[state=active]:border-current sm:px-4 sm:text-sm"
       style={{ color: "var(--mute)" }}
     >
       {icon}
