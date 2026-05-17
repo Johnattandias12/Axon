@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { Send, RotateCcw, AlertTriangle, Loader2, Copy, Check, X } from "lucide-react"
+import { Send, RotateCcw, AlertTriangle, Loader2, Copy, Check, X, Mail } from "lucide-react"
 import {
   transferTicket,
   cancelTransfer,
@@ -24,6 +24,8 @@ export function TicketActions({ ticketId, status, hasTransferToken, hasRefundReq
   const [copied, setCopied] = useState(false)
   const [showRefundReason, setShowRefundReason] = useState(false)
   const [reason, setReason] = useState("")
+  const [showTransferForm, setShowTransferForm] = useState(false)
+  const [recipientEmail, setRecipientEmail] = useState("")
 
   function fd(extra?: Record<string, string>) {
     const f = new FormData()
@@ -32,13 +34,16 @@ export function TicketActions({ ticketId, status, hasTransferToken, hasRefundReq
     return f
   }
 
-  function runTransfer() {
+  function runTransfer(email?: string) {
     setResult(null)
     setTransferUrl(null)
     startTransition(async () => {
-      const r = await transferTicket(null, fd())
+      const r = await transferTicket(null, fd({ recipientEmail: email ?? "" }))
       setResult(r)
-      if (r.ok && r.transferUrl) setTransferUrl(r.transferUrl)
+      if (r.ok && r.transferUrl) {
+        setTransferUrl(r.transferUrl)
+        setShowTransferForm(false)
+      }
     })
   }
 
@@ -220,11 +225,65 @@ export function TicketActions({ ticketId, status, hasTransferToken, hasRefundReq
             </button>
           </div>
         </div>
+      ) : showTransferForm ? (
+        <div className="space-y-2">
+          <p
+            className="text-[10px] font-semibold tracking-wider uppercase"
+            style={{ color: "var(--mute)" }}
+          >
+            Mandar pra alguém
+          </p>
+          <div className="flex items-center gap-2">
+            <Mail size={12} style={{ color: "var(--mute)" }} />
+            <input
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              value={recipientEmail}
+              onChange={(e) => setRecipientEmail(e.target.value)}
+              placeholder="email@exemplo.com (opcional)"
+              className="flex-1 rounded-lg border px-3 py-2 text-xs outline-none focus:border-[var(--pulse)]"
+              style={{
+                borderColor: "var(--rule)",
+                backgroundColor: "var(--paper-soft)",
+                color: "var(--ink)",
+              }}
+            />
+          </div>
+          <p className="text-[10px]" style={{ color: "var(--mute-2)" }}>
+            Se informar email, mandamos o link de aceite direto. Senão você copia e manda você mesmo
+            (WhatsApp, Telegram, etc).
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setShowTransferForm(false)}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-[11px] font-semibold"
+              style={{ borderColor: "var(--rule)", color: "var(--mute)" }}
+            >
+              <X size={11} />
+              Voltar
+            </button>
+            <button
+              type="button"
+              onClick={() => runTransfer(recipientEmail || undefined)}
+              disabled={pending}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold disabled:opacity-60"
+              style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+            >
+              {pending ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
+              {recipientEmail ? "Enviar e gerar link" : "Gerar link"}
+            </button>
+          </div>
+        </div>
       ) : (
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={runTransfer}
+            onClick={() => {
+              setShowTransferForm(true)
+              setResult(null)
+            }}
             disabled={pending}
             className="flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[11px] font-bold transition-transform hover:scale-[1.02] disabled:opacity-60"
             style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}

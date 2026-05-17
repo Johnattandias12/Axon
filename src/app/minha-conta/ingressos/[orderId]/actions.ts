@@ -4,12 +4,18 @@ import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { sendTicketTransferred } from "@/lib/email/send"
+import { formatDate } from "@/lib/utils"
 
 export type TicketActionResult =
   | { ok: true; message?: string; transferUrl?: string }
   | { ok: false; error: string }
 
 const ticketIdSchema = z.object({ ticketId: z.string().uuid() })
+const transferSchema = z.object({
+  ticketId: z.string().uuid(),
+  recipientEmail: z.string().email("Email inválido").optional().or(z.literal("")),
+})
 const refundSchema = z.object({
   ticketId: z.string().uuid(),
   reason: z.string().max(500).optional().default(""),
@@ -40,13 +46,18 @@ async function getAuthedTicket(ticketId: string) {
   return { error: null, user, ticket, admin }
 }
 
-// ─── Transferir: gera token de 7 dias ─────────────────────────
+// ─── Transferir: gera token de 7 dias, opcionalmente envia email ───────
 export async function transferTicket(
   _prev: TicketActionResult | null,
   formData: FormData
 ): Promise<TicketActionResult> {
-  const parsed = ticketIdSchema.safeParse({ ticketId: formData.get("ticketId") })
-  if (!parsed.success) return { ok: false, error: "Dados inválidos." }
+  const parsed = transferSchema.safeParse({
+    ticketId: formData.get("ticketId"),
+    recipientEmail: formData.get("recipientEmail") ?? "",
+  })
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." }
+  }
 
   const ctx = await getAuthedTicket(parsed.data.ticketId)
   if (ctx.error || !ctx.ticket || !ctx.admin) return { ok: false, error: ctx.error ?? "" }
@@ -70,11 +81,45 @@ export async function transferTicket(
   if (error) return { ok: false, error: error.message }
 
   const appUrl = process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"
+  const transferUrl = `${appUrl}/transferir/${token}`
+
+  // Envia email pro destinatário se informado (silencioso sem RESEND_API_KEY)
+  let emailSent = false
+  const recipientEmail = parsed.data.recipientEmail?.trim()
+  if (recipientEmail) {
+    try {
+      const { data: orderEvent } = await ctx.admin
+        .from("tickets")
+        .select("id, events(title, starts_at, venue_name, city, state)")
+        .eq("id", ctx.ticket.id)
+        .single()
+      const evt =
+        orderEvent && Array.isArray(orderEvent.events) ? orderEvent.events[0] : orderEvent?.events
+      if (evt) {
+        const res = await sendTicketTransferred({
+          to: recipientEmail,
+          fromName: ctx.ticket.holder_name ?? "Alguém",
+          eventTitle: evt.title,
+          eventDate: formatDate(evt.starts_at, { dateStyle: "full", timeStyle: "short" }),
+          eventLocation: [evt.venue_name, evt.city, evt.state].filter(Boolean).join(" · "),
+          acceptUrl: transferUrl,
+        })
+        emailSent = res.sent
+      }
+    } catch (err) {
+      console.error("[transferTicket] email envio falhou:", err)
+    }
+  }
+
   revalidatePath(`/minha-conta/ingressos/${ctx.ticket.order_id}`)
   return {
     ok: true,
-    message: "Link de transferência criado.",
-    transferUrl: `${appUrl}/transferir/${token}`,
+    message: emailSent
+      ? "Link enviado por email pro destinatário."
+      : recipientEmail
+        ? "Link criado. Email não foi enviado — copie e mande você mesmo."
+        : "Link de transferência criado.",
+    transferUrl,
   }
 }
 

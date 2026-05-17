@@ -38,10 +38,10 @@ export function NeuronAnimation({ className = "" }: { className?: string }) {
         style={{ animation: "neuron-core-pulse 4s var(--ease-in-out, ease-in-out) infinite" }}
       />
 
-      {/* Galhos principais — 6 raios saindo do centro com impulso viajando */}
-      {Array.from({ length: 6 }).map((_, i) => {
-        const angle = (i * Math.PI * 2) / 6
-        const len = 280 + (i % 2) * 80
+      {/* Galhos principais — 8 raios saindo do centro com impulso viajando */}
+      {Array.from({ length: 8 }).map((_, i) => {
+        const angle = (i * Math.PI * 2) / 8
+        const len = 300 + (i % 3) * 100
         const x2 = 700 + Math.cos(angle) * len
         const y2 = 300 + Math.sin(angle) * len * 0.55
         const cx = 700 + Math.cos(angle) * len * 0.55 + Math.sin(angle) * 40
@@ -156,7 +156,7 @@ export function NeuronAnimation({ className = "" }: { className?: string }) {
         )
       })}
 
-      {/* Nodos sinápticos flutuantes ao fundo */}
+      {/* Nodos sinápticos flutuantes ao fundo — 12 estrelas */}
       {[
         [200, 150, 2, "6s"],
         [1180, 180, 1.5, "5s"],
@@ -164,6 +164,12 @@ export function NeuronAnimation({ className = "" }: { className?: string }) {
         [1240, 460, 2.2, "6.5s"],
         [560, 80, 1.2, "8s"],
         [880, 540, 1.4, "5.5s"],
+        [100, 340, 1.6, "7.5s"],
+        [1320, 320, 1.3, "6.2s"],
+        [420, 540, 1.1, "8.2s"],
+        [980, 100, 1.7, "5.8s"],
+        [380, 240, 1, "9s"],
+        [1060, 380, 1.2, "7.8s"],
       ].map(([cx, cy, r, dur], i) => (
         <circle
           key={`node-${i}`}

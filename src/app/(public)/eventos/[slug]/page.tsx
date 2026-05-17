@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { AddToCartButton } from "@/components/event/AddToCartButton"
 import { EventBannerPlaceholder } from "@/components/event/EventBannerPlaceholder"
 import { ShareEventButtons } from "@/components/event/ShareEventButtons"
+import { CopyLinkButton } from "@/components/event/CopyLinkButton"
 import { PageBackLink } from "@/components/shared/PageHeader"
 import {
   Calendar,
@@ -165,12 +166,15 @@ export default async function EventoPage({ params }: Props) {
           <div className="mx-auto max-w-6xl px-4 pb-8 sm:px-6 sm:pb-12">
             <div className="mb-4 flex items-center justify-between gap-2">
               <PageBackLink href="/eventos" label="Todos os eventos" />
-              <ShareEventButtons
-                eventTitle={event.title}
-                eventSlug={slug}
-                affiliateCode={viewerAffiliateCode}
-                variant="solid"
-              />
+              <div className="flex items-center gap-2">
+                <CopyLinkButton eventSlug={slug} affiliateCode={viewerAffiliateCode} />
+                <ShareEventButtons
+                  eventTitle={event.title}
+                  eventSlug={slug}
+                  affiliateCode={viewerAffiliateCode}
+                  variant="solid"
+                />
+              </div>
             </div>
             <Badge
               className="mb-3 text-[10px] font-bold tracking-wider uppercase"

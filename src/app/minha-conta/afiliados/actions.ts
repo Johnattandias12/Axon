@@ -25,34 +25,54 @@ export async function joinAffiliate(): Promise<JoinState> {
 
   const admin = createAdminClient()
 
-  const existing = await getAffiliateByUserId(admin, user.id)
-  if (existing) {
-    revalidatePath("/minha-conta/afiliados")
-    return { ok: true, code: existing.code }
-  }
+  try {
+    const existing = await getAffiliateByUserId(admin, user.id)
+    if (existing) {
+      revalidatePath("/minha-conta/afiliados")
+      return { ok: true, code: existing.code }
+    }
 
-  // Gera código via função SQL ou fallback client-side
-  let code = await generateAffiliateCode(admin, user.id)
-  if (!code) {
-    for (let i = 0; i < 10; i++) {
-      const candidate = Math.random().toString(36).slice(2, 8).toUpperCase()
-      const clash = await getAffiliateByCode(admin, candidate)
-      if (!clash) {
-        code = candidate
-        break
+    let code = await generateAffiliateCode(admin, user.id)
+    if (!code) {
+      for (let i = 0; i < 10; i++) {
+        const candidate = Math.random().toString(36).slice(2, 8).toUpperCase()
+        const clash = await getAffiliateByCode(admin, candidate)
+        if (!clash) {
+          code = candidate
+          break
+        }
       }
     }
+
+    if (!code) return { ok: false, error: "Falha ao gerar código. Tente novamente." }
+
+    const { error } = await insertAffiliate(admin, {
+      user_id: user.id,
+      code,
+      commission_pct: 5.0,
+    })
+    if (error) {
+      // Migration 008 não aplicada — mensagem amigável
+      if (
+        error.includes("does not exist") ||
+        error.includes("relation") ||
+        error.includes("schema")
+      ) {
+        return {
+          ok: false,
+          error: "Programa de afiliados em ativação. Volte em alguns dias ou fale com o suporte.",
+        }
+      }
+      return { ok: false, error }
+    }
+
+    revalidatePath("/minha-conta/afiliados")
+    return { ok: true, code }
+  } catch (err) {
+    console.error("[joinAffiliate]", err)
+    return {
+      ok: false,
+      error: "Programa de afiliados ainda em ativação. Volte em alguns dias.",
+    }
   }
-
-  if (!code) return { ok: false, error: "Falha ao gerar código. Tente novamente." }
-
-  const { error } = await insertAffiliate(admin, {
-    user_id: user.id,
-    code,
-    commission_pct: 5.0,
-  })
-  if (error) return { ok: false, error }
-
-  revalidatePath("/minha-conta/afiliados")
-  return { ok: true, code }
 }

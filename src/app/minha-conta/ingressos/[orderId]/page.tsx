@@ -7,6 +7,7 @@ import { TicketCard } from "@/components/event/TicketCard"
 import { TicketActions } from "@/components/event/TicketActions"
 import { TicketPdfButton } from "@/components/event/TicketPdfButton"
 import { ShareEventButtons } from "@/components/event/ShareEventButtons"
+import { CopyLinkButton } from "@/components/event/CopyLinkButton"
 import { CelebrateOnMount } from "@/components/shared/CelebrateOnMount"
 import { PageBackLink } from "@/components/shared/PageHeader"
 import { EventCountdown } from "@/components/event/EventCountdown"
@@ -188,6 +189,7 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
                 }
               })}
             />
+            <CopyLinkButton eventSlug={event.slug} />
             <ShareEventButtons
               eventTitle={event.title}
               eventSlug={event.slug}
