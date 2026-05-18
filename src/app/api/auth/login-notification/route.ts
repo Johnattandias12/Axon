@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     const body = (await req.json().catch(() => ({}))) as Record<string, any>
     const userAgent = (body?.userAgent || req.headers.get("user-agent") || "Desconhecido") as string
     let ip = (req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "Desconhecido") as string
-    if (ip && ip.includes(",")) ip = ip.split(",")[0].trim()
+    if (ip && ip.includes(",")) ip = ip.split(",")[0]?.trim() || ip
 
     let location = body?.location
     if (!location && ip && ip !== "Desconhecido" && ip !== "127.0.0.1" && ip !== "::1") {
