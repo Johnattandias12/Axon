@@ -26,7 +26,7 @@ export function MinhaContaSidebar({ isAffiliate }: Props) {
   }
 
   return (
-    <aside className="hidden w-56 shrink-0 md:block">
+    <aside className="hidden w-56 shrink-0 lg:block">
       <div
         className="sticky top-20 rounded-2xl border p-3"
         style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}

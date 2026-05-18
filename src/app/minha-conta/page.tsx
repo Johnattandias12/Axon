@@ -3,24 +3,62 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { redirect } from "next/navigation"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ProfileForm } from "./ProfileForm"
-import { AvatarUploader } from "@/components/shared/AvatarUploader"
 import { EventCard } from "@/components/event/EventCard"
 import { EventCountdown } from "@/components/event/EventCountdown"
 import { PremiumTicketCard, type PremiumTicketOrder } from "@/components/event/PremiumTicketCard"
 import {
   Ticket as TicketIcon,
-  ArrowUpRight,
   Calendar,
   Sparkles,
   History,
-  Lightbulb,
   ShieldCheck,
+  ArrowUpRight,
 } from "lucide-react"
 
 export const metadata: Metadata = { title: "Minha conta" }
+export const dynamic = "force-dynamic"
+
+interface OrderEventLike {
+  id: string
+  title: string
+  slug: string
+  starts_at: string
+  venue_name: string | null
+  city: string | null
+  state: string | null
+  banner_url: string | null
+  category: string | null
+}
+
+interface OrderRow {
+  id: string
+  status: string
+  total_cents: number
+  paid_at: string | null
+  created_at: string
+  events: OrderEventLike | OrderEventLike[] | null
+  tickets: { id: string }[] | null
+}
+
+function firstEvent(o: OrderRow): OrderEventLike | null {
+  if (!o.events) return null
+  return Array.isArray(o.events) ? (o.events[0] ?? null) : o.events
+}
+
+function toPremium(o: OrderRow): PremiumTicketOrder | null {
+  const ev = firstEvent(o)
+  if (!ev) return null
+  return {
+    id: o.id,
+    status: o.status,
+    total_cents: o.total_cents,
+    paid_at: o.paid_at,
+    created_at: o.created_at,
+    event: { ...ev },
+    ticketCount: (o.tickets ?? []).length,
+  }
+}
 
 export default async function MinhaContaPage() {
   const supabase = await createClient()
@@ -29,11 +67,8 @@ export default async function MinhaContaPage() {
   } = await supabase.auth.getUser()
   if (!user) redirect("/entrar?redirectTo=/minha-conta")
 
-  const nowIso = new Date().toISOString()
-
-  // profile pode usar RLS (usuário lê o próprio). orders via admin pra evitar
-  // edge cases de RLS — ownership é garantido pelo .eq("buyer_id", user.id).
   const adminClient = createAdminClient()
+
   const [{ data: profile }, { data: orders }] = await Promise.all([
     supabase
       .from("profiles")
@@ -53,25 +88,29 @@ export default async function MinhaContaPage() {
       .limit(40),
   ])
 
-  const allOrders = orders ?? []
+  const allOrders = (orders ?? []) as OrderRow[]
+  const now = Date.now()
 
-  const futureOrders = allOrders.filter((o) => {
-    const e = Array.isArray(o.events) ? o.events[0] : o.events
-    return e && new Date(e.starts_at) >= new Date(nowIso)
-  })
-  const pastOrders = allOrders.filter((o) => {
-    const e = Array.isArray(o.events) ? o.events[0] : o.events
-    return e && new Date(e.starts_at) < new Date(nowIso)
-  })
+  const future = allOrders
+    .map(toPremium)
+    .filter((o): o is PremiumTicketOrder => o !== null)
+    .filter((o) => new Date(o.event.starts_at).getTime() >= now)
+    .sort((a, b) => new Date(a.event.starts_at).getTime() - new Date(b.event.starts_at).getTime())
 
-  // Sugestões com base no histórico (mesmas categorias)
+  const past = allOrders
+    .map(toPremium)
+    .filter((o): o is PremiumTicketOrder => o !== null)
+    .filter((o) => new Date(o.event.starts_at).getTime() < now)
+    .sort((a, b) => new Date(b.event.starts_at).getTime() - new Date(a.event.starts_at).getTime())
+
+  // Sugestões de eventos baseadas em categoria
   const userCategories = new Set<string>()
   const ownedEventIds = new Set<string>()
   for (const o of allOrders) {
-    const e = Array.isArray(o.events) ? o.events[0] : o.events
-    if (e) {
-      ownedEventIds.add(e.id)
-      if (e.category) userCategories.add(e.category)
+    const ev = firstEvent(o)
+    if (ev) {
+      ownedEventIds.add(ev.id)
+      if (ev.category) userCategories.add(ev.category)
     }
   }
 
@@ -94,6 +133,7 @@ export default async function MinhaContaPage() {
     }> | null
   }
 
+  const nowIso = new Date().toISOString()
   let suggestions: SuggestionEvent[] = []
   if (userCategories.size > 0) {
     const { data } = await supabase
@@ -104,7 +144,7 @@ export default async function MinhaContaPage() {
       .eq("status", "published")
       .gte("starts_at", nowIso)
       .in("category", Array.from(userCategories) as Array<SuggestionEvent["category"]>)
-      .limit(12)
+      .limit(6)
     suggestions = ((data ?? []) as SuggestionEvent[]).filter((e) => !ownedEventIds.has(e.id))
   } else {
     const { data } = await supabase
@@ -115,19 +155,18 @@ export default async function MinhaContaPage() {
       .eq("status", "published")
       .gte("starts_at", nowIso)
       .order("starts_at", { ascending: true })
-      .limit(8)
+      .limit(6)
     suggestions = (data ?? []) as SuggestionEvent[]
   }
 
-  // Detecta se o usuário é afiliado. Tolerante a migration 008/009 não aplicada.
+  // Afiliado ativo?
   let isActiveAffiliate = false
   try {
     const { getAffiliateByUserId } = await import("@/lib/supabase/affiliates-admin")
-    const admin = createAdminClient()
-    const aff = await getAffiliateByUserId(admin, user.id)
+    const aff = await getAffiliateByUserId(adminClient, user.id)
     isActiveAffiliate = !!aff
   } catch {
-    // tabela ainda não existe — segue sem mostrar acesso ao programa
+    /* migration não aplicada */
   }
 
   const hora = new Date().getHours()
@@ -142,326 +181,228 @@ export default async function MinhaContaPage() {
   const rk = (profile?.role ?? "buyer") as keyof typeof roleConfig
   const role = roleConfig[rk] ?? roleConfig.buyer
 
+  const nextTicket = future[0]
+
   return (
     <div className="space-y-8">
-      {/* Hero do perfil */}
-      <div
-        className="relative overflow-hidden rounded-3xl border p-6 sm:p-10"
+      {/* HERO COMPACTO — mobile-first, sem botões enormes */}
+      <header
+        className="relative overflow-hidden rounded-3xl border p-5 sm:p-7"
         style={{
           borderColor: "var(--rule)",
           backgroundColor: "var(--paper-pure)",
           backgroundImage:
-            "linear-gradient(135deg, var(--paper-pure) 0%, color-mix(in srgb, var(--pulse) 4%, var(--paper-pure)) 100%)",
+            "linear-gradient(135deg, var(--paper-pure) 0%, color-mix(in srgb, var(--pulse) 5%, var(--paper-pure)) 100%)",
         }}
       >
-        {/* Glow decorativo */}
         <div
-          className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full opacity-15 blur-3xl"
+          className="pointer-events-none absolute -top-20 -right-20 h-56 w-56 rounded-full opacity-20 blur-3xl"
           style={{ backgroundColor: "var(--pulse)" }}
           aria-hidden="true"
         />
-        <div
-          className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full opacity-8 blur-3xl"
-          style={{ backgroundColor: "var(--pulse-deep)" }}
-          aria-hidden="true"
-        />
-
-        <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-          {/* Avatar grande */}
-          <div className="relative">
-            <Avatar className="h-20 w-20 sm:h-24 sm:w-24">
-              {profile?.avatar_url ? (
-                <AvatarImage src={profile.avatar_url} alt={profile.full_name ?? "Avatar"} />
-              ) : null}
-              <AvatarFallback
-                className="text-2xl font-bold sm:text-3xl"
-                style={{ backgroundColor: "var(--ink)", color: "var(--pulse)" }}
-              >
-                {profile?.full_name
-                  ? profile.full_name
-                      .split(" ")
-                      .slice(0, 2)
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()
-                  : (user.email?.[0]?.toUpperCase() ?? "U")}
-              </AvatarFallback>
-            </Avatar>
-            {/* Pulse ring sutil */}
-            <div
-              className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-offset-2"
-              style={
-                {
-                  "--tw-ring-color": "color-mix(in srgb, var(--pulse) 50%, transparent)",
-                  "--tw-ring-offset-color": "var(--paper-pure)",
-                } as React.CSSProperties
-              }
-            />
-          </div>
-
-          <div className="flex-1 space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span
-                className="h-px w-6"
-                style={{ background: "linear-gradient(90deg, transparent, var(--pulse))" }}
-              />
-              <span
-                className="rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase"
-                style={{ backgroundColor: role.bg, color: role.color }}
-              >
-                {role.label}
-              </span>
-            </div>
+        <div className="relative flex items-center gap-4">
+          <Avatar className="h-14 w-14 shrink-0 sm:h-16 sm:w-16">
+            {profile?.avatar_url ? (
+              <AvatarImage src={profile.avatar_url} alt={profile.full_name ?? "Avatar"} />
+            ) : null}
+            <AvatarFallback
+              className="text-lg font-bold sm:text-xl"
+              style={{ backgroundColor: "var(--ink)", color: "var(--pulse)" }}
+            >
+              {profile?.full_name
+                ? profile.full_name
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                : (user.email?.[0]?.toUpperCase() ?? "U")}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <span
+              className="inline-block rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase"
+              style={{ backgroundColor: role.bg, color: role.color }}
+            >
+              {role.label}
+            </span>
             <h1
-              className="text-3xl font-bold tracking-tight sm:text-4xl"
-              style={{ color: "var(--ink)", letterSpacing: "-0.035em" }}
+              className="mt-1 truncate text-xl font-bold tracking-tight sm:text-2xl"
+              style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
             >
               {saudacao}, {firstName ?? "amigo"}
               <span style={{ color: "var(--pulse-deep)" }}>.</span>
             </h1>
-            <p className="text-sm" style={{ color: "var(--mute)" }}>
+            <p className="truncate text-[11px] sm:text-xs" style={{ color: "var(--mute)" }}>
               {user.email}
             </p>
           </div>
+        </div>
 
-          <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-col">
-            <Link
-              href="/minha-conta/ingressos"
-              className="flex items-center justify-center gap-1.5 rounded-xl px-4 py-3 text-sm font-bold transition-transform hover:scale-[1.03]"
-              style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
-            >
-              <TicketIcon size={14} />
-              Meus ingressos
-            </Link>
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-col">
-              <Link
-                href="/eventos"
-                className="flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-xs font-semibold transition-colors hover:bg-black/5 sm:text-sm"
-                style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
+        {/* Atalhos secundários — grid 2-col mobile, row desktop */}
+        <div className="relative mt-5 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+          <Pill href="/minha-conta/seguranca" icon={<ShieldCheck size={12} />} label="Segurança" />
+          <Pill href="/eventos" icon={<Calendar size={12} />} label="Eventos" />
+          {isActiveAffiliate && (
+            <Pill
+              href="/minha-conta/afiliados"
+              icon={<Sparkles size={12} />}
+              label="Afiliados"
+              accent
+            />
+          )}
+        </div>
+      </header>
+
+      {/* PRÓXIMO INGRESSO EM DESTAQUE com countdown */}
+      {nextTicket && (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles size={14} style={{ color: "var(--pulse-deep)" }} />
+              <h2
+                className="text-[11px] font-semibold tracking-[0.14em] uppercase"
+                style={{ color: "var(--mute)" }}
               >
-                <Calendar size={13} />
-                Eventos
-              </Link>
-              <Link
-                href="/minha-conta/seguranca"
-                className="flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-xs font-semibold transition-colors hover:bg-black/5 sm:text-sm"
-                style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
-              >
-                <ShieldCheck size={13} />
-                Segurança
-              </Link>
-              {isActiveAffiliate && (
-                <Link
-                  href="/minha-conta/afiliados"
-                  className="col-span-2 flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-xs font-semibold transition-colors hover:bg-black/5 sm:text-sm"
-                  style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
-                >
-                  <Sparkles size={13} />
-                  Painel de afiliado
-                </Link>
-              )}
+                Próximo · {nextTicket.event.title}
+              </h2>
             </div>
           </div>
-        </div>
+          <EventCountdown startsAt={nextTicket.event.starts_at} />
+        </section>
+      )}
 
-        {/* Stats em linha */}
-        <div
-          className="relative mt-6 grid grid-cols-3 gap-2 border-t pt-5 sm:gap-3"
-          style={{ borderColor: "var(--rule)" }}
-        >
-          <Mini
-            label="Próximos"
-            value={futureOrders.length.toString()}
-            accent="var(--pulse-deep)"
-          />
-          <Mini label="Histórico" value={pastOrders.length.toString()} />
-          <Mini label="Sugestões" value={suggestions.length.toString()} accent="var(--info)" />
-        </div>
-      </div>
-
-      <Tabs defaultValue="proximos">
-        <div className="-mx-1 [scrollbar-width:none] overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden">
-          <TabsList
-            className="h-auto w-max min-w-full justify-start gap-0 rounded-none border-b p-0"
-            style={{ backgroundColor: "transparent", borderColor: "var(--rule)" }}
-          >
-            <TabTrigger value="proximos" icon={<Calendar size={13} />} label="Próximos" />
-            <TabTrigger value="historico" icon={<History size={13} />} label="Histórico" />
-            <TabTrigger value="sugestoes" icon={<Lightbulb size={13} />} label="Sugestões" />
-            <TabTrigger value="dados" icon={<TicketIcon size={13} />} label="Dados" />
-          </TabsList>
-        </div>
-
-        <TabsContent value="proximos" className="pt-6">
-          {futureOrders.length === 0 ? (
-            <EmptyState
-              title="Nenhum ingresso futuro"
-              desc="Compre um ingresso e ele aparece aqui."
-              cta={{ label: "Explorar eventos", href: "/eventos" }}
-            />
-          ) : (
-            <div className="space-y-5">
-              {/* Countdown do próximo evento */}
-              {(() => {
-                const next = futureOrders
-                  .map((o) => {
-                    const e = Array.isArray(o.events) ? o.events[0] : o.events
-                    return e
-                  })
-                  .filter((e): e is NonNullable<typeof e> => !!e)
-                  .sort(
-                    (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
-                  )[0]
-                if (!next) return null
-                return (
-                  <div className="space-y-2">
-                    <p
-                      className="text-[11px] font-semibold tracking-[0.12em] uppercase"
-                      style={{ color: "var(--mute)" }}
-                    >
-                      Próximo evento · {next.title}
-                    </p>
-                    <EventCountdown startsAt={next.starts_at} />
-                  </div>
-                )
-              })()}
-              <OrdersGrid orders={futureOrders} />
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="historico" className="pt-6">
-          {pastOrders.length === 0 ? (
-            <EmptyState
-              title="Você ainda não foi a nenhum evento"
-              desc="Seu histórico aparece aqui depois que os eventos acontecerem."
-            />
-          ) : (
-            <OrdersGrid orders={pastOrders} past />
-          )}
-        </TabsContent>
-
-        <TabsContent value="sugestoes" className="pt-6">
-          {suggestions.length === 0 ? (
-            <EmptyState
-              title="Sem sugestões agora"
-              desc="Adicione um evento ao carrinho ou conclua uma compra para receber recomendações."
-            />
-          ) : (
-            <div>
-              <div className="mb-4 flex items-center gap-2">
-                <Sparkles size={14} style={{ color: "var(--pulse-deep)" }} />
-                <p className="text-xs" style={{ color: "var(--mute)" }}>
-                  {userCategories.size > 0
-                    ? "Com base em eventos que você comprou"
-                    : "Eventos em destaque"}
-                </p>
-              </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {suggestions.map((event) => {
-                  const lots = event.ticket_lots ?? []
-                  const available = lots.filter(
-                    (l) => l.quantity_total - l.quantity_sold - l.quantity_reserved > 0
-                  )
-                  const minPriceCents =
-                    available.length > 0
-                      ? Math.min(...available.map((l) => l.price_cents))
-                      : undefined
-                  const availableCount = available.reduce(
-                    (s, l) => s + (l.quantity_total - l.quantity_sold - l.quantity_reserved),
-                    0
-                  )
-                  return (
-                    <EventCard key={event.id} event={{ ...event, minPriceCents, availableCount }} />
-                  )
-                })}
-              </div>
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="dados" className="space-y-8 pt-6">
-          <section className="space-y-4">
+      {/* INGRESSOS PRÓXIMOS — área premium, sempre visível */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TicketIcon size={14} style={{ color: "var(--pulse-deep)" }} />
             <h2
               className="text-sm font-semibold tracking-wider uppercase"
               style={{ color: "var(--mute)" }}
             >
-              Foto do perfil
+              Meus ingressos ({future.length})
             </h2>
-            <AvatarUploader
-              userId={user.id}
-              initialUrl={profile?.avatar_url ?? null}
-              fullName={profile?.full_name ?? null}
-              email={user.email ?? null}
-            />
-          </section>
+          </div>
+          {future.length > 0 && (
+            <Link
+              href="/minha-conta/ingressos"
+              className="inline-flex items-center gap-1 text-xs font-semibold"
+              style={{ color: "var(--pulse-deep)" }}
+            >
+              Ver todos <ArrowUpRight size={12} />
+            </Link>
+          )}
+        </div>
 
-          <section>
+        {future.length === 0 ? (
+          <EmptyCard
+            title="Sem ingressos por enquanto"
+            desc="Compre um e ele aparece aqui em destaque, com QR pronto."
+            cta={{ label: "Explorar eventos", href: "/eventos" }}
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+            {future.slice(0, 4).map((o) => (
+              <PremiumTicketCard key={o.id} order={o} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* HISTÓRICO — só aparece se tiver */}
+      {past.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <History size={14} style={{ color: "var(--mute)" }} />
+              <h2
+                className="text-sm font-semibold tracking-wider uppercase"
+                style={{ color: "var(--mute)" }}
+              >
+                Histórico ({past.length})
+              </h2>
+            </div>
+            {past.length > 2 && (
+              <Link
+                href="/minha-conta/ingressos"
+                className="inline-flex items-center gap-1 text-xs font-semibold"
+                style={{ color: "var(--mute)" }}
+              >
+                Ver tudo <ArrowUpRight size={12} />
+              </Link>
+            )}
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+            {past.slice(0, 2).map((o) => (
+              <PremiumTicketCard key={o.id} order={o} past />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* SUGESTÕES */}
+      {suggestions.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Sparkles size={14} style={{ color: "var(--pulse-deep)" }} />
             <h2
-              className="mb-4 text-sm font-semibold tracking-wider uppercase"
+              className="text-sm font-semibold tracking-wider uppercase"
               style={{ color: "var(--mute)" }}
             >
-              Dados pessoais
+              {userCategories.size > 0 ? "Pra você" : "Em destaque"}
             </h2>
-            <ProfileForm
-              userId={user.id}
-              initialData={{
-                full_name: profile?.full_name ?? "",
-                phone: profile?.phone ?? "",
-                cpf: profile?.cpf ?? "",
-              }}
-            />
-          </section>
-        </TabsContent>
-      </Tabs>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {suggestions.map((event) => {
+              const lots = event.ticket_lots ?? []
+              const available = lots.filter(
+                (l) => l.quantity_total - l.quantity_sold - l.quantity_reserved > 0
+              )
+              const minPriceCents =
+                available.length > 0 ? Math.min(...available.map((l) => l.price_cents)) : undefined
+              const availableCount = available.reduce(
+                (s, l) => s + (l.quantity_total - l.quantity_sold - l.quantity_reserved),
+                0
+              )
+              return (
+                <EventCard key={event.id} event={{ ...event, minPriceCents, availableCount }} />
+              )
+            })}
+          </div>
+        </section>
+      )}
     </div>
   )
 }
 
-function Mini({ label, value, accent }: { label: string; value: string; accent?: string }) {
-  return (
-    <div
-      className="rounded-2xl border px-2 py-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)] sm:px-3"
-      style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}
-    >
-      <p
-        className="font-mono text-xl leading-none font-bold sm:text-2xl"
-        style={{ color: accent ?? "var(--ink)", letterSpacing: "-0.02em" }}
-      >
-        {value}
-      </p>
-      <p
-        className="mt-1.5 text-[10px] font-medium tracking-wider uppercase"
-        style={{ color: "var(--mute)" }}
-      >
-        {label}
-      </p>
-    </div>
-  )
-}
-
-function TabTrigger({
-  value,
+function Pill({
+  href,
   icon,
   label,
+  accent = false,
 }: {
-  value: string
+  href: string
   icon: React.ReactNode
   label: string
+  accent?: boolean
 }) {
   return (
-    <TabsTrigger
-      value={value}
-      className="flex shrink-0 items-center gap-1.5 rounded-none border-b-2 border-transparent px-3 py-2.5 text-xs whitespace-nowrap data-[state=active]:border-current sm:px-4 sm:text-sm"
-      style={{ color: "var(--mute)" }}
+    <Link
+      href={href}
+      className="flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-colors hover:bg-black/5"
+      style={{
+        borderColor: accent ? "var(--pulse)" : "var(--rule)",
+        color: accent ? "var(--pulse-deep)" : "var(--ink-4)",
+      }}
     >
       {icon}
       {label}
-    </TabsTrigger>
+    </Link>
   )
 }
 
-function EmptyState({
+function EmptyCard({
   title,
   desc,
   cta,
@@ -472,23 +413,23 @@ function EmptyState({
 }) {
   return (
     <div
-      className="relative overflow-hidden rounded-3xl border border-dashed p-14 text-center"
+      className="relative overflow-hidden rounded-3xl border border-dashed p-8 text-center sm:p-12"
       style={{ borderColor: "var(--rule-strong)" }}
     >
       <div
-        className="pointer-events-none absolute -top-24 -right-24 h-60 w-60 rounded-full opacity-10 blur-3xl"
+        className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full opacity-10 blur-3xl"
         style={{ backgroundColor: "var(--pulse)" }}
         aria-hidden="true"
       />
       <div className="relative">
         <div
-          className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+          className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl"
           style={{ backgroundColor: "var(--pulse-soft)", color: "var(--pulse-deep)" }}
         >
-          <TicketIcon size={26} />
+          <TicketIcon size={22} />
         </div>
         <p
-          className="mt-4 text-lg font-bold tracking-tight"
+          className="mt-4 text-base font-bold tracking-tight"
           style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
         >
           {title}
@@ -507,64 +448,6 @@ function EmptyState({
           </Link>
         )}
       </div>
-    </div>
-  )
-}
-
-type OrderEventLike = {
-  id: string
-  title: string
-  slug: string
-  starts_at: string
-  venue_name: string | null
-  city: string | null
-  state: string | null
-  banner_url: string | null
-  category: string | null
-}
-
-type OrderRow = {
-  id: string
-  status: string
-  total_cents: number
-  paid_at: string | null
-  created_at: string
-  events: OrderEventLike | OrderEventLike[] | null
-  tickets: { id: string }[] | null
-}
-
-function toPremium(order: OrderRow): PremiumTicketOrder | null {
-  const ev = Array.isArray(order.events) ? order.events[0] : order.events
-  if (!ev) return null
-  return {
-    id: order.id,
-    status: order.status,
-    total_cents: order.total_cents,
-    paid_at: order.paid_at,
-    created_at: order.created_at,
-    event: {
-      id: ev.id,
-      title: ev.title,
-      slug: ev.slug,
-      starts_at: ev.starts_at,
-      venue_name: ev.venue_name,
-      city: ev.city,
-      state: ev.state,
-      banner_url: ev.banner_url,
-      category: ev.category,
-    },
-    ticketCount: (order.tickets ?? []).length,
-  }
-}
-
-function OrdersGrid({ orders, past }: { orders: OrderRow[]; past?: boolean }) {
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
-      {orders.map((order) => {
-        const premium = toPremium(order)
-        if (!premium) return null
-        return <PremiumTicketCard key={order.id} order={premium} past={past} />
-      })}
     </div>
   )
 }

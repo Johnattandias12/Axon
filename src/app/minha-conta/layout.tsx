@@ -23,12 +23,12 @@ export default async function MinhaContaLayout({ children }: { children: ReactNo
   }
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col overflow-x-hidden">
       <SiteHeader />
-      <div className="mx-auto flex w-full max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:py-10">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-3 py-5 sm:px-6 sm:py-8 lg:flex-row lg:py-10">
         <MinhaContaSidebar isAffiliate={isAffiliate} />
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="w-full min-w-0 flex-1">{children}</main>
       </div>
-    </>
+    </div>
   )
 }

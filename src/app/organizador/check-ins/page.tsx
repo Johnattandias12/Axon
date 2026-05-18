@@ -1,34 +1,53 @@
 import type { Metadata } from "next"
+import { redirect } from "next/navigation"
+import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { PageHeader } from "@/components/shared/PageHeader"
-import { ScanLine } from "lucide-react"
+import { CheckInsDashboard } from "@/components/check-ins/CheckInsDashboard"
+import { listCheckIns, computeCheckInStats } from "@/lib/check-ins/queries"
 
 export const metadata: Metadata = { title: "Check-ins · Organizador" }
+export const dynamic = "force-dynamic"
 
-export default function OrganizadorCheckInsPage() {
+export default async function OrganizadorCheckInsPage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) redirect("/entrar?redirectTo=/organizador/check-ins")
+
+  const admin = createAdminClient()
+
+  // Resolve eventos do organizador atual
+  const { data: organizer } = await admin
+    .from("organizers")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle()
+
+  if (!organizer) redirect("/organizador/comecar")
+
+  const { data: events } = await admin
+    .from("events")
+    .select("id, title")
+    .eq("organizer_id", (organizer as { id: string }).id)
+
+  const eventIds = (events ?? []).map((e) => e.id)
+  const rows = eventIds.length > 0 ? await listCheckIns(admin, { eventIds, limit: 300 }) : []
+  const stats = computeCheckInStats(rows)
+
   return (
     <div className="space-y-6">
       <PageHeader
         eyebrow="Check-ins"
         title="Atividade na porta"
-        description="Veja em tempo real quem entrou, por qual portão e quando. Dashboard completo chegando."
+        description={
+          eventIds.length === 0
+            ? "Você ainda não criou eventos. Crie um pra começar a coletar check-ins."
+            : `Logs de validação dos seus ${eventIds.length} ${eventIds.length === 1 ? "evento" : "eventos"}.`
+        }
       />
-      <div
-        className="rounded-2xl border border-dashed p-10 text-center"
-        style={{ borderColor: "var(--rule-strong)" }}
-      >
-        <div
-          className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl"
-          style={{ backgroundColor: "var(--paper-soft)", color: "var(--mute)" }}
-        >
-          <ScanLine size={22} />
-        </div>
-        <p className="mt-4 text-sm font-semibold" style={{ color: "var(--ink)" }}>
-          Em construção
-        </p>
-        <p className="mx-auto mt-1 max-w-md text-xs" style={{ color: "var(--mute)" }}>
-          Em breve: lista de check-ins, taxa de entrada por hora, top portões e validadores.
-        </p>
-      </div>
+      <CheckInsDashboard rows={rows} stats={stats} />
     </div>
   )
 }

@@ -1,34 +1,25 @@
 import type { Metadata } from "next"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { PageHeader } from "@/components/shared/PageHeader"
-import { ScanLine } from "lucide-react"
+import { CheckInsDashboard } from "@/components/check-ins/CheckInsDashboard"
+import { listCheckIns, computeCheckInStats } from "@/lib/check-ins/queries"
 
 export const metadata: Metadata = { title: "Check-ins · Admin" }
+export const dynamic = "force-dynamic"
 
-export default function AdminCheckInsPage() {
+export default async function AdminCheckInsPage() {
+  const admin = createAdminClient()
+  const rows = await listCheckIns(admin, { limit: 300 })
+  const stats = computeCheckInStats(rows)
+
   return (
     <div className="space-y-6">
       <PageHeader
         eyebrow="Check-ins · Admin"
         title="Atividade na porta"
-        description="Logs de validação por evento, portão, validador e hora — em breve com dashboard completo."
+        description="Logs de validação consolidados — todos os eventos da plataforma."
       />
-      <div
-        className="rounded-2xl border border-dashed p-10 text-center"
-        style={{ borderColor: "var(--rule-strong)" }}
-      >
-        <div
-          className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl"
-          style={{ backgroundColor: "var(--paper-soft)", color: "var(--mute)" }}
-        >
-          <ScanLine size={22} />
-        </div>
-        <p className="mt-4 text-sm font-semibold" style={{ color: "var(--ink)" }}>
-          Em construção
-        </p>
-        <p className="mx-auto mt-1 max-w-md text-xs" style={{ color: "var(--mute)" }}>
-          Logs e dashboard de check-ins chegam na próxima entrega.
-        </p>
-      </div>
+      <CheckInsDashboard rows={rows} stats={stats} />
     </div>
   )
 }
