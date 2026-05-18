@@ -21,6 +21,25 @@ export const dynamic = "force-dynamic"
 
 const SERVICE_FEE_PCT = 10
 
+import { SalesList } from "@/components/organizador/SalesList"
+
+interface TicketDetails {
+  id: string
+  holder_name: string
+  holder_cpf: string
+  is_half_price: boolean
+  status: string
+  used_at: string | null
+  ticket_lots: { title: string } | null
+}
+
+interface BuyerDetails {
+  id: string
+  full_name: string | null
+  phone: string | null
+  cpf: string | null
+}
+
 interface OrderRow {
   id: string
   total_cents: number
@@ -28,10 +47,13 @@ interface OrderRow {
   service_fee_cents: number
   paid_at: string | null
   payment_method: string | null
+  status: string
   events:
     | { id: string; title: string; slug: string }
     | { id: string; title: string; slug: string }[]
     | null
+  buyer: BuyerDetails | null
+  tickets: TicketDetails[] | null
 }
 
 export default async function FinanceiroPage() {
@@ -62,14 +84,23 @@ export default async function FinanceiroPage() {
   if (eventIds.length > 0) {
     const { data } = await admin
       .from("orders")
-      .select(
-        "id, total_cents, subtotal_cents, service_fee_cents, paid_at, payment_method, events(id, title, slug)"
-      )
+      .select(`
+        id, 
+        total_cents, 
+        subtotal_cents, 
+        service_fee_cents, 
+        paid_at, 
+        payment_method, 
+        status,
+        events(id, title, slug),
+        buyer:buyer_id(id, full_name, phone, cpf),
+        tickets(id, holder_name, holder_cpf, is_half_price, status, used_at, used_by, ticket_lots:ticket_lot_id(title))
+      `)
       .in("event_id", eventIds)
       .eq("status", "paid")
       .order("paid_at", { ascending: false })
       .limit(100)
-    orders = (data ?? []) as OrderRow[]
+    orders = (data ?? []) as unknown as OrderRow[]
   }
 
   // Comissões pagas a afiliados (tolerante a migration 008 ausente)
@@ -291,40 +322,7 @@ export default async function FinanceiroPage() {
             >
               Últimas vendas
             </h2>
-            <div className="space-y-2">
-              {orders.slice(0, 20).map((o) => {
-                const evt = Array.isArray(o.events) ? o.events[0] : o.events
-                return (
-                  <div
-                    key={o.id}
-                    className="flex items-center gap-3 rounded-xl border p-3"
-                    style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
-                  >
-                    <div
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                      style={{ backgroundColor: "var(--success-soft)", color: "var(--success)" }}
-                    >
-                      <ArrowDownRight size={15} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium" style={{ color: "var(--ink)" }}>
-                        {evt?.title ?? "Pedido"}
-                      </p>
-                      <p className="mt-0.5 text-[11px]" style={{ color: "var(--mute)" }}>
-                        {o.paid_at ? formatDate(o.paid_at) : "—"} ·{" "}
-                        {(o.payment_method ?? "pix").toUpperCase()}
-                      </p>
-                    </div>
-                    <p
-                      className="shrink-0 font-mono text-sm font-bold"
-                      style={{ color: "var(--success)" }}
-                    >
-                      + {centsToBRL(o.total_cents)}
-                    </p>
-                  </div>
-                )
-              })}
-            </div>
+            <SalesList initialOrders={orders} />
           </section>
         </>
       )}
