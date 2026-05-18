@@ -34,7 +34,7 @@ export default async function MinhaContaPage() {
   const [{ data: profile }, { data: orders }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("full_name, phone, cpf, role, avatar_url")
+      .select("full_name, phone, cpf, role, avatar_url, birth_date")
       .eq("id", user.id)
       .single(),
     supabase
@@ -263,6 +263,7 @@ export default async function MinhaContaPage() {
             <TabTrigger value="historico" icon={<History size={13} />} label="Histórico" />
             <TabTrigger value="sugestoes" icon={<Sparkles size={13} />} label="Sugestões" />
             <TabTrigger value="dados" icon={<TicketIcon size={13} />} label="Dados" />
+            <TabTrigger value="seguranca" icon={<Lightbulb size={13} />} label="Segurança" />
           </TabsList>
         </div>
 
@@ -383,8 +384,36 @@ export default async function MinhaContaPage() {
                 full_name: profile?.full_name ?? "",
                 phone: profile?.phone ?? "",
                 cpf: profile?.cpf ?? "",
+                birth_date: profile?.birth_date ?? "",
               }}
             />
+          </section>
+        </TabsContent>
+
+        <TabsContent value="seguranca" className="space-y-8 pt-6">
+          <section>
+            <h2
+              className="mb-4 text-sm font-semibold tracking-wider uppercase"
+              style={{ color: "var(--mute)" }}
+            >
+              Segurança e Acesso
+            </h2>
+            <div className="max-w-md rounded-xl border p-5" style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}>
+              <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>Mudar senha</p>
+              <p className="text-xs mt-1 mb-4" style={{ color: "var(--mute)" }}>
+                Se você faz login com email e senha, pode enviar um link de redefinição para o seu email.
+              </p>
+              <form action="/api/auth/reset-password" method="POST">
+                <input type="hidden" name="email" value={user.email} />
+                <Button
+                  type="submit"
+                  className="w-full sm:w-auto"
+                  style={{ backgroundColor: "var(--paper-pure)", color: "var(--ink)", border: "1px solid var(--rule)" }}
+                >
+                  Enviar link de redefinição
+                </Button>
+              </form>
+            </div>
           </section>
         </TabsContent>
       </Tabs>

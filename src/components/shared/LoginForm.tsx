@@ -127,7 +127,7 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
       const supabase = createClient()
       const appUrl = process.env["NEXT_PUBLIC_APP_URL"] ?? window.location.origin
       const { error } = await supabase.auth.resetPasswordForEmail(data.email.trim().toLowerCase(), {
-        redirectTo: `${appUrl}/api/auth/callback?next=/minha-conta`,
+        redirectTo: `${appUrl}/api/auth/callback?next=/redefinir-senha`,
       })
       toast.dismiss(loadingId)
       if (error) {
