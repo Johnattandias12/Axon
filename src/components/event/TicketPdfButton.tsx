@@ -314,10 +314,10 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
       type="button"
       onClick={generate}
       disabled={pending}
-      className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold backdrop-blur-md transition-all hover:scale-[1.02] hover:shadow-[0_8px_24px_-8px_rgba(200,255,0,0.4)] disabled:opacity-60"
+      className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold backdrop-blur-md transition-all hover:scale-[1.02] hover:shadow-[0_8px_24px_-8px_rgba(200,255,0,0.6)] disabled:opacity-60"
       style={{
-        backgroundColor: "var(--ink)",
-        color: "var(--pulse)",
+        backgroundColor: "var(--pulse)",
+        color: "var(--pulse-deep)",
       }}
     >
       {pending ? (
