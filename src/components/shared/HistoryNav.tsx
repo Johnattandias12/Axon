@@ -1,10 +1,16 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 export function HistoryNav() {
   const router = useRouter()
+  const pathname = usePathname()
+
+  // Não renderiza na página principal para manter o design limpo e evitar redundância
+  if (pathname === "/") {
+    return null
+  }
 
   return (
     <div className="hidden sm:flex items-center gap-1 mr-4 border-r pr-4" style={{ borderColor: "var(--rule)" }}>
