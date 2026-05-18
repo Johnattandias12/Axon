@@ -2,16 +2,9 @@ import type { ReactNode } from "react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import {
-  LayoutDashboard,
-  Users,
-  Calendar,
-  Building2,
-  LogOut,
-  Shield,
-  DollarSign,
-} from "lucide-react"
+import { LogOut, Shield, ExternalLink } from "lucide-react"
 import { AxonLogo } from "@/components/shared/AxonLogo"
+import { AdminSidebarNav } from "./AdminSidebarNav"
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
@@ -47,17 +40,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           </span>
         </div>
 
-        <nav className="flex-1 space-y-0.5 p-3">
-          <NavItem href="/admin" icon={<LayoutDashboard size={15} />} label="Dashboard" />
-          <NavItem href="/admin/usuarios" icon={<Users size={15} />} label="Usuários" />
-          <NavItem href="/admin/eventos" icon={<Calendar size={15} />} label="Eventos" />
-          <NavItem
-            href="/admin/organizadores"
-            icon={<Building2 size={15} />}
-            label="Organizadores"
-          />
-          <NavItem href="/admin/afiliados" icon={<DollarSign size={15} />} label="Afiliados" />
-        </nav>
+        <AdminSidebarNav />
 
         <div className="border-t p-3" style={{ borderColor: "var(--rule)" }}>
           <div className="mb-2 px-3 py-1">
@@ -68,10 +51,18 @@ export default async function AdminLayout({ children }: { children: ReactNode })
               Administrador
             </p>
           </div>
+          <Link
+            href="/minha-conta"
+            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-black/5"
+            style={{ color: "var(--mute)" }}
+          >
+            <ExternalLink size={14} />
+            Minha conta
+          </Link>
           <form action="/api/auth/logout" method="POST">
             <button
               type="submit"
-              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-black/5"
+              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-[var(--danger-soft)]"
               style={{ color: "var(--mute)" }}
             >
               <LogOut size={15} />
@@ -83,32 +74,29 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header
-          className="flex h-14 items-center border-b px-4 md:hidden"
+          className="flex h-14 items-center justify-between border-b px-4 md:hidden"
           style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
         >
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center gap-2">
             <AxonLogo size={16} tone="ink" />
+            <span
+              className="rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase"
+              style={{ backgroundColor: "var(--danger-soft)", color: "var(--danger)" }}
+            >
+              Admin
+            </span>
           </Link>
-          <span className="ml-3 text-sm font-bold" style={{ color: "var(--mute)" }}>
-            · Admin
-          </span>
+          <Link
+            href="/minha-conta"
+            className="rounded-full border px-2.5 py-1 text-[11px] font-semibold"
+            style={{ borderColor: "var(--rule)", color: "var(--mute)" }}
+          >
+            Conta
+          </Link>
         </header>
 
-        <main className="mx-auto w-full max-w-5xl flex-1 p-4 sm:p-6">{children}</main>
+        <main className="mx-auto w-full max-w-6xl flex-1 p-4 sm:p-6">{children}</main>
       </div>
     </div>
-  )
-}
-
-function NavItem({ href, icon, label }: { href: string; icon: ReactNode; label: string }) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-black/5"
-      style={{ color: "var(--ink-4)" }}
-    >
-      {icon}
-      {label}
-    </Link>
   )
 }
