@@ -3,7 +3,10 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { centsToBRL, formatDate } from "@/lib/utils"
 import { listAllAffiliates, listAllReferrals } from "@/lib/supabase/affiliates-admin"
+import { listInvites, type AffiliateInvite } from "@/lib/affiliates/invites"
 import { AdminAffiliateActions } from "./AdminAffiliateActions"
+import { AdminInvitePanel, type InviteRow } from "./AdminInvitePanel"
+import { AdminAffiliateRowActions, AffiliateStatusBadge } from "./AdminAffiliateRowActions"
 import { DollarSign, TrendingUp, Users, Clock } from "lucide-react"
 
 export const metadata: Metadata = { title: "Afiliados · Admin" }
@@ -15,7 +18,10 @@ export default async function AdminAfiliadosPage() {
   let affiliates: Awaited<ReturnType<typeof listAllAffiliates>> = []
   let pendingReferrals: Awaited<ReturnType<typeof listAllReferrals>> = []
   let paidReferrals: Awaited<ReturnType<typeof listAllReferrals>> = []
+  let pendingInvites: AffiliateInvite[] = []
+  let usedInvites: AffiliateInvite[] = []
   let migrationMissing = false
+  let migration009Missing = false
 
   try {
     ;[affiliates, pendingReferrals, paidReferrals] = await Promise.all([
@@ -26,6 +32,28 @@ export default async function AdminAfiliadosPage() {
   } catch {
     migrationMissing = true
   }
+
+  try {
+    ;[pendingInvites, usedInvites] = await Promise.all([
+      listInvites(admin, "pending", 100),
+      listInvites(admin, "used", 50),
+    ])
+  } catch {
+    migration009Missing = true
+  }
+
+  const appUrl = process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"
+  const invitesForPanel: InviteRow[] = pendingInvites.map((inv) => ({
+    id: inv.id,
+    email: inv.email,
+    token: inv.token,
+    commission_pct: Number(inv.commission_pct),
+    note: inv.note,
+    created_at: inv.created_at,
+    expires_at: inv.expires_at,
+    used_at: inv.used_at,
+    inviteUrl: `${appUrl}/afiliado/convite/${inv.token}`,
+  }))
 
   const totalAffiliates = affiliates.length
   const totalPendingCents = pendingReferrals.reduce((s, r) => s + r.commission_cents, 0)
@@ -40,7 +68,7 @@ export default async function AdminAfiliadosPage() {
         description="Veja indicações por afiliado, marque comissões como pagas e acompanhe o top performer."
       />
 
-      {migrationMissing && (
+      {(migrationMissing || migration009Missing) && (
         <div
           className="flex items-start gap-3 rounded-xl border px-4 py-3 text-xs"
           style={{
@@ -55,12 +83,17 @@ export default async function AdminAfiliadosPage() {
               Setup pendente
             </p>
             <p>
-              A migration <code>008_affiliates.sql</code> ainda não foi aplicada — o painel mostra
-              dados zerados. Rode no Supabase SQL Editor ou via <code>npx supabase db push</code>{" "}
-              pra ativar o programa.
+              {migrationMissing
+                ? "A migration 008_affiliates.sql ainda não foi aplicada."
+                : "A migration 009_affiliates_invite_credit.sql ainda não foi aplicada."}{" "}
+              Rode <code>npx supabase db push</code> e em seguida <code>pnpm db:types</code>.
             </p>
           </div>
         </div>
+      )}
+
+      {!migration009Missing && (
+        <AdminInvitePanel pendingInvites={invitesForPanel} usedCount={usedInvites.length} />
       )}
 
       {migrationMissing ? null : (
@@ -143,6 +176,9 @@ export default async function AdminAfiliadosPage() {
                             <p className="truncate text-[11px]" style={{ color: "var(--mute)" }}>
                               {a.profiles?.email ?? "—"}
                             </p>
+                            <div className="mt-1">
+                              <AffiliateStatusBadge status={a.status} />
+                            </div>
                           </div>
                           <span
                             className="shrink-0 rounded-full px-2 py-0.5 font-mono text-[11px] font-bold"
@@ -162,13 +198,20 @@ export default async function AdminAfiliadosPage() {
                             {centsToBRL(a.total_commission_cents)}
                           </span>
                         </div>
-                        {pendingTotal > 0 && (
-                          <AdminAffiliateActions
-                            affiliateId={a.id}
-                            pendingCount={pendingFromThis.length}
-                            pendingTotalLabel={centsToBRL(pendingTotal)}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <AdminAffiliateRowActions
+                            id={a.id}
+                            status={a.status}
+                            commissionPct={Number(a.commission_pct)}
                           />
-                        )}
+                          {pendingTotal > 0 && (
+                            <AdminAffiliateActions
+                              affiliateId={a.id}
+                              pendingCount={pendingFromThis.length}
+                              pendingTotalLabel={centsToBRL(pendingTotal)}
+                            />
+                          )}
+                        </div>
                       </div>
 
                       {/* Desktop linha */}
@@ -179,6 +222,9 @@ export default async function AdminAfiliadosPage() {
                         <p className="truncate text-[10px]" style={{ color: "var(--mute)" }}>
                           {a.profiles?.email ?? "—"}
                         </p>
+                        <div className="mt-1">
+                          <AffiliateStatusBadge status={a.status} />
+                        </div>
                       </div>
                       <span
                         className="hidden rounded-full px-2 py-0.5 text-center font-mono font-bold sm:inline-block"
@@ -204,17 +250,18 @@ export default async function AdminAfiliadosPage() {
                       >
                         {centsToBRL(a.total_commission_cents)}
                       </span>
-                      <div className="hidden justify-end sm:flex">
-                        {pendingTotal > 0 ? (
+                      <div className="hidden flex-wrap justify-end gap-1.5 sm:flex">
+                        <AdminAffiliateRowActions
+                          id={a.id}
+                          status={a.status}
+                          commissionPct={Number(a.commission_pct)}
+                        />
+                        {pendingTotal > 0 && (
                           <AdminAffiliateActions
                             affiliateId={a.id}
                             pendingCount={pendingFromThis.length}
                             pendingTotalLabel={centsToBRL(pendingTotal)}
                           />
-                        ) : (
-                          <span className="text-[10px]" style={{ color: "var(--mute-2)" }}>
-                            sem pendência
-                          </span>
                         )}
                       </div>
                     </div>

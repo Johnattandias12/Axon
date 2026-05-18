@@ -6,7 +6,7 @@ import Link from "next/link"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { AffiliateCodeCard } from "./AffiliateCodeCard"
 import { centsToBRL, formatDate } from "@/lib/utils"
-import { Users, DollarSign, Link2, TrendingUp, Lock } from "lucide-react"
+import { Users, Link2, TrendingUp, Lock, Wallet, Clock } from "lucide-react"
 import { getAffiliateByUserId, getReferralsForAffiliate } from "@/lib/supabase/affiliates-admin"
 
 export const metadata: Metadata = { title: "Afiliados · AXON" }
@@ -24,6 +24,24 @@ export default async function AfiliadosPage() {
   const referrals = affiliate ? await getReferralsForAffiliate(admin, affiliate.id, 50) : []
 
   const pending = referrals.filter((r) => r.status === "pending")
+
+  // Saldo wallet (migration 009). Tolera ausência da coluna em DBs antigos.
+  let walletCents = 0
+  try {
+    const { data: walletRow } = await admin
+      .from("profiles")
+      .select("wallet_credit_cents")
+      .eq("id", user.id)
+      .maybeSingle()
+    walletCents = Number(
+      (walletRow as { wallet_credit_cents?: number } | null)?.wallet_credit_cents ?? 0
+    )
+  } catch {
+    walletCents = 0
+  }
+
+  const isPending = affiliate?.status === "pending"
+  const isRejected = affiliate?.status === "rejected"
 
   return (
     <div className="space-y-8">
@@ -75,13 +93,56 @@ export default async function AfiliadosPage() {
             Falar com a AXON
           </Link>
         </div>
+      ) : isPending ? (
+        <div
+          className="space-y-4 rounded-3xl border p-8 text-center"
+          style={{ borderColor: "var(--warning)", backgroundColor: "var(--warning-soft)" }}
+        >
+          <div
+            className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+            style={{ backgroundColor: "var(--warning)", color: "white" }}
+          >
+            <Clock size={22} />
+          </div>
+          <h2
+            className="text-xl font-bold tracking-tight"
+            style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
+          >
+            Inscrição em análise
+          </h2>
+          <p className="mx-auto max-w-md text-sm" style={{ color: "var(--ink-4)" }}>
+            Estamos analisando sua entrada no programa. Em até alguns dias você recebe confirmação.
+          </p>
+        </div>
+      ) : isRejected ? (
+        <div
+          className="space-y-4 rounded-3xl border p-8 text-center"
+          style={{ borderColor: "var(--danger)", backgroundColor: "var(--danger-soft)" }}
+        >
+          <div
+            className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+            style={{ backgroundColor: "var(--danger)", color: "white" }}
+          >
+            <Lock size={22} />
+          </div>
+          <h2
+            className="text-xl font-bold tracking-tight"
+            style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
+          >
+            Inscrição não aprovada
+          </h2>
+          <p className="mx-auto max-w-md text-sm" style={{ color: "var(--ink-4)" }}>
+            No momento sua inscrição não foi aprovada. Entre em contato pra entender critérios.
+          </p>
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Stat
-              icon={<Users size={13} />}
-              label="Indicações"
-              value={String(affiliate.total_referrals)}
+              icon={<Wallet size={13} />}
+              label="Crédito disponível"
+              value={centsToBRL(walletCents)}
+              accent="var(--success)"
             />
             <Stat
               icon={<TrendingUp size={13} />}
@@ -89,10 +150,9 @@ export default async function AfiliadosPage() {
               value={String(pending.length)}
             />
             <Stat
-              icon={<DollarSign size={13} />}
-              label="Acumulado"
-              value={centsToBRL(affiliate.total_commission_cents)}
-              accent="var(--pulse-deep)"
+              icon={<Users size={13} />}
+              label="Indicações"
+              value={String(affiliate.total_referrals)}
             />
             <Stat
               icon={<Link2 size={13} />}
