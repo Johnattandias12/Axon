@@ -243,22 +243,34 @@ export default async function EventoDetailPage({ params }: Props) {
         style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
       >
         <div>
-          <h2 className="text-base font-semibold" style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}>
+          <h2
+            className="text-base font-semibold"
+            style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
+          >
             💳 Meios de pagamento
           </h2>
           <p className="mt-0.5 text-xs" style={{ color: "var(--mute)" }}>
-            Defina como os compradores poderão pagar neste evento. As taxas são exibidas de forma transparente no checkout.
+            Defina como os compradores poderão pagar neste evento. As taxas são exibidas de forma
+            transparente no checkout.
           </p>
         </div>
         <PaymentMethodsConfig
           eventId={id}
-          initialConfig={(event as any).payment_methods ?? {
-            pix: true,
-            credit_card: false,
-            max_installments: 1,
-            convenience_fee_pix_cents: 100,
-            convenience_fee_credit_pct: 5,
-          }}
+          initialConfig={
+            (event.payment_methods as {
+              pix: boolean
+              credit_card: boolean
+              max_installments: 1 | 2 | 3 | 6 | 12
+              convenience_fee_pix_cents: number
+              convenience_fee_credit_pct: number
+            } | null) ?? {
+              pix: true,
+              credit_card: false,
+              max_installments: 1,
+              convenience_fee_pix_cents: 100,
+              convenience_fee_credit_pct: 5,
+            }
+          }
         />
       </div>
 

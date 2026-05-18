@@ -3,8 +3,9 @@
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
+import type { Json } from "@/types/supabase"
 
-interface PaymentConfig {
+export interface PaymentConfig {
   pix: boolean
   credit_card: boolean
   max_installments: 1 | 2 | 3 | 6 | 12
@@ -17,7 +18,9 @@ export async function updatePaymentMethods(
   config: PaymentConfig
 ): Promise<{ ok: boolean; error?: string }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (!user) return { ok: false, error: "Não autenticado." }
 
@@ -44,8 +47,7 @@ export async function updatePaymentMethods(
 
   const { error: updateErr } = await admin
     .from("events")
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .update({ payment_methods: config } as any)
+    .update({ payment_methods: config as unknown as Json })
     .eq("id", eventId)
 
   if (updateErr) return { ok: false, error: updateErr.message }
@@ -62,18 +64,15 @@ export async function updatePaymentMethods(
  */
 export async function getEventPaymentMethods(eventId: string): Promise<PaymentConfig> {
   const admin = createAdminClient()
-  const { data } = await admin
-    .from("events")
-    .select("payment_methods")
-    .eq("id", eventId)
-    .single()
+  const { data } = await admin.from("events").select("payment_methods").eq("id", eventId).single()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data as any)?.payment_methods ?? {
-    pix: true,
-    credit_card: false,
-    max_installments: 1,
-    convenience_fee_pix_cents: 100,
-    convenience_fee_credit_pct: 5,
-  }
+  return (
+    (data?.payment_methods as PaymentConfig | null) ?? {
+      pix: true,
+      credit_card: false,
+      max_installments: 1,
+      convenience_fee_pix_cents: 100,
+      convenience_fee_credit_pct: 5,
+    }
+  )
 }
