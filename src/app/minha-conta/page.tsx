@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { redirect } from "next/navigation"
@@ -10,11 +9,10 @@ import { ProfileForm } from "./ProfileForm"
 import { AvatarUploader } from "@/components/shared/AvatarUploader"
 import { EventCard } from "@/components/event/EventCard"
 import { EventCountdown } from "@/components/event/EventCountdown"
-import { centsToBRL, formatDate } from "@/lib/utils"
+import { PremiumTicketCard, type PremiumTicketOrder } from "@/components/event/PremiumTicketCard"
 import {
   Ticket as TicketIcon,
   ArrowUpRight,
-  CheckCircle2,
   Calendar,
   Sparkles,
   History,
@@ -33,13 +31,16 @@ export default async function MinhaContaPage() {
 
   const nowIso = new Date().toISOString()
 
+  // profile pode usar RLS (usuário lê o próprio). orders via admin pra evitar
+  // edge cases de RLS — ownership é garantido pelo .eq("buyer_id", user.id).
+  const adminClient = createAdminClient()
   const [{ data: profile }, { data: orders }] = await Promise.all([
     supabase
       .from("profiles")
       .select("full_name, phone, cpf, role, avatar_url")
       .eq("id", user.id)
       .single(),
-    supabase
+    adminClient
       .from("orders")
       .select(
         `id, status, total_cents, paid_at, created_at,
@@ -223,41 +224,43 @@ export default async function MinhaContaPage() {
             </p>
           </div>
 
-          <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:flex-col">
+          <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-col">
             <Link
               href="/minha-conta/ingressos"
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-bold transition-transform hover:scale-[1.03] sm:flex-initial"
+              className="flex items-center justify-center gap-1.5 rounded-xl px-4 py-3 text-sm font-bold transition-transform hover:scale-[1.03]"
               style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
             >
               <TicketIcon size={14} />
               Meus ingressos
             </Link>
-            <Link
-              href="/eventos"
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-black/5 sm:flex-initial"
-              style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
-            >
-              <Calendar size={14} />
-              Explorar eventos
-            </Link>
-            <Link
-              href="/minha-conta/seguranca"
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-black/5 sm:flex-initial"
-              style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
-            >
-              <ShieldCheck size={14} />
-              Segurança
-            </Link>
-            {isActiveAffiliate && (
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-col">
               <Link
-                href="/minha-conta/afiliados"
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-black/5 sm:flex-initial"
+                href="/eventos"
+                className="flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-xs font-semibold transition-colors hover:bg-black/5 sm:text-sm"
                 style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
               >
-                <Sparkles size={14} />
-                Painel de afiliado
+                <Calendar size={13} />
+                Eventos
               </Link>
-            )}
+              <Link
+                href="/minha-conta/seguranca"
+                className="flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-xs font-semibold transition-colors hover:bg-black/5 sm:text-sm"
+                style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
+              >
+                <ShieldCheck size={13} />
+                Segurança
+              </Link>
+              {isActiveAffiliate && (
+                <Link
+                  href="/minha-conta/afiliados"
+                  className="col-span-2 flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-xs font-semibold transition-colors hover:bg-black/5 sm:text-sm"
+                  style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
+                >
+                  <Sparkles size={13} />
+                  Painel de afiliado
+                </Link>
+              )}
+            </div>
           </div>
         </div>
 
@@ -508,118 +511,59 @@ function EmptyState({
   )
 }
 
+type OrderEventLike = {
+  id: string
+  title: string
+  slug: string
+  starts_at: string
+  venue_name: string | null
+  city: string | null
+  state: string | null
+  banner_url: string | null
+  category: string | null
+}
+
 type OrderRow = {
   id: string
   status: string
   total_cents: number
   paid_at: string | null
   created_at: string
-  events:
-    | {
-        id: string
-        title: string
-        slug: string
-        starts_at: string
-        venue_name: string | null
-        city: string | null
-        banner_url: string | null
-      }
-    | {
-        id: string
-        title: string
-        slug: string
-        starts_at: string
-        venue_name: string | null
-        city: string | null
-        banner_url: string | null
-      }[]
-    | null
+  events: OrderEventLike | OrderEventLike[] | null
   tickets: { id: string }[] | null
+}
+
+function toPremium(order: OrderRow): PremiumTicketOrder | null {
+  const ev = Array.isArray(order.events) ? order.events[0] : order.events
+  if (!ev) return null
+  return {
+    id: order.id,
+    status: order.status,
+    total_cents: order.total_cents,
+    paid_at: order.paid_at,
+    created_at: order.created_at,
+    event: {
+      id: ev.id,
+      title: ev.title,
+      slug: ev.slug,
+      starts_at: ev.starts_at,
+      venue_name: ev.venue_name,
+      city: ev.city,
+      state: ev.state,
+      banner_url: ev.banner_url,
+      category: ev.category,
+    },
+    ticketCount: (order.tickets ?? []).length,
+  }
 }
 
 function OrdersGrid({ orders, past }: { orders: OrderRow[]; past?: boolean }) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
       {orders.map((order) => {
-        const event = Array.isArray(order.events) ? order.events[0] : order.events
-        const ticketCount = (order.tickets ?? []).length
-        if (!event) return null
-        return (
-          <Link
-            key={order.id}
-            href={`/minha-conta/ingressos/${order.id}`}
-            className="group relative overflow-hidden rounded-2xl border transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]"
-            style={{
-              borderColor: "var(--rule)",
-              backgroundColor: "var(--paper-pure)",
-              opacity: past ? 0.85 : 1,
-            }}
-          >
-            <div className="flex gap-4 p-4">
-              <div
-                className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl"
-                style={{ backgroundColor: "var(--paper-soft)" }}
-              >
-                {event.banner_url ? (
-                  <Image
-                    src={event.banner_url}
-                    alt={event.title}
-                    fill
-                    sizes="80px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div
-                    className="flex h-full w-full items-center justify-center"
-                    style={{ background: "linear-gradient(135deg, var(--ink), var(--ink-3))" }}
-                  >
-                    <TicketIcon size={20} style={{ color: "var(--pulse)" }} />
-                  </div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  {order.status === "paid" && (
-                    <CheckCircle2 size={12} style={{ color: "var(--success)" }} />
-                  )}
-                  <p
-                    className="text-[10px] font-semibold tracking-wider uppercase"
-                    style={{
-                      color: past
-                        ? "var(--mute)"
-                        : order.status === "paid"
-                          ? "var(--success)"
-                          : "var(--mute)",
-                    }}
-                  >
-                    {past ? "Encerrado" : order.status === "paid" ? "Confirmado" : "Pendente"}
-                  </p>
-                </div>
-                <p
-                  className="mt-0.5 line-clamp-2 text-sm font-semibold"
-                  style={{ color: "var(--ink)" }}
-                >
-                  {event.title}
-                </p>
-                <p className="mt-1 text-[11px]" style={{ color: "var(--mute)" }}>
-                  {formatDate(event.starts_at, { dateStyle: "medium" })}
-                  {event.city ? ` · ${event.city}` : ""}
-                </p>
-                <div
-                  className="mt-2 flex items-center justify-between border-t pt-2"
-                  style={{ borderColor: "var(--rule)" }}
-                >
-                  <span className="text-[10px] font-medium" style={{ color: "var(--mute)" }}>
-                    {ticketCount} {ticketCount === 1 ? "ingresso" : "ingressos"}
-                  </span>
-                  <span className="font-mono text-xs font-bold" style={{ color: "var(--ink)" }}>
-                    {centsToBRL(order.total_cents)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Link>
-        )
+        const premium = toPremium(order)
+        if (!premium) return null
+        return <PremiumTicketCard key={order.id} order={premium} past={past} />
       })}
     </div>
   )

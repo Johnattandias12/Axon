@@ -2,12 +2,75 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { PageHeader } from "@/components/shared/PageHeader"
-import { OrdersGrid, type OrderRow } from "@/components/shared/OrdersGrid"
-import { Ticket as TicketIcon, Calendar, History } from "lucide-react"
+import { PremiumTicketCard, type PremiumTicketOrder } from "@/components/event/PremiumTicketCard"
+import { EventCountdown } from "@/components/event/EventCountdown"
+import { Ticket as TicketIcon, Calendar, History, Sparkles } from "lucide-react"
 
 export const metadata: Metadata = { title: "Meus ingressos · AXON" }
 export const dynamic = "force-dynamic"
+
+interface RawOrderRow {
+  id: string
+  status: string
+  total_cents: number
+  paid_at: string | null
+  created_at: string
+  events:
+    | {
+        id: string
+        title: string
+        slug: string
+        starts_at: string
+        venue_name: string | null
+        city: string | null
+        state: string | null
+        banner_url: string | null
+        category: string | null
+      }
+    | Array<{
+        id: string
+        title: string
+        slug: string
+        starts_at: string
+        venue_name: string | null
+        city: string | null
+        state: string | null
+        banner_url: string | null
+        category: string | null
+      }>
+    | null
+  tickets: { id: string }[] | null
+}
+
+function toPremium(rows: RawOrderRow[]): PremiumTicketOrder[] {
+  const out: PremiumTicketOrder[] = []
+  for (const o of rows) {
+    const ev = Array.isArray(o.events) ? o.events[0] : o.events
+    if (!ev) continue
+    out.push({
+      id: o.id,
+      status: o.status,
+      total_cents: o.total_cents,
+      paid_at: o.paid_at,
+      created_at: o.created_at,
+      event: {
+        id: ev.id,
+        title: ev.title,
+        slug: ev.slug,
+        starts_at: ev.starts_at,
+        venue_name: ev.venue_name,
+        city: ev.city,
+        state: ev.state,
+        banner_url: ev.banner_url,
+        category: ev.category,
+      },
+      ticketCount: (o.tickets ?? []).length,
+    })
+  }
+  return out
+}
 
 export default async function MeusIngressosPage() {
   const supabase = await createClient()
@@ -16,7 +79,10 @@ export default async function MeusIngressosPage() {
   } = await supabase.auth.getUser()
   if (!user) redirect("/entrar?redirectTo=/minha-conta/ingressos")
 
-  const { data: orders } = await supabase
+  // Usa adminClient pra bypass de RLS — ownership garantido via .eq("buyer_id", user.id).
+  // Padrão do projeto pra páginas de detalhe de pedido.
+  const admin = createAdminClient()
+  const { data: orders } = await admin
     .from("orders")
     .select(
       `id, status, total_cents, paid_at, created_at,
@@ -28,74 +94,96 @@ export default async function MeusIngressosPage() {
     .order("created_at", { ascending: false })
     .limit(200)
 
-  const allOrders = (orders ?? []) as OrderRow[]
-  const nowIso = new Date().toISOString()
+  const all = toPremium((orders ?? []) as RawOrderRow[])
+  const now = Date.now()
 
-  const future = allOrders.filter((o) => {
-    const e = Array.isArray(o.events) ? o.events[0] : o.events
-    return e && new Date(e.starts_at) >= new Date(nowIso)
-  })
-  const past = allOrders.filter((o) => {
-    const e = Array.isArray(o.events) ? o.events[0] : o.events
-    return e && new Date(e.starts_at) < new Date(nowIso)
-  })
+  const future = all
+    .filter((o) => new Date(o.event.starts_at).getTime() >= now)
+    .sort((a, b) => new Date(a.event.starts_at).getTime() - new Date(b.event.starts_at).getTime())
+  const past = all
+    .filter((o) => new Date(o.event.starts_at).getTime() < now)
+    .sort((a, b) => new Date(b.event.starts_at).getTime() - new Date(a.event.starts_at).getTime())
+
+  const next = future[0]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 sm:space-y-10">
       <PageHeader
         back={{ href: "/minha-conta", label: "Minha conta" }}
         eyebrow="Meus ingressos"
-        title={`${allOrders.length} ${allOrders.length === 1 ? "pedido" : "pedidos"}`}
-        description="Todos os ingressos que você comprou na AXON, em um só lugar."
+        title={
+          all.length === 0
+            ? "Você ainda não tem ingressos"
+            : all.length === 1
+              ? "1 ingresso"
+              : `${all.length} ingressos`
+        }
+        description={
+          all.length === 0
+            ? "Compre um ingresso e ele aparece aqui — pronto pra escanear na porta."
+            : "Tudo o que você comprou na AXON, num só lugar."
+        }
       />
 
-      {allOrders.length === 0 ? (
+      {/* Hero: próximo evento com countdown */}
+      {next && (
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Sparkles size={14} style={{ color: "var(--pulse-deep)" }} />
+            <h2
+              className="text-[11px] font-semibold tracking-[0.14em] uppercase"
+              style={{ color: "var(--mute)" }}
+            >
+              Próximo · {next.event.title}
+            </h2>
+          </div>
+          <EventCountdown startsAt={next.event.starts_at} />
+        </section>
+      )}
+
+      {all.length === 0 ? (
         <EmptyState />
       ) : (
         <>
-          <section className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Calendar size={14} style={{ color: "var(--pulse-deep)" }} />
-              <h2
-                className="text-sm font-semibold tracking-wider uppercase"
-                style={{ color: "var(--mute)" }}
-              >
-                Próximos ({future.length})
-              </h2>
-            </div>
-            {future.length === 0 ? (
-              <p
-                className="rounded-2xl border border-dashed p-6 text-center text-sm"
-                style={{ borderColor: "var(--rule)", color: "var(--mute)" }}
-              >
-                Sem eventos próximos. Que tal explorar a agenda?
-              </p>
-            ) : (
-              <OrdersGrid orders={future} />
-            )}
-          </section>
+          {future.length > 0 && (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Calendar size={14} style={{ color: "var(--pulse-deep)" }} />
+                  <h2
+                    className="text-sm font-semibold tracking-wider uppercase"
+                    style={{ color: "var(--mute)" }}
+                  >
+                    Próximos ({future.length})
+                  </h2>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:gap-6">
+                {future.map((o) => (
+                  <PremiumTicketCard key={o.id} order={o} />
+                ))}
+              </div>
+            </section>
+          )}
 
-          <section className="space-y-4">
-            <div className="flex items-center gap-2">
-              <History size={14} style={{ color: "var(--mute)" }} />
-              <h2
-                className="text-sm font-semibold tracking-wider uppercase"
-                style={{ color: "var(--mute)" }}
-              >
-                Histórico ({past.length})
-              </h2>
-            </div>
-            {past.length === 0 ? (
-              <p
-                className="rounded-2xl border border-dashed p-6 text-center text-sm"
-                style={{ borderColor: "var(--rule)", color: "var(--mute)" }}
-              >
-                Você ainda não foi a nenhum evento. Seu histórico aparece aqui depois.
-              </p>
-            ) : (
-              <OrdersGrid orders={past} past />
-            )}
-          </section>
+          {past.length > 0 && (
+            <section className="space-y-4">
+              <div className="flex items-center gap-2">
+                <History size={14} style={{ color: "var(--mute)" }} />
+                <h2
+                  className="text-sm font-semibold tracking-wider uppercase"
+                  style={{ color: "var(--mute)" }}
+                >
+                  Histórico ({past.length})
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:gap-6">
+                {past.map((o) => (
+                  <PremiumTicketCard key={o.id} order={o} past />
+                ))}
+              </div>
+            </section>
+          )}
         </>
       )}
     </div>
@@ -105,7 +193,7 @@ export default async function MeusIngressosPage() {
 function EmptyState() {
   return (
     <div
-      className="relative overflow-hidden rounded-3xl border border-dashed p-14 text-center"
+      className="relative overflow-hidden rounded-3xl border border-dashed p-10 text-center sm:p-14"
       style={{ borderColor: "var(--rule-strong)" }}
     >
       <div
@@ -124,10 +212,10 @@ function EmptyState() {
           className="mt-4 text-lg font-bold tracking-tight"
           style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
         >
-          Nenhum ingresso ainda
+          Sem ingressos por aqui
         </p>
         <p className="mx-auto mt-1.5 max-w-sm text-sm" style={{ color: "var(--mute)" }}>
-          Quando você comprar um ingresso, ele aparece aqui. Pronto pra escanear na porta.
+          Compre um ingresso e ele aparece aqui — com QR pronto e tudo.
         </p>
         <Link
           href="/eventos"
