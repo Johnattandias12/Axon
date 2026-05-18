@@ -53,7 +53,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       .from("tickets")
       .select(
         `id, holder_name, holder_cpf, is_half_price, half_price_doc_type, status, qr_hash,
-         orders(id, total_cents, paid_at, payment_method, buyer_id, profiles(email, full_name)),
+         orders(id, total_cents, paid_at, payment_method, buyer_id, profiles:buyer_id(email, full_name)),
          ticket_lots(name, price_cents, ticket_types(name))`
       )
       .eq("event_id", eventId)
@@ -120,7 +120,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       .select(
         `id, scanned_at, result,
          tickets(id, holder_name, holder_cpf, ticket_lots(name, ticket_types(name))),
-         profiles(email, full_name)`
+         profiles:validator_id(email, full_name)`
       )
       .eq("event_id", eventId)
       .order("scanned_at", { ascending: true })
