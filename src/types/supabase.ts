@@ -16,6 +16,7 @@ export type Database = {
           cpf: string | null
           phone: string | null
           avatar_url: string | null
+          birth_date: string | null
           role: "buyer" | "organizer" | "validator" | "admin"
           marketing_consent: boolean
           created_at: string
@@ -27,6 +28,7 @@ export type Database = {
           cpf?: string | null
           phone?: string | null
           avatar_url?: string | null
+          birth_date?: string | null
           role?: "buyer" | "organizer" | "validator" | "admin"
           marketing_consent?: boolean
           created_at?: string
@@ -38,6 +40,7 @@ export type Database = {
           cpf?: string | null
           phone?: string | null
           avatar_url?: string | null
+          birth_date?: string | null
           role?: "buyer" | "organizer" | "validator" | "admin"
           marketing_consent?: boolean
           updated_at?: string
