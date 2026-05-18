@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const {
       data: { user },
     } = await supabase.auth.getUser()
-    const email = user.email
+    const email = user?.email
     if (!user || !email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -19,12 +19,12 @@ export async function POST(req: Request) {
       .eq("id", user.id)
       .single()
 
-    const body = await req.json().catch(() => ({}))
-    const userAgent = (body.userAgent || req.headers.get("user-agent") || "Desconhecido") as string
+    const body = (await req.json().catch(() => ({}))) as Record<string, any>
+    const userAgent = (body?.userAgent || req.headers.get("user-agent") || "Desconhecido") as string
     let ip = (req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "Desconhecido") as string
     if (ip && ip.includes(",")) ip = ip.split(",")[0].trim()
 
-    let location = body.location
+    let location = body?.location
     if (!location && ip && ip !== "Desconhecido" && ip !== "127.0.0.1" && ip !== "::1") {
       try {
         const res = await fetch(`https://ipapi.co/${ip}/json/`)
