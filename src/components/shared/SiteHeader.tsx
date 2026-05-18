@@ -101,6 +101,13 @@ export async function SiteHeader() {
           >
             Eventos
           </Link>
+          <Link
+            href="/precos"
+            className="text-sm transition-colors hover:opacity-70"
+            style={{ color: "var(--mute)" }}
+          >
+            Preços
+          </Link>
           {(profile?.role === "organizer" || profile?.role === "admin") && (
             <Link
               href="/organizador"

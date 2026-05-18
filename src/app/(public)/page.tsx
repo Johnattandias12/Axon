@@ -482,6 +482,7 @@ export default function HomePage() {
               <ul className="space-y-2.5">
                 {[
                   { l: "Ver eventos", h: "/eventos" },
+                  { l: "Preços e taxas", h: "/precos" },
                   { l: "Para organizadores", h: "/organizador/comecar" },
                   { l: "Minha conta", h: "/minha-conta" },
                 ].map(({ l, h }) => (

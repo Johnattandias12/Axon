@@ -6,7 +6,7 @@ import { formatDate, centsToBRL } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Pencil, Ticket, Users, Globe, Gift } from "lucide-react"
+import { Pencil, Ticket, Users, Globe, Gift, ListChecks } from "lucide-react"
 import { PublishButton } from "./PublishButton"
 import { PageBackLink } from "@/components/shared/PageHeader"
 import { EventAnalyticsCard } from "@/components/organizer/EventAnalyticsCard"
@@ -127,16 +127,22 @@ export default async function EventoDetailPage({ params }: Props) {
           sub={`${allLots.length} lotes`}
         />
         <ActionCard
-          href={`/organizador/eventos/${id}/equipe`}
-          icon={<Users size={16} />}
-          label="Equipe"
-          sub="Validadores"
+          href={`/organizador/eventos/${id}/convidados`}
+          icon={<ListChecks size={16} />}
+          label="Convidados"
+          sub="Lista + export"
         />
         <ActionCard
           href={`/organizador/eventos/${id}/cortesia`}
           icon={<Gift size={16} />}
           label="Cortesias"
           sub="Lista VIP"
+        />
+        <ActionCard
+          href={`/organizador/eventos/${id}/equipe`}
+          icon={<Users size={16} />}
+          label="Equipe"
+          sub="Validadores"
         />
       </div>
 
