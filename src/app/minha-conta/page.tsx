@@ -253,7 +253,7 @@ export default async function MinhaContaPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="proximos">
+      <Tabs defaultValue="proximos" className="flex flex-col gap-6">
         <div className="-mx-1 [scrollbar-width:none] overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden">
           <TabsList
             className="h-auto w-max min-w-full justify-start gap-0 rounded-none border-b p-0"
@@ -261,7 +261,7 @@ export default async function MinhaContaPage() {
           >
             <TabTrigger value="proximos" icon={<Calendar size={13} />} label="Próximos" />
             <TabTrigger value="historico" icon={<History size={13} />} label="Histórico" />
-            <TabTrigger value="sugestoes" icon={<Lightbulb size={13} />} label="Sugestões" />
+            <TabTrigger value="sugestoes" icon={<Sparkles size={13} />} label="Sugestões" />
             <TabTrigger value="dados" icon={<TicketIcon size={13} />} label="Dados" />
           </TabsList>
         </div>
@@ -426,7 +426,7 @@ function TabTrigger({
   return (
     <TabsTrigger
       value={value}
-      className="flex shrink-0 items-center gap-1.5 rounded-none border-b-2 border-transparent px-3 py-2.5 text-xs whitespace-nowrap data-[state=active]:border-current sm:px-4 sm:text-sm"
+      className="flex shrink-0 items-center gap-1.5 rounded-none border-b-2 border-transparent px-1 py-3 text-sm font-semibold transition-colors data-[state=active]:border-current data-[state=active]:text-foreground sm:px-3 sm:py-4 sm:text-[15px]"
       style={{ color: "var(--mute)" }}
     >
       {icon}

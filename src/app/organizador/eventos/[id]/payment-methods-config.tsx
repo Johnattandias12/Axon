@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { updatePaymentMethods } from "./actions"
+import { Zap, CreditCard, CheckCircle2, AlertTriangle } from "lucide-react"
 
 interface PaymentConfig {
   pix: boolean
@@ -62,7 +63,7 @@ export function PaymentMethodsConfig({ eventId, initialConfig }: Props) {
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xl">⚡</span>
+              <Zap size={20} className="text-lime-400" />
               <h3 className="font-bold text-white">Pix</h3>
               <span className="text-xs bg-lime-400 text-black font-bold px-2 py-0.5 rounded-full">Recomendado</span>
             </div>
@@ -70,9 +71,9 @@ export function PaymentMethodsConfig({ eventId, initialConfig }: Props) {
               Aprovação instantânea • Dinheiro disponível em ~2 minutos • Taxa: R$ {pixConvenienceReais} por pedido
             </p>
             <div className="mt-2 flex flex-wrap gap-3 text-xs text-zinc-500">
-              <span>✅ Sem risco de chargeback</span>
-              <span>✅ Recebimento imediato</span>
-              <span>✅ Menor taxa ao comprador</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 size={14} className="text-lime-400" /> Sem risco de chargeback</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 size={14} className="text-lime-400" /> Recebimento imediato</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 size={14} className="text-lime-400" /> Menor taxa ao comprador</span>
             </div>
           </div>
           <button
@@ -89,7 +90,7 @@ export function PaymentMethodsConfig({ eventId, initialConfig }: Props) {
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xl">💳</span>
+              <CreditCard size={20} className="text-blue-400" />
               <h3 className="font-bold text-white">Cartão de crédito</h3>
               <span className="text-xs bg-zinc-600 text-zinc-300 font-bold px-2 py-0.5 rounded-full">Opcional</span>
             </div>
@@ -97,9 +98,9 @@ export function PaymentMethodsConfig({ eventId, initialConfig }: Props) {
               Permite parcelamento • Dinheiro em D+15 • Taxa conveniência cobrada do comprador
             </p>
             <div className="mt-2 flex flex-wrap gap-3 text-xs text-zinc-500">
-              <span>⚠️ Risco de chargeback</span>
-              <span>⚠️ Recebimento em 15 dias</span>
-              <span>✅ Mais opções ao comprador</span>
+              <span className="flex items-center gap-1.5"><AlertTriangle size={14} className="text-amber-400" /> Risco de chargeback</span>
+              <span className="flex items-center gap-1.5"><AlertTriangle size={14} className="text-amber-400" /> Recebimento em 15 dias</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 size={14} className="text-lime-400" /> Mais opções ao comprador</span>
             </div>
           </div>
           <button
@@ -139,7 +140,7 @@ export function PaymentMethodsConfig({ eventId, initialConfig }: Props) {
           {cfg.pix && (
             <div className="flex items-center justify-between bg-zinc-900 rounded-lg p-3">
               <div className="flex items-center gap-2">
-                <span>⚡</span>
+                <Zap size={16} className="text-lime-400" />
                 <span className="text-white font-medium">Pix</span>
                 <span className="text-xs bg-lime-400/10 text-lime-400 border border-lime-400/20 px-2 py-0.5 rounded-full">Aprovação imediata</span>
               </div>
@@ -150,7 +151,7 @@ export function PaymentMethodsConfig({ eventId, initialConfig }: Props) {
             <>
               <div className="flex items-center justify-between bg-zinc-900 rounded-lg p-3">
                 <div className="flex items-center gap-2">
-                  <span>💳</span>
+                  <CreditCard size={16} className="text-blue-400" />
                   <span className="text-white font-medium">Cartão 1x</span>
                 </div>
                 <span className="text-zinc-400 text-xs">+ {CREDIT_CONVENIENCE[1]}</span>
@@ -158,7 +159,7 @@ export function PaymentMethodsConfig({ eventId, initialConfig }: Props) {
               {cfg.max_installments > 1 && (
                 <div className="flex items-center justify-between bg-zinc-900 rounded-lg p-3">
                   <div className="flex items-center gap-2">
-                    <span>💳</span>
+                    <CreditCard size={16} className="text-blue-400" />
                     <span className="text-white font-medium">Até {cfg.max_installments}x</span>
                   </div>
                   <span className="text-zinc-400 text-xs">+ {CREDIT_CONVENIENCE[cfg.max_installments]}</span>
@@ -188,8 +189,8 @@ export function PaymentMethodsConfig({ eventId, initialConfig }: Props) {
 
       {/* Aviso importante */}
       {!cfg.pix && cfg.credit_card && (
-        <div className="flex gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-sm text-amber-300">
-          <span className="text-lg flex-shrink-0">⚠️</span>
+        <div className="flex items-start gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-sm text-amber-300">
+          <AlertTriangle size={20} className="flex-shrink-0 mt-0.5 text-amber-400" />
           <p>Somente cartão ativo: o repasse ao organizador ocorre em D+15. Recomendamos manter o Pix ativo para recebimento imediato.</p>
         </div>
       )}
