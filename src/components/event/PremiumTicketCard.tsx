@@ -146,21 +146,26 @@ export function PremiumTicketCard({
       </div>
 
       {/* Bottom: dados do ingresso */}
-      <div className="space-y-3 p-4 sm:p-5">
-        <div className="flex items-center gap-3 text-[12px]" style={{ color: "var(--mute)" }}>
-          <span className="inline-flex items-center gap-1.5">
-            <Clock size={12} style={{ color: "var(--pulse-deep)" }} />
-            {formatDate(eventDate, { dateStyle: "long", timeStyle: "short" })}
+      <div className="min-w-0 space-y-3 p-4 sm:p-5">
+        <div
+          className="flex min-w-0 items-center gap-3 text-[12px]"
+          style={{ color: "var(--mute)" }}
+        >
+          <span className="inline-flex min-w-0 items-center gap-1.5">
+            <Clock size={12} className="shrink-0" style={{ color: "var(--pulse-deep)" }} />
+            <span className="truncate">
+              {formatDate(eventDate, { dateStyle: "long", timeStyle: "short" })}
+            </span>
           </span>
         </div>
         {local && (
-          <p
-            className="line-clamp-1 inline-flex items-center gap-1.5 text-[12px]"
+          <div
+            className="flex min-w-0 items-center gap-1.5 text-[12px]"
             style={{ color: "var(--mute)" }}
           >
-            <MapPin size={12} style={{ color: "var(--mute)" }} />
-            {local}
-          </p>
+            <MapPin size={12} className="shrink-0" style={{ color: "var(--mute)" }} />
+            <span className="truncate">{local}</span>
+          </div>
         )}
 
         <div

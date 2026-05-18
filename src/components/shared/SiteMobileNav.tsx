@@ -99,7 +99,7 @@ export function SiteMobileNav({
       )}
 
       <aside
-        className="fixed top-0 right-0 z-[1001] flex h-full w-[300px] max-w-[85vw] flex-col overflow-y-auto border-l shadow-2xl transition-transform duration-300 ease-out md:hidden"
+        className="fixed top-0 right-0 z-[1001] flex h-full w-[280px] max-w-[80vw] flex-col overflow-y-auto border-l shadow-2xl transition-transform duration-300 ease-out md:hidden"
         style={{
           backgroundColor: "var(--paper)",
           borderColor: "var(--rule)",

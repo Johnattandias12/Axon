@@ -196,7 +196,7 @@ export default async function MinhaContaPage() {
         }}
       >
         <div
-          className="pointer-events-none absolute -top-20 -right-20 h-56 w-56 rounded-full opacity-20 blur-3xl"
+          className="pointer-events-none absolute -top-12 -right-12 h-36 w-36 rounded-full opacity-20 blur-3xl sm:-top-20 sm:-right-20 sm:h-56 sm:w-56"
           style={{ backgroundColor: "var(--pulse)" }}
           aria-hidden="true"
         />

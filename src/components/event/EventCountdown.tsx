@@ -44,10 +44,7 @@ export function EventCountdown({ startsAt, compact = false }: Props) {
 
   if (compact) {
     return (
-      <span
-        className="inline-flex items-center gap-1.5 text-xs"
-        style={{ color: "var(--mute)" }}
-      >
+      <span className="inline-flex items-center gap-1.5 text-xs" style={{ color: "var(--mute)" }}>
         <Clock size={11} style={{ color: "var(--pulse-deep)" }} />
         {t.days > 0
           ? `${t.days}d ${t.hours}h`
@@ -62,7 +59,7 @@ export function EventCountdown({ startsAt, compact = false }: Props) {
 
   return (
     <div
-      className="relative flex flex-wrap items-center justify-between gap-3 overflow-hidden rounded-2xl border p-4 sm:p-5"
+      className="relative flex flex-wrap items-center justify-between gap-2 overflow-hidden rounded-2xl border p-3 sm:gap-3 sm:p-5"
       style={{
         borderColor: isClose ? "var(--pulse)" : "var(--rule)",
         backgroundColor: "var(--paper-pure)",
@@ -71,7 +68,7 @@ export function EventCountdown({ startsAt, compact = false }: Props) {
       }}
     >
       <div
-        className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full blur-2xl"
+        className="pointer-events-none absolute -top-8 -right-8 h-24 w-24 rounded-full blur-2xl sm:-top-12 sm:-right-12 sm:h-32 sm:w-32"
         style={{
           backgroundColor: "var(--pulse)",
           opacity: isClose ? 0.25 : 0.12,
@@ -79,18 +76,22 @@ export function EventCountdown({ startsAt, compact = false }: Props) {
         aria-hidden="true"
       />
 
-      <div className="relative flex items-center gap-3">
+      <div className="relative flex min-w-0 items-center gap-2 sm:gap-3">
         <div
-          className="flex h-10 w-10 items-center justify-center rounded-xl"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10"
           style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
         >
-          <Clock size={18} />
+          <Clock size={16} className="sm:hidden" />
+          <Clock size={18} className="hidden sm:block" />
         </div>
-        <div>
-          <p className="text-[10px] font-semibold tracking-wider uppercase" style={{ color: "var(--mute)" }}>
+        <div className="min-w-0">
+          <p
+            className="text-[10px] font-semibold tracking-wider uppercase"
+            style={{ color: "var(--mute)" }}
+          >
             {isClose ? "Falta pouco!" : "Contagem regressiva"}
           </p>
-          <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
+          <p className="truncate text-xs font-semibold sm:text-sm" style={{ color: "var(--ink)" }}>
             {isClose
               ? t.days === 0
                 ? "Hoje é o dia"
@@ -102,7 +103,7 @@ export function EventCountdown({ startsAt, compact = false }: Props) {
         </div>
       </div>
 
-      <div className="relative flex gap-1.5 sm:gap-2">
+      <div className="relative flex shrink-0 gap-1 sm:gap-2">
         <Unit value={t.days} label="d" />
         <Sep />
         <Unit value={t.hours} label="h" />
@@ -118,19 +119,16 @@ export function EventCountdown({ startsAt, compact = false }: Props) {
 function Unit({ value, label }: { value: number; label: string }) {
   return (
     <div
-      className="flex min-w-[44px] flex-col items-center rounded-lg px-2 py-1.5 sm:min-w-[52px]"
+      className="flex min-w-[36px] flex-col items-center rounded-lg px-1.5 py-1 sm:min-w-[52px] sm:px-2 sm:py-1.5"
       style={{ backgroundColor: "var(--paper-soft)" }}
     >
       <span
-        className="font-mono text-lg leading-none font-bold tabular-nums sm:text-xl"
+        className="font-mono text-base leading-none font-bold tabular-nums sm:text-xl"
         style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}
       >
         {value.toString().padStart(2, "0")}
       </span>
-      <span
-        className="mt-0.5 text-[9px] tracking-wider uppercase"
-        style={{ color: "var(--mute)" }}
-      >
+      <span className="mt-0.5 text-[9px] tracking-wider uppercase" style={{ color: "var(--mute)" }}>
         {label}
       </span>
     </div>
@@ -140,7 +138,7 @@ function Unit({ value, label }: { value: number; label: string }) {
 function Sep() {
   return (
     <span
-      className="self-center font-mono text-lg font-bold"
+      className="self-center font-mono text-base font-bold sm:text-lg"
       style={{ color: "var(--pulse-deep)" }}
     >
       :
