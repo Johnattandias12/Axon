@@ -10,6 +10,7 @@ import { ProfileForm } from "./ProfileForm"
 import { AvatarUploader } from "@/components/shared/AvatarUploader"
 import { EventCard } from "@/components/event/EventCard"
 import { EventCountdown } from "@/components/event/EventCountdown"
+import { ResetPasswordButton } from "@/components/shared/ResetPasswordButton"
 import { centsToBRL, formatDate } from "@/lib/utils"
 import {
   Ticket as TicketIcon,
@@ -403,16 +404,7 @@ export default async function MinhaContaPage() {
               <p className="text-xs mt-1 mb-4" style={{ color: "var(--mute)" }}>
                 Se você faz login com email e senha, pode enviar um link de redefinição para o seu email.
               </p>
-              <form action="/api/auth/reset-password" method="POST">
-                <input type="hidden" name="email" value={user.email} />
-                <Button
-                  type="submit"
-                  className="w-full sm:w-auto"
-                  style={{ backgroundColor: "var(--paper-pure)", color: "var(--ink)", border: "1px solid var(--rule)" }}
-                >
-                  Enviar link de redefinição
-                </Button>
-              </form>
+              {user.email ? <ResetPasswordButton email={user.email} /> : <p>Email não disponível.</p>}
             </div>
           </section>
         </TabsContent>

@@ -89,3 +89,16 @@ export async function sendRefundProcessed(args: SendRefundProcessedArgs) {
   const { subject, html, text } = refundProcessedEmail(args)
   return sendEmail({ to: args.to, subject, html, text })
 }
+
+interface SendLoginNotificationArgs {
+  to: string
+  userName: string
+  ip: string
+  userAgent: string
+  location?: string
+}
+
+export async function sendLoginNotification(args: SendLoginNotificationArgs) {
+  const { subject, html, text } = loginNotificationEmail(args)
+  return sendEmail({ to: args.to, subject, html, text })
+}
