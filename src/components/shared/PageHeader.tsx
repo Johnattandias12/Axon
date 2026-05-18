@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { ReactNode } from "react"
 
 interface Props {
@@ -88,6 +88,48 @@ export function PageHeader({ back, eyebrow, title, description, actions, classNa
           )}
         </div>
         {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+      </div>
+
+      {/* Barra de controle de histórico abaixo da caixa de títulos */}
+      <div
+        className="flex items-center justify-between pt-3 border-t mt-4"
+        style={{ borderColor: "var(--rule-strong)" }}
+      >
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="group flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all hover:scale-[1.02] hover:border-white/20 active:scale-[0.98]"
+          style={{
+            borderColor: "var(--rule)",
+            backgroundColor: "var(--paper-pure)",
+            color: "var(--ink-3)",
+          }}
+        >
+          <ChevronLeft
+            size={14}
+            className="transition-transform group-hover:-translate-x-0.5"
+            style={{ color: "var(--pulse)" }}
+          />
+          Voltar
+        </button>
+
+        <button
+          type="button"
+          onClick={() => router.forward()}
+          className="group flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all hover:scale-[1.02] hover:border-white/20 active:scale-[0.98]"
+          style={{
+            borderColor: "var(--rule)",
+            backgroundColor: "var(--paper-pure)",
+            color: "var(--ink-3)",
+          }}
+        >
+          Avançar
+          <ChevronRight
+            size={14}
+            className="transition-transform group-hover:translate-x-0.5"
+            style={{ color: "var(--pulse)" }}
+          />
+        </button>
       </div>
     </div>
   )
