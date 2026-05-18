@@ -417,10 +417,10 @@ export function OrganizerOnboarding({ userId }: Props) {
                 Estrutura de taxas
               </p>
               <ul className="space-y-1 text-xs" style={{ color: "var(--ink-3)" }}>
-                <li>⚡ <strong style={{ color: "var(--ink)" }}>Pix:</strong> R$ 1,00 por pedido (comprador) · recebimento instantâneo</li>
-                <li>💳 <strong style={{ color: "var(--ink)" }}>Cartão 1x:</strong> +5% (comprador) · recebimento D+17</li>
-                <li>💳 <strong style={{ color: "var(--ink)" }}>Cartão 2–12x:</strong> +8% a +18% (comprador) · recebimento D+17</li>
-                <li>🏷️ <strong style={{ color: "var(--ink)" }}>Comissão AXON:</strong> 9% sobre o valor do ingresso</li>
+                <li><strong style={{ color: "var(--ink)" }}>Pix:</strong> R$ 1,00 por pedido (comprador) · recebimento instantâneo</li>
+                <li><strong style={{ color: "var(--ink)" }}>Cartão 1x:</strong> +5% (comprador) · recebimento D+17</li>
+                <li><strong style={{ color: "var(--ink)" }}>Cartão 2–12x:</strong> +8% a +18% (comprador) · recebimento D+17</li>
+                <li><strong style={{ color: "var(--ink)" }}>Comissão AXON:</strong> 9% sobre o valor do ingresso</li>
               </ul>
             </div>
 

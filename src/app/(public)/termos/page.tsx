@@ -15,8 +15,8 @@ const sections = [
       <>
         <p>
           Estes Termos regulam a relação entre a <strong className="text-[var(--ink)]">AXON</strong> — plataforma
-          operada por Francisco Johnattan Dias da Silva Costa (CNPJ em processo de abertura), com sede em
-          Currais Novos — RN — e os usuários que acessam <strong className="text-[var(--ink)]">axonia.vercel.app</strong>{" "}
+          gerida pelo CEO Johnattan Dias (CNPJ em processo de abertura), com sede em
+          Natal — RN — e os usuários que acessam <strong className="text-[var(--ink)]">axonia.vercel.app</strong>{" "}
           e domínios associados.
         </p>
         <p>

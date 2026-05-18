@@ -14,8 +14,8 @@ const sections = [
     content: (
       <>
         <p>
-          O controlador dos seus dados pessoais é a <strong className="text-[var(--ink)]">AXON</strong>, operada por
-          Francisco Johnattan Dias da Silva Costa, com sede em Currais Novos — RN, Brasil.
+          O controlador dos seus dados pessoais é a <strong className="text-[var(--ink)]">AXON</strong>, operada pelo
+          CEO Johnattan Dias, com sede em Natal — RN, Brasil.
         </p>
         <p>
           Encarregado de dados (DPO):{" "}
@@ -272,7 +272,7 @@ export default function PrivacidadePage() {
             <a href="mailto:privacidade@axonia.com.br" className="underline underline-offset-2" style={{ color: "var(--pulse)" }}>
               privacidade@axonia.com.br
             </a>{" "}
-            · AXON — Currais Novos, RN, Brasil · Respondemos em até 15 dias úteis.
+            · AXON — Natal, RN, Brasil · Respondemos em até 15 dias úteis.
           </p>
           <p className="mt-3 text-[13px]" style={{ color: "var(--mute)" }}>
             Veja também:{" "}
