@@ -102,10 +102,10 @@ export default function HomePage() {
               style={{ borderColor: "rgba(255,255,255,0.08)" }}
             >
               {[
-                { v: "Pix", d: "Cai na hora" },
-                { v: "QR Code", d: "Ingresso no celular" },
-                { v: "D+1", d: "Repasse pro organizador" },
-                { v: "Offline", d: "Valida sem 4G" },
+                { v: "9%", d: "Taxa do organizador" },
+                { v: "Pix", d: "Cai em ~2 minutos" },
+                { v: "D+1", d: "Repasse garantido" },
+                { v: "0%", d: "Taxa de adesão" },
               ].map(({ v, d }) => (
                 <div key={v} className="group flex flex-col items-start gap-1">
                   <p className="text-xl font-black text-white transition-colors group-hover:text-[var(--pulse)]">
@@ -430,6 +430,154 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Seção de Taxas — Transparência total */}
+        <section
+          className="border-b py-[80px]"
+          style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
+        >
+          <div className="mx-auto max-w-[1200px] px-5 md:px-8">
+            <div className="mb-12 text-center">
+              <p
+                className="mb-2 text-[11px] font-semibold tracking-[0.12em] uppercase"
+                style={{ color: "var(--mute)" }}
+              >
+                Sem letra miúda
+              </p>
+              <h2
+                className="text-[clamp(24px,3vw,38px)] font-bold tracking-tight"
+                style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}
+              >
+                Taxas claras.{" "}
+                <span style={{ color: "var(--pulse)" }}>Você decide como pagar.</span>
+              </h2>
+              <p className="mt-3 text-[15px]" style={{ color: "var(--mute)" }}>
+                O comprador escolhe o método. A conveniência é repassada de forma transparente.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {/* Pix */}
+              <div
+                className="group relative overflow-hidden rounded-2xl border-2 p-6 transition-all hover:-translate-y-1"
+                style={{ borderColor: "var(--pulse)", backgroundColor: "rgba(200,255,0,0.03)" }}
+              >
+                <div
+                  className="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full opacity-20 blur-3xl"
+                  style={{ backgroundColor: "var(--pulse)" }}
+                  aria-hidden="true"
+                />
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="text-3xl">⚡</span>
+                  <span
+                    className="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider"
+                    style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+                  >
+                    Recomendado
+                  </span>
+                </div>
+                <p className="mb-1 text-2xl font-black" style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}>
+                  R$ 1,00
+                </p>
+                <p className="mb-4 text-sm font-semibold" style={{ color: "var(--ink)" }}>Pix — por pedido</p>
+                <ul className="space-y-2 text-[13px]" style={{ color: "var(--mute)" }}>
+                  <li className="flex items-center gap-2">
+                    <svg className="h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="var(--pulse)" strokeWidth="1.5"><path d="M2 6l3 3 5-6"/></svg>
+                    Aprovação em ~2 minutos
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <svg className="h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="var(--pulse)" strokeWidth="1.5"><path d="M2 6l3 3 5-6"/></svg>
+                    Sem risco de chargeback
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <svg className="h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="var(--pulse)" strokeWidth="1.5"><path d="M2 6l3 3 5-6"/></svg>
+                    Organizador recebe em D+1
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <svg className="h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="var(--pulse)" strokeWidth="1.5"><path d="M2 6l3 3 5-6"/></svg>
+                    Menor custo para o comprador
+                  </li>
+                </ul>
+              </div>
+
+              {/* Cartão à vista */}
+              <div
+                className="group relative overflow-hidden rounded-2xl border p-6 transition-all hover:-translate-y-1"
+                style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}
+              >
+                <div
+                  className="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full opacity-10 blur-3xl"
+                  style={{ backgroundColor: "var(--info)" }}
+                  aria-hidden="true"
+                />
+                <div className="mb-4">
+                  <span className="text-3xl">💳</span>
+                </div>
+                <p className="mb-1 text-2xl font-black" style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}>
+                  +5%
+                </p>
+                <p className="mb-4 text-sm font-semibold" style={{ color: "var(--ink)" }}>Cartão à vista (1x)</p>
+                <ul className="space-y-2 text-[13px]" style={{ color: "var(--mute)" }}>
+                  <li className="flex items-center gap-2">
+                    <svg className="h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="var(--info)" strokeWidth="1.5"><path d="M2 6l3 3 5-6"/></svg>
+                    Aprovação em segundos
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <svg className="h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="var(--info)" strokeWidth="1.5"><path d="M2 6l3 3 5-6"/></svg>
+                    Funciona em qualquer banco
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <svg className="h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="var(--info)" strokeWidth="1.5"><path d="M2 6l3 3 5-6"/></svg>
+                    Ativado pelo organizador
+                  </li>
+                </ul>
+              </div>
+
+              {/* Parcelado */}
+              <div
+                className="group relative overflow-hidden rounded-2xl border p-6 transition-all hover:-translate-y-1"
+                style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}
+              >
+                <div
+                  className="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full opacity-10 blur-3xl"
+                  style={{ backgroundColor: "var(--warning)" }}
+                  aria-hidden="true"
+                />
+                <div className="mb-4">
+                  <span className="text-3xl">📆</span>
+                </div>
+                <p className="mb-1 text-2xl font-black" style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}>
+                  até 12x
+                </p>
+                <p className="mb-4 text-sm font-semibold" style={{ color: "var(--ink)" }}>Cartão parcelado</p>
+                <ul className="space-y-2 text-[13px]" style={{ color: "var(--mute)" }}>
+                  <li className="flex items-center gap-2">
+                    <svg className="h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="var(--warning)" strokeWidth="1.5"><path d="M2 6l3 3 5-6"/></svg>
+                    2–3x com +8% de conveniência
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <svg className="h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="var(--warning)" strokeWidth="1.5"><path d="M2 6l3 3 5-6"/></svg>
+                    6x com +12% de conveniência
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <svg className="h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="var(--warning)" strokeWidth="1.5"><path d="M2 6l3 3 5-6"/></svg>
+                    Ativado pelo organizador
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Nota de rodapé */}
+            <p className="mt-8 text-center text-[13px]" style={{ color: "var(--mute)" }}>
+              A comissão AXON de <strong style={{ color: "var(--ink)" }}>9%</strong> é retida no split — o organizador recebe o valor líquido direto na conta.
+              Taxas de conveniência são cobradas do comprador e exibidas antes da finalização.{" "}
+              <Link href="/termos" style={{ color: "var(--pulse)" }} className="underline underline-offset-2">
+                Ver termos completos
+              </Link>
+            </p>
+          </div>
+        </section>
+
       </main>
 
       {/* Footer */}
