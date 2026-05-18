@@ -20,8 +20,8 @@ export async function POST(req: Request) {
 
     const body = await req.json().catch(() => ({}))
     const userAgent = body.userAgent || req.headers.get("user-agent") || "Desconhecido"
-    let ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "Desconhecido"
-    if (ip.includes(",")) ip = ip.split(",")[0].trim()
+    let ip: string = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "Desconhecido"
+    if (ip && ip.includes(",")) ip = ip.split(",")[0].trim()
 
     let location = body.location
     if (!location && ip && ip !== "Desconhecido" && ip !== "127.0.0.1" && ip !== "::1") {
@@ -41,9 +41,9 @@ export async function POST(req: Request) {
     await sendLoginNotification({
       to: user.email,
       userName: profile?.full_name || user.email.split("@")[0],
-      ip,
-      userAgent,
-      location,
+      ip: ip || "Desconhecido",
+      userAgent: userAgent || "Desconhecido",
+      location: location || "",
     })
 
     return NextResponse.json({ ok: true })
