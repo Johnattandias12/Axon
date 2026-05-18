@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { redirect } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -18,6 +19,7 @@ import {
   Sparkles,
   History,
   Lightbulb,
+  ShieldCheck,
 } from "lucide-react"
 
 export const metadata: Metadata = { title: "Minha conta" }
@@ -116,6 +118,17 @@ export default async function MinhaContaPage() {
     suggestions = (data ?? []) as SuggestionEvent[]
   }
 
+  // Detecta se o usuário é afiliado. Tolerante a migration 008/009 não aplicada.
+  let isActiveAffiliate = false
+  try {
+    const { getAffiliateByUserId } = await import("@/lib/supabase/affiliates-admin")
+    const admin = createAdminClient()
+    const aff = await getAffiliateByUserId(admin, user.id)
+    isActiveAffiliate = !!aff
+  } catch {
+    // tabela ainda não existe — segue sem mostrar acesso ao programa
+  }
+
   const hora = new Date().getHours()
   const saudacao = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite"
   const firstName = profile?.full_name?.split(" ")[0]
@@ -212,29 +225,39 @@ export default async function MinhaContaPage() {
 
           <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:flex-col">
             <Link
-              href="/eventos"
+              href="/minha-conta/ingressos"
               className="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-bold transition-transform hover:scale-[1.03] sm:flex-initial"
               style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+            >
+              <TicketIcon size={14} />
+              Meus ingressos
+            </Link>
+            <Link
+              href="/eventos"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-black/5 sm:flex-initial"
+              style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
             >
               <Calendar size={14} />
               Explorar eventos
             </Link>
             <Link
-              href="/carrinho"
+              href="/minha-conta/seguranca"
               className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-black/5 sm:flex-initial"
               style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
             >
-              <TicketIcon size={14} />
-              Meu carrinho
+              <ShieldCheck size={14} />
+              Segurança
             </Link>
-            <Link
-              href="/minha-conta/afiliados"
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-black/5 sm:flex-initial"
-              style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
-            >
-              <Sparkles size={14} />
-              Programa de afiliados
-            </Link>
+            {isActiveAffiliate && (
+              <Link
+                href="/minha-conta/afiliados"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-black/5 sm:flex-initial"
+                style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
+              >
+                <Sparkles size={14} />
+                Painel de afiliado
+              </Link>
+            )}
           </div>
         </div>
 

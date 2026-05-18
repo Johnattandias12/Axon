@@ -12,6 +12,8 @@ import {
   User as UserIcon,
   Building2,
   Shield,
+  ShieldCheck,
+  Ticket,
   LogOut,
   LogIn,
 } from "lucide-react"
@@ -188,6 +190,12 @@ export function SiteMobileNav({
           {isAuthed && (
             <>
               <NavItem
+                href="/minha-conta/ingressos"
+                icon={<Ticket size={15} />}
+                label="Meus ingressos"
+                onClose={() => setOpen(false)}
+              />
+              <NavItem
                 href="/carrinho"
                 icon={<ShoppingBag size={15} />}
                 label="Carrinho"
@@ -198,6 +206,12 @@ export function SiteMobileNav({
                 href="/minha-conta"
                 icon={<UserIcon size={15} />}
                 label="Minha conta"
+                onClose={() => setOpen(false)}
+              />
+              <NavItem
+                href="/minha-conta/seguranca"
+                icon={<ShieldCheck size={15} />}
+                label="Segurança"
                 onClose={() => setOpen(false)}
               />
               {(role === "organizer" || role === "admin") && (

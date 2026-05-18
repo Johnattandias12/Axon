@@ -2,11 +2,11 @@ import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
+import Link from "next/link"
 import { PageHeader } from "@/components/shared/PageHeader"
-import { JoinAffiliateButton } from "./JoinAffiliateButton"
 import { AffiliateCodeCard } from "./AffiliateCodeCard"
 import { centsToBRL, formatDate } from "@/lib/utils"
-import { Users, DollarSign, Link2, TrendingUp } from "lucide-react"
+import { Users, DollarSign, Link2, TrendingUp, Lock } from "lucide-react"
 import { getAffiliateByUserId, getReferralsForAffiliate } from "@/lib/supabase/affiliates-admin"
 
 export const metadata: Metadata = { title: "Afiliados · AXON" }
@@ -45,28 +45,35 @@ export default async function AfiliadosPage() {
             borderColor: "var(--rule)",
             backgroundColor: "var(--paper-pure)",
             backgroundImage:
-              "linear-gradient(135deg, var(--paper-pure) 0%, color-mix(in srgb, var(--pulse) 6%, var(--paper-pure)) 100%)",
+              "linear-gradient(135deg, var(--paper-pure) 0%, color-mix(in srgb, var(--pulse) 4%, var(--paper-pure)) 100%)",
           }}
         >
           <div
             className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
-            style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+            style={{ backgroundColor: "var(--ink)", color: "var(--pulse)" }}
           >
-            <DollarSign size={24} />
+            <Lock size={22} />
           </div>
           <div>
             <h2
               className="text-xl font-bold tracking-tight"
               style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
             >
-              Vire afiliado AXON
+              Programa por convite
             </h2>
             <p className="mx-auto mt-2 max-w-md text-sm" style={{ color: "var(--mute)" }}>
-              Você ganha 5% sobre cada ingresso vendido por meio do seu link único. Sem mensalidade,
-              sem mínimo de vendas. Saque a partir de R$ 50.
+              O programa de afiliados AXON é fechado. Se você é organizador, influencer ou parceiro
+              e quer divulgar nossos eventos, fale com a gente. Comissão sobre cada venda confirmada
+              pelo seu link.
             </p>
           </div>
-          <JoinAffiliateButton />
+          <Link
+            href="mailto:contato@axon.app?subject=Quero%20virar%20afiliado%20AXON"
+            className="inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.03]"
+            style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+          >
+            Falar com a AXON
+          </Link>
         </div>
       ) : (
         <>

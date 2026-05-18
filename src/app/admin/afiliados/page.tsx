@@ -40,20 +40,30 @@ export default async function AdminAfiliadosPage() {
         description="Veja indicações por afiliado, marque comissões como pagas e acompanhe o top performer."
       />
 
-      {migrationMissing ? (
+      {migrationMissing && (
         <div
-          className="rounded-2xl border border-dashed p-8 text-center"
-          style={{ borderColor: "var(--warning)", backgroundColor: "var(--warning-soft)" }}
+          className="flex items-start gap-3 rounded-xl border px-4 py-3 text-xs"
+          style={{
+            borderColor: "var(--warning)",
+            backgroundColor: "var(--warning-soft)",
+            color: "var(--ink-4)",
+          }}
         >
-          <p className="text-sm font-semibold" style={{ color: "var(--warning)" }}>
-            Programa de afiliados em ativação
-          </p>
-          <p className="mt-2 text-xs" style={{ color: "var(--ink-4)" }}>
-            A migration <code>008_affiliates.sql</code> ainda não foi aplicada. Rode no Supabase SQL
-            Editor ou via <code>npx supabase db push</code>.
-          </p>
+          <span style={{ color: "var(--warning)" }}>⚠</span>
+          <div className="space-y-1">
+            <p className="font-semibold" style={{ color: "var(--warning)" }}>
+              Setup pendente
+            </p>
+            <p>
+              A migration <code>008_affiliates.sql</code> ainda não foi aplicada — o painel mostra
+              dados zerados. Rode no Supabase SQL Editor ou via <code>npx supabase db push</code>{" "}
+              pra ativar o programa.
+            </p>
+          </div>
         </div>
-      ) : (
+      )}
+
+      {migrationMissing ? null : (
         <>
           {/* KPIs */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

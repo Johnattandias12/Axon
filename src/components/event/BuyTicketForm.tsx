@@ -46,6 +46,22 @@ export function BuyTicketForm({
     if (stored && /^[A-Z0-9]{4,12}$/.test(stored)) setAffiliateCode(stored)
   }, [])
 
+  // Pré-preenche titular com último uso (poupa digitação). Stored cru.
+  useEffect(() => {
+    const n = localStorage.getItem("axon_holder_name")
+    if (n) setHolderName(n)
+    const c = localStorage.getItem("axon_holder_cpf")
+    if (c) setHolderCpf(c)
+  }, [])
+
+  // Persiste enquanto digita pra próxima compra já vir preenchido.
+  useEffect(() => {
+    if (holderName) localStorage.setItem("axon_holder_name", holderName)
+  }, [holderName])
+  useEffect(() => {
+    if (holderCpf) localStorage.setItem("axon_holder_cpf", holderCpf)
+  }, [holderCpf])
+
   const subtotal = pricePerUnit * qty
   const fee = Math.round(subtotal * 0.1)
   const total = subtotal + fee
