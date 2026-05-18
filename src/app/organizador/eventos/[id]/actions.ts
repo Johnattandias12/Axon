@@ -44,7 +44,8 @@ export async function updatePaymentMethods(
 
   const { error: updateErr } = await admin
     .from("events")
-    .update({ payment_methods: config })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .update({ payment_methods: config } as any)
     .eq("id", eventId)
 
   if (updateErr) return { ok: false, error: updateErr.message }
@@ -67,7 +68,8 @@ export async function getEventPaymentMethods(eventId: string): Promise<PaymentCo
     .eq("id", eventId)
     .single()
 
-  return data?.payment_methods ?? {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data as any)?.payment_methods ?? {
     pix: true,
     credit_card: false,
     max_installments: 1,

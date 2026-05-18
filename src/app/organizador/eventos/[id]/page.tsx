@@ -246,7 +246,7 @@ export default async function EventoDetailPage({ params }: Props) {
         </div>
         <PaymentMethodsConfig
           eventId={id}
-          initialConfig={event.payment_methods ?? {
+          initialConfig={(event as any).payment_methods ?? {
             pix: true,
             credit_card: false,
             max_installments: 1,
