@@ -93,7 +93,7 @@ export function BuyTicketForm({
         style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
         disabled={maxQuantity <= 0}
       >
-        {maxQuantity <= 0 ? "Esgotado" : "Comprar ingresso"}
+        {maxQuantity <= 0 ? "Esgotado" : "Quero ir"}
       </button>
 
       {open && (
@@ -118,7 +118,7 @@ export function BuyTicketForm({
             <div className="border-b p-5" style={{ borderColor: "var(--rule)" }}>
               <div className="flex items-center gap-2" style={{ color: "var(--mute)" }}>
                 <Ticket size={14} />
-                <span className="text-xs font-medium tracking-wider uppercase">Compra rápida</span>
+                <span className="text-xs font-medium tracking-wider uppercase">Vai. Viva.</span>
               </div>
               <p
                 className="mt-1.5 text-lg font-bold tracking-tight"
@@ -269,10 +269,10 @@ export function BuyTicketForm({
                 {pending ? (
                   <>
                     <Loader2 size={16} className="animate-spin" />
-                    Gerando ingresso…
+                    Reservando teu lugar…
                   </>
                 ) : (
-                  <>Confirmar e gerar ingresso</>
+                  <>Confirma. Te vejo lá.</>
                 )}
               </button>
 

@@ -201,8 +201,9 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
           })
         }
       }
-    } catch {
-      // Migração 008 pode não estar aplicada — ignora silenciosamente
+    } catch (affErr) {
+      // Migração 008 pode não estar aplicada. Loga mas não bloqueia a compra.
+      console.error("[buyDemo] afiliado falhou (compra OK):", affErr)
     }
   }
 

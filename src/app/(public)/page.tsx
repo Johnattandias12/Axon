@@ -92,7 +92,7 @@ export default function HomePage() {
                 className="inline-flex items-center gap-2 rounded-xl border px-8 py-4 text-[16px] font-semibold text-white transition-all hover:border-white/30 hover:bg-white/10"
                 style={{ borderColor: "rgba(255,255,255,0.15)" }}
               >
-                Criar conta
+                Cria tua conta
               </Link>
             </div>
 

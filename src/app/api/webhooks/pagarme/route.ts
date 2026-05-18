@@ -129,10 +129,17 @@ export async function POST(req: Request) {
           .select("ticket_lot_id, quantity")
           .eq("order_id", ourOrderId)
         for (const it of items ?? []) {
-          await admin.rpc("release_lot", {
+          const { error: releaseErr } = await admin.rpc("release_lot", {
             p_lot_id: it.ticket_lot_id,
             p_quantity: it.quantity,
           })
+          if (releaseErr) {
+            console.error(
+              "[pagarme webhook] release_lot falhou",
+              { lot_id: it.ticket_lot_id, qty: it.quantity, event: event.id },
+              releaseErr
+            )
+          }
         }
         break
       }

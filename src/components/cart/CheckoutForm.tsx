@@ -50,7 +50,7 @@ export function CheckoutForm({ defaultName = "", defaultCpf = "" }: Props) {
           placeholder="Nome completo"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--pulse)]"
+          className="w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none focus:border-[var(--pulse)]"
           style={{
             borderColor: "var(--rule)",
             backgroundColor: "var(--paper-soft)",
@@ -75,7 +75,7 @@ export function CheckoutForm({ defaultName = "", defaultCpf = "" }: Props) {
           value={cpf}
           onChange={(e) => setCpf(formatCPF(e.target.value))}
           inputMode="numeric"
-          className="w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--pulse)]"
+          className="w-full rounded-lg border px-3 py-2 text-sm transition-colors outline-none focus:border-[var(--pulse)]"
           style={{
             borderColor: "var(--rule)",
             backgroundColor: "var(--paper-soft)",
@@ -109,12 +109,12 @@ export function CheckoutForm({ defaultName = "", defaultCpf = "" }: Props) {
         {pending ? (
           <>
             <Loader2 size={16} className="animate-spin" />
-            Finalizando…
+            Confirmando…
           </>
         ) : (
           <>
             <ShieldCheck size={14} />
-            Finalizar compra
+            Confirma. Bora entrar.
           </>
         )}
       </button>
