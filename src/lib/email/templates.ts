@@ -462,3 +462,72 @@ ${reason ? `Motivo: ${reason}` : ""}
 — AXON`,
   }
 }
+
+/**
+ * Email de notificação de login
+ */
+export function loginNotificationEmail({
+  userName,
+  ip,
+  userAgent,
+  location,
+}: {
+  userName: string
+  ip: string
+  userAgent: string
+  location?: string
+}): { subject: string; html: string; text: string } {
+  const t = TOKENS
+  const subject = "Novo login na sua conta AXON"
+  const body = `
+          <tr>
+            <td style="padding:36px 28px 8px;">
+              <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${t.mute};">
+                Segurança
+              </p>
+              <h1 style="margin:8px 0 0;font-size:26px;line-height:1.18;letter-spacing:-0.03em;font-weight:800;color:${t.ink};">
+                Novo login detectado
+              </h1>
+              <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${t.mute};">
+                Olá, ${escapeHtml(userName)}.<br><br>
+                Registramos um novo acesso à sua conta na AXON. Se foi você, pode ignorar este e-mail.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 28px 28px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:${t.paper};border-radius:16px;border:1px solid ${t.rule};">
+                <tr>
+                  <td style="padding:20px;">
+                    <p style="margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:${t.mute};">Detalhes do Acesso</p>
+                    <p style="margin:6px 0 0;font-size:13px;color:${t.mute};"><strong style="color:${t.ink};">Data:</strong> ${new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}</p>
+                    <p style="margin:6px 0 0;font-size:13px;color:${t.mute};"><strong style="color:${t.ink};">IP:</strong> ${escapeHtml(ip)}</p>
+                    ${location ? `<p style="margin:6px 0 0;font-size:13px;color:${t.mute};"><strong style="color:${t.ink};">Local aproximado:</strong> ${escapeHtml(location)}</p>` : ""}
+                    <p style="margin:6px 0 0;font-size:13px;color:${t.mute};"><strong style="color:${t.ink};">Dispositivo:</strong> ${escapeHtml(userAgent)}</p>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:16px 0 0;font-size:12px;color:${t.mute};line-height:1.5;">
+                Se não reconhece este acesso, recomendamos que <a href="https://axon.com.br/redefinir-senha" style="color:${t.danger};font-weight:bold;text-decoration:none;">redefina sua senha imediatamente</a>.
+              </p>
+            </td>
+          </tr>`
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Alerta de Login", children: body }),
+    text: `Novo login detectado
+
+Olá, ${userName}.
+
+Registramos um novo acesso à sua conta na AXON.
+
+Data: ${new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}
+IP: ${ip}
+${location ? `Local aproximado: ${location}` : ""}
+Dispositivo: ${userAgent}
+
+Se não foi você, redefina sua senha imediatamente.
+
+— AXON`,
+  }
+}

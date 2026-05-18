@@ -119,7 +119,6 @@ export default async function MinhaContaPage() {
 
   const hora = new Date().getHours()
   const saudacao = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite"
-  const firstName = profile?.full_name?.split(" ")[0]
   const roleConfig = {
     admin: { label: "Admin", bg: "var(--danger-soft)", color: "var(--danger)" },
     organizer: { label: "Organizador", bg: "var(--pulse-soft)", color: "var(--pulse-deep)" },
@@ -203,7 +202,7 @@ export default async function MinhaContaPage() {
               className="text-3xl font-bold tracking-tight sm:text-4xl"
               style={{ color: "var(--ink)", letterSpacing: "-0.035em" }}
             >
-              {saudacao}, {firstName ?? "amigo"}
+              {saudacao}, {profile?.full_name ?? "amigo"}
               <span style={{ color: "var(--pulse-deep)" }}>.</span>
             </h1>
             <p className="text-sm" style={{ color: "var(--mute)" }}>

@@ -14,6 +14,7 @@ import { ChevronDown, Shield, Building2, User as UserIcon } from "lucide-react"
 import { SiteMobileNav } from "./SiteMobileNav"
 import { ThemeToggle } from "./ThemeToggle"
 import { HeaderCartButton } from "@/components/cart/HeaderCartButton"
+import { HistoryNav } from "./HistoryNav"
 
 export async function SiteHeader() {
   const supabase = await createClient()
@@ -79,18 +80,21 @@ export async function SiteHeader() {
         aria-hidden="true"
       />
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-3 sm:gap-4 sm:px-6">
-        <Link
-          href="/"
-          className="flex shrink-0 items-center transition-opacity hover:opacity-80"
-          aria-label="AXON · Início"
-        >
-          <span className="sm:hidden">
-            <AxonSymbol size={26} tone="ink" />
-          </span>
-          <span className="hidden sm:block">
-            <AxonLogo size={20} tone="ink" />
-          </span>
-        </Link>
+        <div className="flex items-center">
+          <Link
+            href="/"
+            className="flex shrink-0 items-center transition-opacity hover:opacity-80"
+            aria-label="AXON · Início"
+          >
+            <span className="sm:hidden">
+              <AxonSymbol size={26} tone="ink" />
+            </span>
+            <span className="hidden sm:block">
+              <AxonLogo size={20} tone="ink" />
+            </span>
+          </Link>
+          <HistoryNav />
+        </div>
 
         {/* Nav desktop */}
         <nav className="hidden items-center gap-6 md:flex">

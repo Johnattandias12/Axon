@@ -80,6 +80,17 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
         toast.error(mapSupabaseError(error.message))
         return
       }
+
+      // Notifica login via email em background (best-effort)
+      fetch("/api/auth/login-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userAgent: window.navigator.userAgent,
+          location: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
+      }).catch(console.error)
+
       toast.success("Bem-vindo de volta! Bora encher o carrinho.", { duration: 2200 })
       // Hard navigation pra garantir que o header server-side reflita o login
       window.location.href = redirectTo
