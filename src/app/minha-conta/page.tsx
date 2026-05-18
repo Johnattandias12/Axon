@@ -33,7 +33,7 @@ export default async function MinhaContaPage() {
 
   const nowIso = new Date().toISOString()
 
-  const [{ data: profile }, { data: orders }] = await Promise.all([
+  const [{ data: initialProfile }, { data: orders }] = await Promise.all([
     supabase
       .from("profiles")
       .select("full_name, phone, cpf, role, avatar_url, birth_date")
@@ -51,6 +51,25 @@ export default async function MinhaContaPage() {
       .order("created_at", { ascending: false })
       .limit(40),
   ])
+
+  let profile = initialProfile
+  if (!profile) {
+    const { data: fallbackProfile } = await supabase
+      .from("profiles")
+      .select("full_name, role, avatar_url")
+      .eq("id", user.id)
+      .single()
+    if (fallbackProfile) {
+      profile = {
+        full_name: fallbackProfile.full_name,
+        role: fallbackProfile.role,
+        avatar_url: fallbackProfile.avatar_url,
+        phone: null,
+        cpf: null,
+        birth_date: null,
+      } as any
+    }
+  }
 
   const allOrders = orders ?? []
 
