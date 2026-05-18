@@ -8,7 +8,8 @@ export async function POST(req: Request) {
     const {
       data: { user },
     } = await supabase.auth.getUser()
-    if (!user || !user.email) {
+    const email = user.email
+    if (!user || !email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -19,8 +20,8 @@ export async function POST(req: Request) {
       .single()
 
     const body = await req.json().catch(() => ({}))
-    const userAgent = body.userAgent || req.headers.get("user-agent") || "Desconhecido"
-    let ip: string = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "Desconhecido"
+    const userAgent = (body.userAgent || req.headers.get("user-agent") || "Desconhecido") as string
+    let ip = (req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "Desconhecido") as string
     if (ip && ip.includes(",")) ip = ip.split(",")[0].trim()
 
     let location = body.location
@@ -39,8 +40,8 @@ export async function POST(req: Request) {
     }
 
     await sendLoginNotification({
-      to: user.email,
-      userName: profile?.full_name || user.email.split("@")[0],
+      to: email,
+      userName: (profile?.full_name || email.split("@")[0]) as string,
       ip: ip || "Desconhecido",
       userAgent: userAgent || "Desconhecido",
       location: location || "",
