@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { SecurityForm } from "./SecurityForm"
+import { EmailForm } from "./EmailForm"
 import { ShieldCheck, Mail, Key } from "lucide-react"
 
 export const metadata: Metadata = { title: "Segurança · AXON" }
@@ -41,21 +42,14 @@ export default async function SegurancaPage() {
             Identidade
           </h2>
         </div>
+        <EmailForm currentEmail={user.email ?? ""} />
+
         <div
           className="rounded-2xl border p-4"
           style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
         >
           <p
             className="text-[11px] font-semibold tracking-wider uppercase"
-            style={{ color: "var(--mute)" }}
-          >
-            E-mail
-          </p>
-          <p className="mt-1 font-mono text-sm" style={{ color: "var(--ink)" }}>
-            {user.email}
-          </p>
-          <p
-            className="mt-3 text-[11px] font-semibold tracking-wider uppercase"
             style={{ color: "var(--mute)" }}
           >
             Último acesso
