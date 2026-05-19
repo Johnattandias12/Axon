@@ -15,14 +15,14 @@ interface TicketConfirmationEmailProps {
  * Tokens visuais compartilhados entre todos os templates AXON (Dark Mode)
  */
 const TOKENS = {
-  text: "#FFFFFF",        // Texto principal
-  textMute: "#8C8C91",    // Texto secundário
-  bgBase: "#08080A",      // Fundo fora do e-mail
-  bgCard: "#121214",      // Fundo do card principal
-  bgDarker: "#050506",    // Fundo de destaque (Header)
-  pulse: "#C8FF00",       // Cor principal
+  text: "#FFFFFF", // Texto principal
+  textMute: "#8C8C91", // Texto secundário
+  bgBase: "#08080A", // Fundo fora do e-mail
+  bgCard: "#121214", // Fundo do card principal
+  bgDarker: "#050506", // Fundo de destaque (Header)
+  pulse: "#C8FF00", // Cor principal
   pulseSoft: "rgba(200, 255, 0, 0.08)", // Fundo sutil do Pulse
-  rule: "#2A2A30",        // Bordas
+  rule: "#2A2A30", // Bordas
   success: "#16A34A",
   danger: "#DC2626",
 } as const
@@ -227,7 +227,11 @@ Veja seu ingresso: ${orderUrl}
 —
 AXON · suporte@axon.com.br`
 
-  return { subject, html: emailShell({ subject, eyebrow: "Compra Confirmada", children: body }), text }
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Compra Confirmada", children: body }),
+    text,
+  }
 }
 
 /**
@@ -309,7 +313,9 @@ export function refundProcessedEmail({
 }): { subject: string; html: string; text: string } {
   const t = TOKENS
   const approved = decision === "approved"
-  const subject = approved ? `Reembolso aprovado para ${eventTitle}` : `Reembolso recusado para ${eventTitle}`
+  const subject = approved
+    ? `Reembolso aprovado para ${eventTitle}`
+    : `Reembolso recusado para ${eventTitle}`
   const accent = approved ? t.success : t.danger
   const headline = approved ? "Reembolso aprovado." : "Reembolso recusado."
   const explainer = approved
@@ -407,5 +413,269 @@ export function loginNotificationEmail({
     subject,
     html: emailShell({ subject, eyebrow: "Alerta de Login", children: body }),
     text: `Novo login detectado\n\nOlá, ${userName}.\n\nData: ${new Date().toLocaleString("pt-BR")}\nIP: ${ip}\nAparelho: ${userAgent}\n\nSe não foi você, redefina sua senha.\n\n— AXON`,
+  }
+}
+
+/**
+ * Email de redefinição de senha. Link gerado server-side via Supabase Admin.generateLink.
+ */
+export function passwordResetEmail({
+  userName,
+  resetUrl,
+}: {
+  userName: string
+  resetUrl: string
+}): { subject: string; html: string; text: string } {
+  const t = TOKENS
+  const subject = "Redefina sua senha AXON"
+  const body = `
+          <tr>
+            <td style="padding:36px 28px 8px;">
+              <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${t.textMute};">
+                Segurança
+              </p>
+              <h1 style="margin:8px 0 0;font-size:26px;line-height:1.18;letter-spacing:-0.03em;font-weight:800;color:${t.text};">
+                Redefina sua senha.
+              </h1>
+              <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                Olá, ${escapeHtml(userName)}. Você pediu pra redefinir a senha da sua conta AXON. Clique no botão pra criar uma nova.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 28px 8px;" align="center">
+              <a href="${resetUrl}" style="display:inline-block;padding:14px 32px;background-color:${t.pulse};color:#000000;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:-0.01em;border-radius:12px;">
+                Redefinir senha
+              </a>
+              <p style="margin:14px 0 0;font-size:11px;color:${t.textMute};">
+                Link válido por 1 hora. Se não foi você, ignore.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 28px 28px;">
+              <p style="margin:0;font-size:11px;color:${t.textMute};line-height:1.5;word-break:break-all;">
+                Ou copie e cole no navegador: <a href="${resetUrl}" style="color:${t.pulse};text-decoration:none;">${escapeHtml(resetUrl)}</a>
+              </p>
+            </td>
+          </tr>`
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Redefinir senha", children: body }),
+    text: `Olá, ${userName}.\n\nVocê pediu pra redefinir sua senha AXON.\n\nLink (válido por 1 hora): ${resetUrl}\n\nSe não foi você, ignore.\n\n— AXON`,
+  }
+}
+
+/**
+ * Email com link mágico (passwordless). Link gerado via Supabase Admin.generateLink type=magiclink.
+ */
+export function magicLinkEmail({ userName, magicUrl }: { userName: string; magicUrl: string }): {
+  subject: string
+  html: string
+  text: string
+} {
+  const t = TOKENS
+  const subject = "Seu link de acesso AXON"
+  const body = `
+          <tr>
+            <td style="padding:36px 28px 8px;">
+              <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${t.textMute};">
+                Entrar
+              </p>
+              <h1 style="margin:8px 0 0;font-size:26px;line-height:1.18;letter-spacing:-0.03em;font-weight:800;color:${t.text};">
+                Entra. Aproveita.
+              </h1>
+              <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                Olá${userName ? `, ${escapeHtml(userName)}` : ""}. Clique no botão pra entrar na sua conta sem digitar senha.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 28px 8px;" align="center">
+              <a href="${magicUrl}" style="display:inline-block;padding:14px 32px;background-color:${t.pulse};color:#000000;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:-0.01em;border-radius:12px;">
+                Entrar agora
+              </a>
+              <p style="margin:14px 0 0;font-size:11px;color:${t.textMute};">
+                Link válido por 1 hora. Uso único.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 28px 28px;">
+              <p style="margin:0;font-size:11px;color:${t.textMute};line-height:1.5;word-break:break-all;">
+                Ou copie e cole: <a href="${magicUrl}" style="color:${t.pulse};text-decoration:none;">${escapeHtml(magicUrl)}</a>
+              </p>
+            </td>
+          </tr>`
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Link de acesso", children: body }),
+    text: `Olá${userName ? `, ${userName}` : ""}.\n\nLink de acesso AXON (válido por 1 hora): ${magicUrl}\n\n— AXON`,
+  }
+}
+
+/**
+ * Email de convite pra scanner (porteira/operador). Usa link tokenizado de /scan/[token].
+ */
+export function scannerInviteEmail({
+  scannerName,
+  eventTitle,
+  eventDate,
+  scanUrl,
+}: {
+  scannerName: string
+  eventTitle: string
+  eventDate: string
+  scanUrl: string
+}): { subject: string; html: string; text: string } {
+  const t = TOKENS
+  const subject = `${scannerName}, seu link de portaria — ${eventTitle}`
+  const body = `
+          <tr>
+            <td style="padding:36px 28px 8px;">
+              <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${t.pulse};">
+                Portaria
+              </p>
+              <h1 style="margin:8px 0 0;font-size:26px;line-height:1.18;letter-spacing:-0.03em;font-weight:800;color:${t.text};">
+                Olá, ${escapeHtml(scannerName)}.
+              </h1>
+              <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                Aqui está seu link pra validar ingressos do evento <strong style="color:${t.text};">${escapeHtml(eventTitle)}</strong> (${escapeHtml(eventDate)}).
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 28px 8px;" align="center">
+              <a href="${scanUrl}" style="display:inline-block;padding:14px 32px;background-color:${t.pulse};color:#000000;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:-0.01em;border-radius:12px;">
+                Abrir scanner →
+              </a>
+              <p style="margin:14px 0 0;font-size:12px;color:${t.textMute};">
+                Abra no celular. A câmera vai pedir permissão.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 28px 28px;">
+              <p style="margin:0;font-size:11px;color:${t.textMute};line-height:1.5;word-break:break-all;">
+                Ou copie no navegador: <a href="${scanUrl}" style="color:${t.pulse};text-decoration:none;">${escapeHtml(scanUrl)}</a>
+              </p>
+            </td>
+          </tr>`
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Convite Scanner", children: body }),
+    text: `Olá, ${scannerName}.\n\nSeu link de portaria para ${eventTitle} (${eventDate}):\n\n${scanUrl}\n\nAbra no celular.\n\n— AXON`,
+  }
+}
+
+/**
+ * Email de convite pra entrar numa crew/equipe de um evento.
+ */
+export function crewInviteEmail({
+  inviterName,
+  crewName,
+  eventTitle,
+  eventDate,
+  joinUrl,
+}: {
+  inviterName: string
+  crewName: string
+  eventTitle: string
+  eventDate: string
+  joinUrl: string
+}): { subject: string; html: string; text: string } {
+  const t = TOKENS
+  const subject = `${inviterName} te convidou pra crew "${crewName}"`
+  const body = `
+          <tr>
+            <td style="padding:36px 28px 8px;">
+              <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${t.pulse};">
+                Crew
+              </p>
+              <h1 style="margin:8px 0 0;font-size:26px;line-height:1.18;letter-spacing:-0.03em;font-weight:800;color:${t.text};">
+                Bora junto.
+              </h1>
+              <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                <strong style="color:${t.text};">${escapeHtml(inviterName)}</strong> montou a crew <strong style="color:${t.pulse};">${escapeHtml(crewName)}</strong> pro evento <strong style="color:${t.text};">${escapeHtml(eventTitle)}</strong> (${escapeHtml(eventDate)}).
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 28px 28px;" align="center">
+              <a href="${joinUrl}" style="display:inline-block;padding:14px 32px;background-color:${t.pulse};color:#000000;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:-0.01em;border-radius:12px;">
+                Entrar na crew
+              </a>
+              <p style="margin:14px 0 0;font-size:11px;color:${t.textMute};">
+                Você decide se aparece com nome e Instagram. Link válido até o evento.
+              </p>
+            </td>
+          </tr>`
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Convite Crew", children: body }),
+    text: `${inviterName} te convidou pra crew "${crewName}" no ${eventTitle} (${eventDate}).\n\nEntrar: ${joinUrl}\n\n— AXON`,
+  }
+}
+
+/**
+ * Email de comissão de afiliado creditada.
+ */
+export function affiliateCommissionEmail({
+  affiliateName,
+  eventTitle,
+  amountCents,
+  commissionRatePct,
+  balanceCents,
+}: {
+  affiliateName: string
+  eventTitle: string
+  amountCents: number
+  commissionRatePct: number
+  balanceCents: number
+}): { subject: string; html: string; text: string } {
+  const t = TOKENS
+  const subject = `+${centsToBRL(amountCents)} em créditos AXON`
+  const body = `
+          <tr>
+            <td style="padding:36px 28px 8px;">
+              <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${t.pulse};">
+                Comissão
+              </p>
+              <h1 style="margin:8px 0 0;font-size:26px;line-height:1.18;letter-spacing:-0.03em;font-weight:800;color:${t.text};">
+                Caiu na carteira.
+              </h1>
+              <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                Olá, ${escapeHtml(affiliateName)}. Sua venda em <strong style="color:${t.text};">${escapeHtml(eventTitle)}</strong> gerou ${commissionRatePct}% em créditos AXON.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 28px 8px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:${t.bgDarker};border-radius:16px;border:1px solid ${t.rule};">
+                <tr>
+                  <td style="padding:20px;">
+                    <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:${t.textMute};">Crédito recebido</p>
+                    <p style="margin:6px 0 0;font-size:24px;font-weight:800;color:${t.pulse};font-family:'Courier New',monospace;">${centsToBRL(amountCents)}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 20px 20px;border-top:1px solid ${t.rule};">
+                    <p style="margin:14px 0 0;font-size:13px;color:${t.textMute};">
+                      <strong style="color:${t.text};">Saldo total:</strong> <span style="font-family:'Courier New',monospace;">${centsToBRL(balanceCents)}</span>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 28px 28px;" align="center">
+              <p style="margin:0 0 14px;font-size:12px;color:${t.textMute};">Use seus créditos no checkout do próximo ingresso.</p>
+            </td>
+          </tr>`
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Crédito creditado", children: body }),
+    text: `Olá, ${affiliateName}.\n\nSua venda em ${eventTitle} gerou ${commissionRatePct}% em créditos AXON.\n\nCrédito recebido: ${centsToBRL(amountCents)}\nSaldo total: ${centsToBRL(balanceCents)}\n\n— AXON`,
   }
 }

@@ -7,7 +7,6 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createClient } from "@/lib/supabase/client"
 import { ArrowRight, CheckCircle2 } from "lucide-react"
 
 const schema = z.object({
@@ -20,9 +19,10 @@ interface MagicLinkFormProps {
   redirectTo?: string
 }
 
-export function MagicLinkForm({ redirectTo = "/" }: MagicLinkFormProps) {
+export function MagicLinkForm({ redirectTo: _redirectTo = "/" }: MagicLinkFormProps) {
   const [sent, setSent] = useState(false)
   const [sentEmail, setSentEmail] = useState("")
+  void _redirectTo
 
   const {
     register,
@@ -32,22 +32,24 @@ export function MagicLinkForm({ redirectTo = "/" }: MagicLinkFormProps) {
   } = useForm<FormData>({ resolver: zodResolver(schema) })
 
   const onSubmit = async (data: FormData) => {
-    const supabase = createClient()
-    const appUrl = process.env["NEXT_PUBLIC_APP_URL"] ?? "http://localhost:3000"
-    const { error } = await supabase.auth.signInWithOtp({
-      email: data.email,
-      options: {
-        emailRedirectTo: `${appUrl}/api/auth/callback?next=${encodeURIComponent(redirectTo)}`,
-      },
-    })
-
-    if (error) {
-      setError("email", { message: "Não foi possível enviar o link. Tente novamente." })
-      return
+    try {
+      const res = await fetch("/api/auth/magic-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email.trim().toLowerCase() }),
+      })
+      const body = (await res.json().catch(() => null)) as { ok: boolean; error?: string } | null
+      if (!res.ok || !body?.ok) {
+        setError("email", {
+          message: body?.error || "Não foi possível enviar agora. Tente novamente.",
+        })
+        return
+      }
+      setSentEmail(data.email)
+      setSent(true)
+    } catch {
+      setError("email", { message: "Erro inesperado. Tente novamente." })
     }
-
-    setSentEmail(data.email)
-    setSent(true)
   }
 
   if (sent) {

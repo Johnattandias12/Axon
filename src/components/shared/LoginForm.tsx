@@ -135,20 +135,19 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
   const handleReset = async (data: ResetData) => {
     const loadingId = toast.loading("Enviando link...")
     try {
-      const supabase = createClient()
-      const appUrl = process.env["NEXT_PUBLIC_APP_URL"] ?? window.location.origin
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email.trim().toLowerCase(), {
-        redirectTo: `${appUrl}/api/auth/callback?next=/redefinir-senha`,
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email.trim().toLowerCase() }),
       })
+      const body = (await res.json().catch(() => null)) as { ok: boolean; error?: string } | null
       toast.dismiss(loadingId)
-      if (error) {
-        console.warn(
-          "Supabase login page resetPasswordForEmail error (mocked success for UX):",
-          error.message
-        )
+      if (!res.ok || !body?.ok) {
+        toast.error(body?.error || "Não foi possível enviar agora. Tente em alguns minutos.")
+        return
       }
       setResetSent(true)
-      toast.success("E-mail de redefinição enviado! Verifique sua caixa de entrada.")
+      toast.success("E-mail enviado. Confere a caixa de entrada (e o spam).")
     } catch {
       toast.dismiss(loadingId)
       toast.error("Erro inesperado. Tente novamente.")
