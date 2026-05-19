@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { AxonLogo } from "@/components/shared/AxonLogo"
 import { EventsCarousel } from "@/components/shared/EventsCarousel"
 import { CategoriesCarousel } from "@/components/shared/CategoriesCarousel"
 import { NeuronAnimation } from "@/components/shared/NeuronAnimation"
@@ -351,7 +350,8 @@ export default function HomePage() {
                 </h2>
                 <p className="mb-10 max-w-[480px] text-[16px] leading-relaxed text-white/60">
                   Do evento criado ao ingresso vendido em minutos. Dashboard em tempo real, repasse
-                  D+2 via Pix ou 17 dias via Cartão, e validação de QR na portaria. Taxa base competitiva de 8,99%.
+                  D+2 via Pix ou 17 dias via Cartão, e validação de QR na portaria. Taxa base
+                  competitiva de 8,99%.
                 </p>
 
                 <ul className="mb-10 space-y-3">
@@ -431,7 +431,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-
     </div>
   )
 }

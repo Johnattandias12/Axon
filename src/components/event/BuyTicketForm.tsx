@@ -40,18 +40,34 @@ export function BuyTicketForm({
     if (via && /^[A-Z0-9]{4,12}$/.test(via)) {
       sessionStorage.setItem("axon_ref", via)
       setAffiliateCode(via)
-      
+
       // Rastrear clique silenciosamente
       fetch("/api/affiliate/track", {
         method: "POST",
-        body: JSON.stringify({ code: via, eventId: eventSlug }) // passamos slug provisório ou id se tivermos
+        body: JSON.stringify({ code: via, eventId: eventSlug }), // passamos slug provisório ou id se tivermos
       }).catch(() => {})
-      
+
       return
     }
     const stored = sessionStorage.getItem("axon_ref")
     if (stored && /^[A-Z0-9]{4,12}$/.test(stored)) setAffiliateCode(stored)
   }, [eventSlug])
+
+  // Pré-preenche titular com último uso (poupa digitação). Stored cru.
+  useEffect(() => {
+    const n = localStorage.getItem("axon_holder_name")
+    if (n) setHolderName(n)
+    const c = localStorage.getItem("axon_holder_cpf")
+    if (c) setHolderCpf(c)
+  }, [])
+
+  // Persiste enquanto digita pra próxima compra já vir preenchido.
+  useEffect(() => {
+    if (holderName) localStorage.setItem("axon_holder_name", holderName)
+  }, [holderName])
+  useEffect(() => {
+    if (holderCpf) localStorage.setItem("axon_holder_cpf", holderCpf)
+  }, [holderCpf])
 
   const subtotal = pricePerUnit * qty
   const fee = Math.round(subtotal * 0.1)
@@ -84,7 +100,7 @@ export function BuyTicketForm({
         style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
         disabled={maxQuantity <= 0}
       >
-        {maxQuantity <= 0 ? "Esgotado" : "Comprar ingresso"}
+        {maxQuantity <= 0 ? "Esgotado" : "Quero ir"}
       </button>
 
       {open && (
@@ -109,7 +125,7 @@ export function BuyTicketForm({
             <div className="border-b p-5" style={{ borderColor: "var(--rule)" }}>
               <div className="flex items-center gap-2" style={{ color: "var(--mute)" }}>
                 <Ticket size={14} />
-                <span className="text-xs font-medium tracking-wider uppercase">Compra rápida</span>
+                <span className="text-xs font-medium tracking-wider uppercase">Vai. Viva.</span>
               </div>
               <p
                 className="mt-1.5 text-lg font-bold tracking-tight"
@@ -260,10 +276,10 @@ export function BuyTicketForm({
                 {pending ? (
                   <>
                     <Loader2 size={16} className="animate-spin" />
-                    Gerando ingresso…
+                    Reservando teu lugar…
                   </>
                 ) : (
-                  <>Confirmar e gerar ingresso</>
+                  <>Confirma. Te vejo lá.</>
                 )}
               </button>
 

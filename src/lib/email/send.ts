@@ -1,4 +1,9 @@
-import { ticketConfirmationEmail, ticketTransferredEmail, refundProcessedEmail, loginNotificationEmail } from "./templates"
+import {
+  ticketConfirmationEmail,
+  ticketTransferredEmail,
+  refundProcessedEmail,
+  loginNotificationEmail,
+} from "./templates"
 
 /**
  * Envia email via Resend se RESEND_API_KEY estiver configurado.

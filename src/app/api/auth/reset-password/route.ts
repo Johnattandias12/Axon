@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   }
 
   const supabase = await createClient()
-  
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/api/auth/callback?next=/redefinir-senha`,
   })
@@ -20,7 +20,9 @@ export async function POST(request: Request) {
   // Se o request veio do painel Minha Conta, voltamos pra lá
   const referer = request.headers.get("referer") || ""
   if (referer.includes("/minha-conta")) {
-    return NextResponse.redirect(new URL("/minha-conta?tab=seguranca&msg=Email+enviado", request.url))
+    return NextResponse.redirect(
+      new URL("/minha-conta?tab=seguranca&msg=Email+enviado", request.url)
+    )
   }
 
   if (error) {

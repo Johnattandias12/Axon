@@ -18,7 +18,7 @@ export function AddToCartButton({ lotId, maxQuantity, isAuthenticated, eventSlug
   const [pending, startTransition] = useTransition()
   const [justAdded, setJustAdded] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { open, bumpRefresh } = useCartUI()
+  const { bumpRefresh } = useCartUI()
   const cap = Math.min(maxQuantity, 6)
 
   if (!isAuthenticated) {
@@ -72,7 +72,10 @@ export function AddToCartButton({ lotId, maxQuantity, isAuthenticated, eventSlug
         className="flex items-center justify-between rounded-lg border p-1.5 px-2"
         style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}
       >
-        <span className="text-[10px] font-bold tracking-wider uppercase" style={{ color: "var(--mute)" }}>
+        <span
+          className="text-[10px] font-bold tracking-wider uppercase"
+          style={{ color: "var(--mute)" }}
+        >
           Quantidade
         </span>
         <div className="flex items-center gap-2">
@@ -84,7 +87,10 @@ export function AddToCartButton({ lotId, maxQuantity, isAuthenticated, eventSlug
           >
             <Minus size={9} />
           </button>
-          <span className="min-w-[1.2rem] text-center font-mono text-xs font-bold" style={{ color: "var(--ink)" }}>
+          <span
+            className="min-w-[1.2rem] text-center font-mono text-xs font-bold"
+            style={{ color: "var(--ink)" }}
+          >
             {qty}
           </span>
           <button
@@ -119,9 +125,7 @@ export function AddToCartButton({ lotId, maxQuantity, isAuthenticated, eventSlug
             No carrinho
           </>
         ) : (
-          <>
-            Quero ir
-          </>
+          <>Quero ir</>
         )}
       </button>
       {error && (

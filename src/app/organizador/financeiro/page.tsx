@@ -4,17 +4,8 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { PageHeader } from "@/components/shared/PageHeader"
-import { centsToBRL, formatDate } from "@/lib/utils"
-import {
-  ArrowDownRight,
-  Banknote,
-  Clock,
-  DollarSign,
-  TrendingUp,
-  Wallet,
-  Percent,
-  Receipt,
-} from "lucide-react"
+import { centsToBRL } from "@/lib/utils"
+import { Banknote, Clock, DollarSign, TrendingUp, Wallet, Percent, Receipt } from "lucide-react"
 
 export const metadata: Metadata = { title: "Financeiro · AXON" }
 export const dynamic = "force-dynamic"
@@ -84,7 +75,8 @@ export default async function FinanceiroPage() {
   if (eventIds.length > 0) {
     const { data } = await admin
       .from("orders")
-      .select(`
+      .select(
+        `
         id, 
         total_cents, 
         subtotal_cents, 
@@ -95,7 +87,8 @@ export default async function FinanceiroPage() {
         events(id, title, slug),
         buyer:buyer_id(id, full_name, phone, cpf),
         tickets(id, holder_name, holder_cpf, is_half_price, status, used_at, used_by, ticket_lots:ticket_lot_id(title))
-      `)
+      `
+      )
       .in("event_id", eventIds)
       .eq("status", "paid")
       .order("paid_at", { ascending: false })

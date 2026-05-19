@@ -142,7 +142,10 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
       })
       toast.dismiss(loadingId)
       if (error) {
-        console.warn("Supabase login page resetPasswordForEmail error (mocked success for UX):", error.message)
+        console.warn(
+          "Supabase login page resetPasswordForEmail error (mocked success for UX):",
+          error.message
+        )
       }
       setResetSent(true)
       toast.success("E-mail de redefinição enviado! Verifique sua caixa de entrada.")

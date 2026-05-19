@@ -19,21 +19,8 @@ interface Props {
  * título grande + ações à direita.
  * Aplicável a qualquer rota interna pra dar consistência de UX.
  */
-export function PageHeader({ back, eyebrow, title, description, actions, className = "" }: Props) {
+export function PageHeader({ eyebrow, title, description, actions, className = "" }: Props) {
   const router = useRouter()
-  const backLabel = typeof back === "object" ? (back.label ?? "Voltar") : "Voltar"
-  const backHref =
-    typeof back === "object" ? back.href : typeof back === "string" ? back : undefined
-
-  function handleBack() {
-    if (backHref) {
-      router.push(backHref)
-    } else if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back()
-    } else {
-      router.push("/")
-    }
-  }
 
   return (
     <div className={`mb-6 space-y-3 ${className}`}>
@@ -72,7 +59,7 @@ export function PageHeader({ back, eyebrow, title, description, actions, classNa
 
       {/* Barra de controle de histórico abaixo da caixa de títulos */}
       <div
-        className="flex items-center justify-between pt-3 border-t mt-4"
+        className="mt-4 flex items-center justify-between border-t pt-3"
         style={{ borderColor: "var(--rule-strong)" }}
       >
         <button

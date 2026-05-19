@@ -89,11 +89,7 @@ export function ProfileForm({ userId, initialData }: Props) {
 
       <div className="space-y-1.5">
         <Label style={{ color: "var(--ink)" }}>Data de Nascimento</Label>
-        <Input
-          type="date"
-          {...register("birth_date")}
-          className="w-full"
-        />
+        <Input type="date" {...register("birth_date")} className="w-full" />
         <p className="text-xs" style={{ color: "var(--mute-2)" }}>
           Necessário para eventos com restrição de faixa etária.
         </p>

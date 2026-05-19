@@ -10,11 +10,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ChevronDown, Shield, Building2, User as UserIcon } from "lucide-react"
+import { ChevronDown, Shield, Building2, User as UserIcon, Ticket, ShieldCheck } from "lucide-react"
 import { SiteMobileNav } from "./SiteMobileNav"
 import { ThemeToggle } from "./ThemeToggle"
 import { HeaderCartButton } from "@/components/cart/HeaderCartButton"
-import { HistoryNav } from "./HistoryNav"
 
 export async function SiteHeader() {
   const supabase = await createClient()
@@ -103,6 +102,13 @@ export async function SiteHeader() {
             style={{ color: "var(--mute)" }}
           >
             Eventos
+          </Link>
+          <Link
+            href="/precos"
+            className="text-sm transition-colors hover:opacity-70"
+            style={{ color: "var(--mute)" }}
+          >
+            Preços
           </Link>
           {(profile?.role === "organizer" || profile?.role === "admin") && (
             <Link
@@ -208,13 +214,23 @@ export async function SiteHeader() {
                       </span>
                     </div>
                     <DropdownMenuItem render={<Link href="/minha-conta" />}>
+                      <UserIcon size={13} className="mr-1.5" />
                       Minha conta
+                    </DropdownMenuItem>
+                    <DropdownMenuItem render={<Link href="/minha-conta/ingressos" />}>
+                      <Ticket size={13} className="mr-1.5" />
+                      Meus ingressos
                     </DropdownMenuItem>
                     <DropdownMenuItem render={<Link href="/carrinho" />}>
                       Carrinho{cartCount > 0 ? ` (${cartCount})` : ""}
                     </DropdownMenuItem>
+                    <DropdownMenuItem render={<Link href="/minha-conta/seguranca" />}>
+                      <ShieldCheck size={13} className="mr-1.5" />
+                      Segurança
+                    </DropdownMenuItem>
                     {(profile?.role === "organizer" || profile?.role === "admin") && (
                       <DropdownMenuItem render={<Link href="/organizador" />}>
+                        <Building2 size={13} className="mr-1.5" />
                         Painel do organizador
                       </DropdownMenuItem>
                     )}
@@ -223,6 +239,7 @@ export async function SiteHeader() {
                         render={<Link href="/admin" />}
                         style={{ color: "var(--danger)" }}
                       >
+                        <Shield size={13} className="mr-1.5" />
                         Painel admin
                       </DropdownMenuItem>
                     )}

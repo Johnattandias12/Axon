@@ -87,7 +87,9 @@ export default async function CarrinhoPage() {
             style={{ color: "var(--ink)", letterSpacing: "-0.035em" }}
           >
             {totalItems > 0
-              ? `${totalItems} ${totalItems === 1 ? "ingresso" : "ingressos"} selecionados`
+              ? totalItems === 1
+                ? "1 noite na sua mão"
+                : `${totalItems} noites na sua mão`
               : "Seu carrinho"}
           </h1>
         </div>
@@ -250,7 +252,10 @@ function EventGroup({
                 sizes="80px"
                 className="object-cover"
               />
-              <div className="absolute inset-0" style={{ backgroundColor: "var(--pulse)", opacity: 0.2, mixBlendMode: "multiply" }} />
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: "var(--pulse)", opacity: 0.2, mixBlendMode: "multiply" }}
+              />
             </>
           ) : (
             <div
@@ -331,17 +336,17 @@ function EmptyCart() {
           className="mt-4 text-xl font-bold tracking-tight"
           style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
         >
-          Seu carrinho está vazio
+          Carrinho leve. Noite vazia.
         </h2>
         <p className="mt-1.5 text-sm" style={{ color: "var(--mute)" }}>
-          Explore os eventos e adicione seus ingressos favoritos.
+          Encontra teu evento. Entra.
         </p>
         <Link
           href="/eventos"
           className="mt-6 inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.02]"
           style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
         >
-          Ver eventos
+          Bora ver
           <ArrowRight size={14} />
         </Link>
       </div>

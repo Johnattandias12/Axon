@@ -164,6 +164,7 @@ export type Database = {
           cover_policy: Json
           age_rating: string | null
           is_nominal: boolean
+          payment_methods: Json
           created_at: string
           updated_at: string
         }
@@ -188,6 +189,7 @@ export type Database = {
           cover_policy?: Json
           age_rating?: string | null
           is_nominal?: boolean
+          payment_methods?: Json
         }
         Update: {
           slug?: string
@@ -208,6 +210,7 @@ export type Database = {
           cover_policy?: Json
           age_rating?: string | null
           is_nominal?: boolean
+          payment_methods?: Json
           updated_at?: string
         }
         Relationships: [

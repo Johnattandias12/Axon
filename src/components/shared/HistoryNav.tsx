@@ -13,7 +13,10 @@ export function HistoryNav() {
   }
 
   return (
-    <div className="hidden sm:flex items-center gap-1 mr-4 border-r pr-4" style={{ borderColor: "var(--rule)" }}>
+    <div
+      className="mr-4 hidden items-center gap-1 border-r pr-4 sm:flex"
+      style={{ borderColor: "var(--rule)" }}
+    >
       <button
         onClick={() => router.back()}
         className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-black/5"

@@ -81,7 +81,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         "pago_em",
       ].join(","),
     ]
-    
+
     if (tickets && tickets.length > 0) {
       console.log("[CSV Export Sales] Primeiro ticket:", JSON.stringify(tickets[0], null, 2))
     }

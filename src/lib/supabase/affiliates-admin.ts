@@ -15,6 +15,10 @@ export interface Affiliate {
   total_referrals: number
   total_commission_cents: number
   created_at: string
+  // Campos da migration 009 — opcionais pra tolerância antes do db:push
+  status?: "pending" | "active" | "rejected"
+  approved_by?: string | null
+  approved_at?: string | null
 }
 
 export interface AffiliateReferral {

@@ -15,9 +15,9 @@ export default async function ResetPasswordPage({
   const error = resolvedParams.error as string | undefined
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div
-        className="w-full max-w-md space-y-8 rounded-3xl border p-8 sm:p-12 shadow-2xl"
+        className="w-full max-w-md space-y-8 rounded-3xl border p-8 shadow-2xl sm:p-12"
         style={{
           backgroundColor: "var(--paper-pure)",
           borderColor: "var(--rule)",
@@ -26,10 +26,16 @@ export default async function ResetPasswordPage({
         }}
       >
         <div className="text-center">
-          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}>
+          <div
+            className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl"
+            style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+          >
             <TicketIcon size={28} />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight" style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}>
+          <h2
+            className="text-3xl font-bold tracking-tight"
+            style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}
+          >
             Criar nova senha
           </h2>
           <p className="mt-2 text-sm" style={{ color: "var(--mute)" }}>
@@ -40,7 +46,11 @@ export default async function ResetPasswordPage({
         <form className="mt-8 space-y-6" action={resetPasswordAction}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold mb-1.5" style={{ color: "var(--ink)" }}>
+              <label
+                htmlFor="password"
+                className="mb-1.5 block text-sm font-semibold"
+                style={{ color: "var(--ink)" }}
+              >
                 Nova senha
               </label>
               <input
@@ -48,19 +58,25 @@ export default async function ResetPasswordPage({
                 name="password"
                 type="password"
                 required
-                className="block w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 transition-all"
-                style={{
-                  backgroundColor: "var(--input-bg)",
-                  borderColor: "var(--rule)",
-                  color: "var(--ink)",
-                  "--tw-ring-color": "color-mix(in srgb, var(--pulse) 30%, transparent)",
-                } as React.CSSProperties}
+                className="block w-full rounded-xl border px-4 py-3 text-sm transition-all focus:ring-2 focus:outline-none"
+                style={
+                  {
+                    backgroundColor: "var(--input-bg)",
+                    borderColor: "var(--rule)",
+                    color: "var(--ink)",
+                    "--tw-ring-color": "color-mix(in srgb, var(--pulse) 30%, transparent)",
+                  } as React.CSSProperties
+                }
                 placeholder="Mínimo 6 caracteres"
                 minLength={6}
               />
             </div>
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold mb-1.5" style={{ color: "var(--ink)" }}>
+              <label
+                htmlFor="confirmPassword"
+                className="mb-1.5 block text-sm font-semibold"
+                style={{ color: "var(--ink)" }}
+              >
                 Confirmar nova senha
               </label>
               <input
@@ -68,13 +84,15 @@ export default async function ResetPasswordPage({
                 name="confirmPassword"
                 type="password"
                 required
-                className="block w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 transition-all"
-                style={{
-                  backgroundColor: "var(--input-bg)",
-                  borderColor: "var(--rule)",
-                  color: "var(--ink)",
-                  "--tw-ring-color": "color-mix(in srgb, var(--pulse) 30%, transparent)",
-                } as React.CSSProperties}
+                className="block w-full rounded-xl border px-4 py-3 text-sm transition-all focus:ring-2 focus:outline-none"
+                style={
+                  {
+                    backgroundColor: "var(--input-bg)",
+                    borderColor: "var(--rule)",
+                    color: "var(--ink)",
+                    "--tw-ring-color": "color-mix(in srgb, var(--pulse) 30%, transparent)",
+                  } as React.CSSProperties
+                }
                 placeholder="Repita a senha"
                 minLength={6}
               />

@@ -16,9 +16,9 @@ export default async function ForgotPasswordPage({
   const success = resolvedParams.success === "true"
 
   return (
-    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <div
-        className="w-full max-w-md space-y-8 rounded-3xl border p-8 sm:p-12 shadow-2xl"
+        className="w-full max-w-md space-y-8 rounded-3xl border p-8 shadow-2xl sm:p-12"
         style={{
           backgroundColor: "var(--paper-pure)",
           borderColor: "var(--rule)",
@@ -27,10 +27,16 @@ export default async function ForgotPasswordPage({
         }}
       >
         <div className="text-center">
-          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}>
+          <div
+            className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl"
+            style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
+          >
             <TicketIcon size={28} />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight" style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}>
+          <h2
+            className="text-3xl font-bold tracking-tight"
+            style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}
+          >
             Recuperar senha
           </h2>
           <p className="mt-2 text-sm" style={{ color: "var(--mute)" }}>
@@ -39,7 +45,13 @@ export default async function ForgotPasswordPage({
         </div>
 
         {success ? (
-          <div className="rounded-xl border p-4 text-center" style={{ backgroundColor: "var(--success-soft)", borderColor: "color-mix(in srgb, var(--success) 30%, transparent)" }}>
+          <div
+            className="rounded-xl border p-4 text-center"
+            style={{
+              backgroundColor: "var(--success-soft)",
+              borderColor: "color-mix(in srgb, var(--success) 30%, transparent)",
+            }}
+          >
             <p className="text-sm font-semibold" style={{ color: "var(--success)" }}>
               Link de recuperação enviado!
             </p>
@@ -51,7 +63,11 @@ export default async function ForgotPasswordPage({
           <form className="mt-8 space-y-6" action="/api/auth/reset-password" method="POST">
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold mb-1.5" style={{ color: "var(--ink)" }}>
+                <label
+                  htmlFor="email"
+                  className="mb-1.5 block text-sm font-semibold"
+                  style={{ color: "var(--ink)" }}
+                >
                   Email
                 </label>
                 <input
@@ -60,13 +76,15 @@ export default async function ForgotPasswordPage({
                   type="email"
                   autoComplete="email"
                   required
-                  className="block w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    backgroundColor: "var(--input-bg)",
-                    borderColor: "var(--rule)",
-                    color: "var(--ink)",
-                    "--tw-ring-color": "color-mix(in srgb, var(--pulse) 30%, transparent)",
-                  } as React.CSSProperties}
+                  className="block w-full rounded-xl border px-4 py-3 text-sm transition-all focus:ring-2 focus:outline-none"
+                  style={
+                    {
+                      backgroundColor: "var(--input-bg)",
+                      borderColor: "var(--rule)",
+                      color: "var(--ink)",
+                      "--tw-ring-color": "color-mix(in srgb, var(--pulse) 30%, transparent)",
+                    } as React.CSSProperties
+                  }
                   placeholder="Seu email cadastrado"
                 />
               </div>

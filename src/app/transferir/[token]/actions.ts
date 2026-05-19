@@ -4,13 +4,14 @@ import { redirect } from "next/navigation"
 import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
+import { validateCPF } from "@/lib/utils/validators"
 
 export type ClaimResult = { ok: true; orderId: string } | { ok: false; error: string } | null
 
 const claimSchema = z.object({
   token: z.string().uuid(),
   holderName: z.string().min(2).max(120),
-  holderCpf: z.string().min(3).max(14),
+  holderCpf: z.string().refine((v) => validateCPF(v), "CPF inválido."),
 })
 
 export async function claimTransfer(_prev: ClaimResult, formData: FormData): Promise<ClaimResult> {
@@ -19,7 +20,9 @@ export async function claimTransfer(_prev: ClaimResult, formData: FormData): Pro
     holderName: String(formData.get("holderName") ?? "").trim(),
     holderCpf: String(formData.get("holderCpf") ?? "").replace(/\D/g, ""),
   })
-  if (!parsed.success) return { ok: false, error: "Dados inválidos." }
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." }
+  }
 
   const supabase = await createClient()
   const {
@@ -48,7 +51,9 @@ export async function claimTransfer(_prev: ClaimResult, formData: FormData): Pro
     return { ok: false, error: "Você não pode transferir pra você mesmo." }
   }
 
-  const { error } = await admin
+  // Update atômico: só promove se ainda estiver paused e com o token certo.
+  // Se outro request reivindicou no meio do caminho, .select() retorna [] e abortamos.
+  const { data: updated, error } = await admin
     .from("tickets")
     .update({
       status: "valid",
@@ -60,12 +65,14 @@ export async function claimTransfer(_prev: ClaimResult, formData: FormData): Pro
       holder_cpf: parsed.data.holderCpf,
     })
     .eq("id", ticket.id)
+    .eq("status", "paused")
+    .eq("transfer_token", parsed.data.token)
+    .select("id")
 
   if (error) return { ok: false, error: error.message }
-
-  // Não muda o buyer_id da order. O destinatário não vê em /minha-conta
-  // (compra original continua com quem comprou). Mas o QR já é dele.
-  // TODO: futuro — criar tabela ticket_holders pra rastreio mais limpo.
+  if (!updated || updated.length === 0) {
+    return { ok: false, error: "Link já foi reivindicado por outra pessoa." }
+  }
 
   redirect(`/transferir/${parsed.data.token}/sucesso`)
 }
