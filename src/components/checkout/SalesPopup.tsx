@@ -55,6 +55,8 @@ export function SalesPopup() {
     }
   }, [])
 
+  if (!sale) return null
+
   return (
     <div
       className={`fixed bottom-6 left-6 z-50 flex max-w-[300px] items-center gap-3 overflow-hidden rounded-xl border p-3 shadow-2xl backdrop-blur-md transition-all duration-500 ${

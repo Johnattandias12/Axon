@@ -9,11 +9,11 @@ export async function POST(req: Request) {
     const admin = createAdminClient()
     
     // Buscar o ID do afiliado pelo código
-    const { data: affiliate } = await admin
-      .from("affiliates")
+    const { data: affiliate } = (await admin
+      .from("affiliates" as any)
       .select("id")
       .eq("code", code.toUpperCase())
-      .single()
+      .single()) as any
 
     if (!affiliate) {
       return NextResponse.json({ ok: false, error: "Affiliate not found" })
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const userAgent = req.headers.get("user-agent")
 
     // Insere o click
-    await admin.from("affiliate_clicks").insert({
+    await admin.from("affiliate_clicks" as any).insert({
       affiliate_id: affiliate.id,
       event_id: eventId || null,
       ip_address: ip,

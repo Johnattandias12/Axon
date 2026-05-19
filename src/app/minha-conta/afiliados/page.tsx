@@ -26,7 +26,7 @@ export default async function AfiliadosPage() {
 
   // Buscar cliques
   const { count: clicksCount } = affiliate 
-    ? await admin.from("affiliate_clicks").select("*", { count: 'exact', head: true }).eq("affiliate_id", affiliate.id)
+    ? await admin.from("affiliate_clicks" as any).select("*", { count: 'exact', head: true }).eq("affiliate_id", affiliate.id)
     : { count: 0 }
   
   const clicks = clicksCount || 0
