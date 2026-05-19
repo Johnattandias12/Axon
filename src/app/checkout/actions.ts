@@ -234,7 +234,7 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
       holder_name: parsed.data.holderName,
       holder_cpf: parsed.data.holderCpf,
       is_half_price: lot.is_half_price,
-      status: "paused" as const,
+      status: "valid" as const,
     }
   })
 

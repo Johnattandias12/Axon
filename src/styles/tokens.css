@@ -169,6 +169,10 @@ html {
   textarea {
     font-size: 16px !important; /* iOS só evita zoom se >= 16px */
   }
+  select option {
+    background-color: var(--paper-soft) !important;
+    color: var(--ink) !important;
+  }
 }
 
 /* Touch targets mínimos no mobile (44pt Apple) */

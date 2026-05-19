@@ -33,6 +33,8 @@ export async function POST(req: Request) {
   const auth = req.headers.get("authorization")
   const signature = req.headers.get("x-hub-signature") || req.headers.get("pagarme-signature")
 
+  const isSandbox = process.env["NEXT_PUBLIC_PAGARME_ENV"] === "sandbox"
+
   let authed = false
   if (whUser && whPass && auth) {
     authed = verifyPagarmeBasicAuth(auth, whUser, whPass)
@@ -49,6 +51,10 @@ export async function POST(req: Request) {
   } else if (!whUser && !whPass && !hmacSecret) {
     console.warn(
       "[pagarme-webhook] sem PAGARME_WEBHOOK_USER+PASSWORD nem PAGARME_WEBHOOK_SECRET — rodando sem verificação (dev only)"
+    )
+  } else if (isSandbox) {
+    console.warn(
+      "[pagarme-webhook] rodando em modo sandbox com credenciais incompletas no header — ignorando autenticação"
     )
   } else {
     // env definida mas header ausente
@@ -257,7 +263,7 @@ async function handleOrderPaid(
         holder_name: holder.name ?? "Titular",
         holder_cpf: holder.cpf ?? "",
         is_half_price: lot?.is_half_price ?? false,
-        status: "paused",
+        status: "valid",
       })
     }
   }
