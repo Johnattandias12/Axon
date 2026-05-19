@@ -242,13 +242,16 @@ function EventGroup({
           style={{ backgroundColor: "var(--paper-pure)" }}
         >
           {event.banner_url ? (
-            <Image
-              src={event.banner_url}
-              alt={event.title}
-              fill
-              sizes="80px"
-              className="object-cover"
-            />
+            <>
+              <Image
+                src={event.banner_url}
+                alt={event.title}
+                fill
+                sizes="80px"
+                className="object-cover"
+              />
+              <div className="absolute inset-0" style={{ backgroundColor: "var(--pulse)", opacity: 0.2, mixBlendMode: "multiply" }} />
+            </>
           ) : (
             <div
               className="flex h-full w-full items-center justify-center"

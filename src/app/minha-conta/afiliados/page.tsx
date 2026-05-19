@@ -22,8 +22,15 @@ export default async function AfiliadosPage() {
   const affiliate = await getAffiliateByUserId(admin, user.id)
 
   const referrals = affiliate ? await getReferralsForAffiliate(admin, affiliate.id, 50) : []
-
   const pending = referrals.filter((r) => r.status === "pending")
+
+  // Buscar cliques
+  const { count: clicksCount } = affiliate 
+    ? await admin.from("affiliate_clicks").select("*", { count: 'exact', head: true }).eq("affiliate_id", affiliate.id)
+    : { count: 0 }
+  
+  const clicks = clicksCount || 0
+  const ctr = clicks > 0 ? ((affiliate!.total_referrals / clicks) * 100).toFixed(1) : "0.0"
 
   return (
     <div className="space-y-8">
@@ -62,8 +69,9 @@ export default async function AfiliadosPage() {
               Vire afiliado AXON
             </h2>
             <p className="mx-auto mt-2 max-w-md text-sm" style={{ color: "var(--mute)" }}>
-              Você ganha 5% sobre cada ingresso vendido por meio do seu link único. Sem mensalidade,
-              sem mínimo de vendas. Saque a partir de R$ 50.
+              Você ganha 5% sobre cada ingresso vendido por meio do seu link único.
+              O valor não é em dinheiro vivo, ele se converte em Créditos na Plataforma
+              para você usar como quiser.
             </p>
           </div>
           <JoinAffiliateButton />
@@ -72,14 +80,19 @@ export default async function AfiliadosPage() {
         <>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Stat
-              icon={<Users size={13} />}
-              label="Indicações"
-              value={String(affiliate.total_referrals)}
+              icon={<TrendingUp size={13} />}
+              label="Cliques (Visitas)"
+              value={String(clicks)}
             />
             <Stat
               icon={<TrendingUp size={13} />}
-              label="Pendentes"
-              value={String(pending.length)}
+              label="CTR (Conversão)"
+              value={`${ctr}%`}
+            />
+            <Stat
+              icon={<Users size={13} />}
+              label="Indicações"
+              value={String(affiliate.total_referrals)}
             />
             <Stat
               icon={<DollarSign size={13} />}
@@ -195,7 +208,7 @@ export default async function AfiliadosPage() {
               </div>
             )}
             <p className="text-xs" style={{ color: "var(--mute-2)" }}>
-              Pagamentos processados toda quarta para acumulado ≥ R$ 50.
+              Os valores acumulados ficam disponíveis instantaneamente como créditos para compras de ingressos na AXON.
             </p>
           </section>
         </>

@@ -351,7 +351,7 @@ export default function HomePage() {
                 </h2>
                 <p className="mb-10 max-w-[480px] text-[16px] leading-relaxed text-white/60">
                   Do evento criado ao ingresso vendido em minutos. Dashboard em tempo real, repasse
-                  D+1 via Pix e validação de QR na portaria. Sem taxa de adesão.
+                  D+2 via Pix ou 17 dias via Cartão, e validação de QR na portaria. Taxa base competitiva de 8,99%.
                 </p>
 
                 <ul className="mb-10 space-y-3">
@@ -359,7 +359,7 @@ export default function HomePage() {
                     "Criação de evento em menos de 5 minutos",
                     "Lotes com preços e datas configuráveis",
                     "Meia-entrada automática (Lei 12.933/2013)",
-                    "Repasse D+1 direto na conta",
+                    "Repasse D+2 (Pix) e 17 dias (Cartão) na conta",
                     "App de validação offline para a portaria",
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-3 text-[14px] text-white/60">
@@ -400,7 +400,7 @@ export default function HomePage() {
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { v: "0%", l: "Taxa de adesão", a: "var(--pulse)" },
-                  { v: "D+1", l: "Repasse garantido", a: "var(--info)" },
+                  { v: "8,99%", l: "Taxa por ingresso vendido", a: "var(--info)" },
                   { v: "Pix", l: "Pagamento instantâneo", a: "var(--success)" },
                   { v: "QR", l: "Validação segura", a: "var(--warning)" },
                 ].map(({ v, l, a }) => (

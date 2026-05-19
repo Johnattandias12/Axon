@@ -417,10 +417,10 @@ export function OrganizerOnboarding({ userId }: Props) {
                 Estrutura de taxas
               </p>
               <ul className="space-y-1 text-xs" style={{ color: "var(--ink-3)" }}>
-                <li><strong style={{ color: "var(--ink)" }}>Pix:</strong> R$ 1,00 por pedido (comprador) · recebimento instantâneo</li>
-                <li><strong style={{ color: "var(--ink)" }}>Cartão 1x:</strong> +5% (comprador) · recebimento D+17</li>
-                <li><strong style={{ color: "var(--ink)" }}>Cartão 2–12x:</strong> +8% a +18% (comprador) · recebimento D+17</li>
-                <li><strong style={{ color: "var(--ink)" }}>Comissão AXON:</strong> 9% sobre o valor do ingresso</li>
+                <li><strong style={{ color: "var(--ink)" }}>Pix:</strong> Recebimento em D+2 (dias úteis)</li>
+                <li><strong style={{ color: "var(--ink)" }}>Cartão:</strong> Recebimento em 17 dias</li>
+                <li><strong style={{ color: "var(--ink)" }}>Comissão AXON:</strong> 8,99% sobre o valor do ingresso</li>
+                <li><strong style={{ color: "var(--ink)" }}>Saque:</strong> Tarifa fixa de transferência bancária por solicitação de saque.</li>
               </ul>
             </div>
 
@@ -429,9 +429,9 @@ export function OrganizerOnboarding({ userId }: Props) {
               qualidade, segurança e realização do evento. A AXON atua como marketplace intermediário.
             </p>
             <p>
-              <strong style={{ color: "var(--ink)" }}>Repasse:</strong> via Pix disponível em D+1 após
-              confirmação do pagamento; via cartão em D+17 (2 dias após o recebimento do gateway).
-              A comissão AXON de 9% é retida automaticamente no split — você já recebe o valor líquido.
+              <strong style={{ color: "var(--ink)" }}>Repasse:</strong> via Pix disponível em D+2 após
+              confirmação do pagamento; via cartão em 17 dias.
+              A comissão AXON de 8,99% é retida automaticamente no split. Ao sacar o valor disponível, haverá cobrança de taxa fixa de transferência imposta pelo gateway de pagamentos. Antecipação via suporte (sujeita a aprovação).
             </p>
             <p>
               <strong style={{ color: "var(--ink)" }}>Cancelamentos:</strong> em caso de cancelamento

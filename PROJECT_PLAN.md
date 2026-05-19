@@ -2,7 +2,7 @@
 
 ## Visão
 
-Marketplace de ingressos brasileiro com diferencial em **Pix instantâneo**, **antifraude em camadas** e **PWA de validação offline-first**. Modelo de negócio: taxa de 8–10% sobre o ingresso (paga pelo comprador) + opcional split do organizador.
+Marketplace de ingressos brasileiro com diferencial em **Pix instantâneo**, **antifraude em camadas** e **PWA de validação offline-first**. Modelo de negócio: taxa base de 8,99% sobre o ingresso + taxa fixa de saque para o organizador. Repasses em D+2 (Pix) e 17 dias (Cartão).
 
 ## Princípios
 

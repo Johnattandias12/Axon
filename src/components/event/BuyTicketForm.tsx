@@ -33,18 +33,25 @@ export function BuyTicketForm({
   const [pending, startTransition] = useTransition()
   const [affiliateCode, setAffiliateCode] = useState("")
 
-  // Captura ?via= do URL no mount (persiste em sessionStorage)
+  // Captura ?via= do URL no mount (persiste em sessionStorage) e registra clique
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search)
     const via = sp.get("via")
     if (via && /^[A-Z0-9]{4,12}$/.test(via)) {
       sessionStorage.setItem("axon_ref", via)
       setAffiliateCode(via)
+      
+      // Rastrear clique silenciosamente
+      fetch("/api/affiliate/track", {
+        method: "POST",
+        body: JSON.stringify({ code: via, eventId: eventSlug }) // passamos slug provisório ou id se tivermos
+      }).catch(() => {})
+      
       return
     }
     const stored = sessionStorage.getItem("axon_ref")
     if (stored && /^[A-Z0-9]{4,12}$/.test(stored)) setAffiliateCode(stored)
-  }, [])
+  }, [eventSlug])
 
   const subtotal = pricePerUnit * qty
   const fee = Math.round(subtotal * 0.1)

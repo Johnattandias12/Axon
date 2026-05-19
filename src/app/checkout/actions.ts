@@ -105,7 +105,7 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
     .insert({
       buyer_id: user.id,
       event_id: event.id,
-      status: "paid",
+      status: "pending",
       subtotal_cents: subtotal,
       service_fee_cents: fee,
       total_cents: total,
@@ -138,7 +138,7 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
       holder_name: parsed.data.holderName,
       holder_cpf: parsed.data.holderCpf,
       is_half_price: lot.is_half_price,
-      status: "valid" as const,
+      status: "pending" as const,
     }
   })
 
@@ -202,6 +202,5 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
   }
 
   revalidatePath("/minha-conta", "layout")
-  revalidatePath(`/minha-conta/ingressos/${order.id}`)
-  redirect(`/minha-conta/ingressos/${order.id}`)
+  redirect(`/checkout/${order.id}`)
 }
