@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { TurnstileWidget } from "@/components/shared/TurnstileWidget"
 import { createClient } from "@/lib/supabase/client"
 import { ArrowRight, Eye, EyeOff, MailCheck } from "lucide-react"
 
@@ -53,6 +54,7 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
   const [showPass, setShowPass] = useState(false)
   const [signupSuccessEmail, setSignupSuccessEmail] = useState<string | null>(null)
   const [resetSent, setResetSent] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string>("")
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -138,7 +140,10 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: data.email.trim().toLowerCase() }),
+        body: JSON.stringify({
+          email: data.email.trim().toLowerCase(),
+          ...(turnstileToken ? { turnstileToken } : {}),
+        }),
       })
       const body = (await res.json().catch(() => null)) as { ok: boolean; error?: string } | null
       toast.dismiss(loadingId)
@@ -250,6 +255,7 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
                   </p>
                 )}
               </div>
+              <TurnstileWidget onToken={setTurnstileToken} />
               <Button
                 type="submit"
                 disabled={resetForm.formState.isSubmitting}

@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
 import { dispatchPasswordReset } from "@/lib/email/auth-via-admin"
+import { verifyTurnstile, clientIpFromHeaders } from "@/lib/turnstile"
 import { z } from "zod"
 
 const schema = z.object({
   email: z.string().email(),
+  turnstileToken: z.string().optional(),
 })
 
 /**
@@ -20,6 +22,7 @@ export async function POST(request: Request) {
   const isJson = ct.includes("application/json")
 
   let email: string | undefined
+  let turnstileToken: string | undefined
   if (isJson) {
     const body = await request.json().catch(() => null)
     const parsed = schema.safeParse(body)
@@ -27,9 +30,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Email inválido" }, { status: 400 })
     }
     email = parsed.data.email
+    turnstileToken = parsed.data.turnstileToken
   } else {
     const formData = await request.formData()
     email = formData.get("email")?.toString().trim().toLowerCase()
+    turnstileToken = formData.get("turnstileToken")?.toString()
+  }
+
+  // Captcha (skip silenciosamente em dev sem secret configurado)
+  const captcha = await verifyTurnstile(turnstileToken, clientIpFromHeaders(request.headers))
+  if (!captcha.ok) {
+    if (isJson)
+      return NextResponse.json(
+        { ok: false, error: "Verificação anti-bot falhou. Tente recarregar." },
+        { status: 400 }
+      )
+    return NextResponse.redirect(
+      new URL("/esqueci-senha?error=Verifica%C3%A7%C3%A3o%20anti-bot%20falhou", request.url),
+      303
+    )
   }
 
   if (!email) {

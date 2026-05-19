@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
 import { dispatchMagicLink } from "@/lib/email/auth-via-admin"
+import { verifyTurnstile, clientIpFromHeaders } from "@/lib/turnstile"
 import { z } from "zod"
 
 const schema = z.object({
   email: z.string().email(),
+  turnstileToken: z.string().optional(),
 })
 
 /**
@@ -18,6 +20,18 @@ export async function POST(request: Request) {
   }
 
   const email = parsed.data.email.trim().toLowerCase()
+
+  const captcha = await verifyTurnstile(
+    parsed.data.turnstileToken,
+    clientIpFromHeaders(request.headers)
+  )
+  if (!captcha.ok) {
+    return NextResponse.json(
+      { ok: false, error: "Verificação anti-bot falhou. Tente recarregar." },
+      { status: 400 }
+    )
+  }
+
   const result = await dispatchMagicLink(email)
 
   if (!result.ok) {

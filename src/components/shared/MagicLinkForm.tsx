@@ -7,6 +7,7 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { TurnstileWidget } from "@/components/shared/TurnstileWidget"
 import { ArrowRight, CheckCircle2 } from "lucide-react"
 
 const schema = z.object({
@@ -22,6 +23,7 @@ interface MagicLinkFormProps {
 export function MagicLinkForm({ redirectTo: _redirectTo = "/" }: MagicLinkFormProps) {
   const [sent, setSent] = useState(false)
   const [sentEmail, setSentEmail] = useState("")
+  const [turnstileToken, setTurnstileToken] = useState<string>("")
   void _redirectTo
 
   const {
@@ -36,7 +38,10 @@ export function MagicLinkForm({ redirectTo: _redirectTo = "/" }: MagicLinkFormPr
       const res = await fetch("/api/auth/magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: data.email.trim().toLowerCase() }),
+        body: JSON.stringify({
+          email: data.email.trim().toLowerCase(),
+          ...(turnstileToken ? { turnstileToken } : {}),
+        }),
       })
       const body = (await res.json().catch(() => null)) as { ok: boolean; error?: string } | null
       if (!res.ok || !body?.ok) {
@@ -107,6 +112,8 @@ export function MagicLinkForm({ redirectTo: _redirectTo = "/" }: MagicLinkFormPr
           </p>
         )}
       </div>
+
+      <TurnstileWidget onToken={setTurnstileToken} />
 
       <Button
         type="submit"
