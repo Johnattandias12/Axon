@@ -10,7 +10,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ChevronDown, Shield, Building2, User as UserIcon, Ticket, ShieldCheck } from "lucide-react"
+import {
+  ChevronDown,
+  Shield,
+  Building2,
+  User as UserIcon,
+  Ticket,
+  ShieldCheck,
+  Instagram,
+  Sparkles,
+  QrCode,
+} from "lucide-react"
 import { SiteMobileNav } from "./SiteMobileNav"
 import { ThemeToggle } from "./ThemeToggle"
 import { HeaderCartButton } from "@/components/cart/HeaderCartButton"
@@ -128,9 +138,36 @@ export async function SiteHeader() {
               Admin
             </Link>
           )}
+          {profile?.role === "validator" && (
+            <Link
+              href="/scan"
+              className="text-sm transition-colors hover:opacity-70"
+              style={{ color: "var(--mute)" }}
+            >
+              Scanner
+            </Link>
+          )}
+          <Link
+            href="/em-breve"
+            className="flex items-center gap-1 text-sm transition-colors hover:opacity-70"
+            style={{ color: "var(--mute)" }}
+          >
+            <Sparkles size={13} />
+            Em breve
+          </Link>
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
+          <a
+            href="https://www.instagram.com/axon.way/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram @axon.way"
+            className="hidden h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-black/5 sm:flex"
+            style={{ color: "var(--mute)" }}
+          >
+            <Instagram size={16} />
+          </a>
           <ThemeToggle />
           {user && <HeaderCartButton cartCount={cartCount} />}
 
@@ -234,6 +271,12 @@ export async function SiteHeader() {
                         Painel do organizador
                       </DropdownMenuItem>
                     )}
+                    {profile?.role === "validator" && (
+                      <DropdownMenuItem render={<Link href="/scan" />}>
+                        <QrCode size={13} className="mr-1.5" />
+                        Painel scanner
+                      </DropdownMenuItem>
+                    )}
                     {profile?.role === "admin" && (
                       <DropdownMenuItem
                         render={<Link href="/admin" />}
@@ -243,6 +286,22 @@ export async function SiteHeader() {
                         Painel admin
                       </DropdownMenuItem>
                     )}
+                    <DropdownMenuItem render={<Link href="/em-breve" />}>
+                      <Sparkles size={13} className="mr-1.5" />
+                      Em breve
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      render={
+                        <a
+                          href="https://www.instagram.com/axon.way/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        />
+                      }
+                    >
+                      <Instagram size={13} className="mr-1.5" />
+                      @axon.way
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <form action="/api/auth/logout" method="POST">
                       <DropdownMenuItem

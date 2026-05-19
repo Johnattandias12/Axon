@@ -88,6 +88,41 @@ export function SiteFooter() {
                     Suporte pelo WhatsApp
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="https://www.instagram.com/axon.way/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-[13px] transition-colors hover:opacity-100"
+                    style={{ color: "var(--mute)" }}
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <rect x="2" y="2" width="20" height="20" rx="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                    </svg>
+                    @axon.way
+                  </a>
+                </li>
+                <li>
+                  <Link
+                    href="/em-breve"
+                    className="text-[13px] transition-colors hover:opacity-100"
+                    style={{ color: "var(--pulse)" }}
+                  >
+                    Em breve →
+                  </Link>
+                </li>
               </ul>
             </nav>
 
