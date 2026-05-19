@@ -114,12 +114,27 @@ export async function cancelPagarmeOrder(pagarmeOrderId: string): Promise<void> 
   await pagarme.delete(`/orders/${pagarmeOrderId}`)
 }
 
-/** Persiste o gateway_order_id na nossa order pra reconciliação. */
+/** Persiste o gateway_order_id na nossa order + salva PIX QR na metadata pra recarregar checkout. */
 export async function linkOrderToGateway(
   admin: AnyClient,
   orderId: string,
-  pagarmeOrderId: string
+  pagarmeOrderId: string,
+  pix?: { qr_code?: string; qr_code_url?: string; expires_at?: string }
 ): Promise<void> {
+  // Lê metadata atual pra fazer merge (não sobrescrever holders)
+  const { data } = await admin
+    .from("orders")
+    .select("metadata")
+    .eq("id", orderId)
+    .single<{ metadata: Record<string, unknown> | null }>()
+
+  const newMetadata = {
+    ...(data?.metadata ?? {}),
+    ...(pix?.qr_code ? { pix_qr: pix.qr_code } : {}),
+    ...(pix?.qr_code_url ? { pix_qr_url: pix.qr_code_url } : {}),
+    ...(pix?.expires_at ? { pix_expires_at: pix.expires_at } : {}),
+  }
+
   await admin
     .from("orders")
     .update({
@@ -127,6 +142,7 @@ export async function linkOrderToGateway(
       payment_method: "pix",
       status: "pending",
       reserved_until: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+      metadata: newMetadata,
     })
     .eq("id", orderId)
 }

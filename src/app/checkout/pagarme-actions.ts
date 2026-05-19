@@ -170,7 +170,11 @@ export async function createPixChargeAction(formData: FormData): Promise<PixChar
       ],
     })
 
-    await linkOrderToGateway(admin, order.id, result.pagarme_order_id)
+    await linkOrderToGateway(admin, order.id, result.pagarme_order_id, {
+      qr_code: result.qr_code,
+      ...(result.qr_code_url ? { qr_code_url: result.qr_code_url } : {}),
+      expires_at: result.expires_at,
+    })
 
     return {
       ok: true,

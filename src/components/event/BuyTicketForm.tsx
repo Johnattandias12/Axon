@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState, useTransition } from "react"
 import { Loader2, ShieldCheck, Ticket, Minus, Plus, X } from "lucide-react"
-import { buyDemo, type BuyDemoState } from "@/app/checkout/actions"
+import { buyTicket, type BuyTicketState } from "@/app/checkout/buy-action"
 import { centsToBRL } from "@/lib/utils"
 import Link from "next/link"
 
@@ -29,7 +29,7 @@ export function BuyTicketForm({
   const [qty, setQty] = useState(1)
   const [holderName, setHolderName] = useState("")
   const [holderCpf, setHolderCpf] = useState("")
-  const [state, formAction] = useActionState<BuyDemoState, FormData>(buyDemo, null)
+  const [state, formAction] = useActionState<BuyTicketState, FormData>(buyTicket, null)
   const [pending, startTransition] = useTransition()
   const [affiliateCode, setAffiliateCode] = useState("")
 

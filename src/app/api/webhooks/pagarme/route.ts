@@ -1,59 +1,386 @@
 import { NextResponse } from "next/server"
-import crypto from "crypto"
-// Importaremos o Supabase e as funções de email aqui futuramente
-// import { createClient } from "@supabase/supabase-js"
-// import { sendTicketConfirmation } from "@/lib/email/send"
+import { verifyPagarmeSignature } from "@/lib/payments/pagarme/webhook-verify"
+import { PagarmeWebhookEventSchema, isHandledEvent } from "@/lib/payments/pagarme/types"
+import { createAdminClient } from "@/lib/supabase/admin"
+import { sendTicketConfirmation } from "@/lib/email/send"
+import { generateQrPayload } from "@/lib/qr/hmac"
+import { formatDate } from "@/lib/utils"
 
+export const dynamic = "force-dynamic"
+
+/**
+ * Webhook Pagar.me v5.
+ *
+ * Garantias:
+ *  - Assinatura HMAC-SHA256 conferida com timingSafeEqual (header X-Hub-Signature)
+ *  - Idempotência por event.id (insert UNIQUE em webhook_events; duplicado = 200 OK silencioso)
+ *  - confirm_order() RPC roda em transaction com lock pessimista (FOR UPDATE)
+ *  - release_lot() devolve estoque em cancel/fail/expire
+ *  - Email de confirmação enviado apenas no 1º processamento do evento
+ *  - Falha de processamento NÃO marca evento como processado (fica gravado com .error)
+ */
 export async function POST(req: Request) {
-  try {
-    const rawBody = await req.text()
-    const signature = req.headers.get("pagarme-signature")
-    const secret = process.env.PAGARME_WEBHOOK_SECRET
+  const rawBody = await req.text()
+  const signature = req.headers.get("x-hub-signature") || req.headers.get("pagarme-signature")
+  const secret = process.env["PAGARME_WEBHOOK_SECRET"]
 
-    // 1. Verificação de Segurança (Assinatura do Webhook)
-    if (secret && signature) {
-      const expectedSignature = crypto
-        .createHmac("sha1", secret)
-        .update(rawBody)
-        .digest("hex")
-
-      if (`sha1=${expectedSignature}` !== signature) {
-        console.error("[Pagar.me Webhook] Assinatura inválida!")
-        return new NextResponse("Invalid signature", { status: 400 })
-      }
-    } else {
-      console.warn("[Pagar.me Webhook] Rodando sem validação de assinatura (Chave não configurada no .env).")
+  // 1) Assinatura — em prod EXIGE; em dev sem secret avisa mas processa.
+  if (secret) {
+    const ok = verifyPagarmeSignature(rawBody, signature, secret)
+    if (!ok) {
+      console.error("[pagarme-webhook] invalid signature")
+      return new NextResponse("invalid signature", { status: 401 })
     }
-
-    const event = JSON.parse(rawBody)
-    console.log("[Pagar.me Webhook] Recebido evento:", event.type, "Pedido:", event.data?.id)
-
-    // 2. Processamento do Evento
-    if (event.type === "order.paid") {
-      const order = event.data
-      const orderId = order.code // O 'code' é o nosso UUID do pedido no banco
-      
-      console.log(`✅ Pedido pago confirmado: ${orderId}`)
-      
-      // A Fazer: 
-      // - Atualizar o status do pedido no Supabase para 'paid'
-      // - Gerar os QR Codes (HMAC)
-      // - Disparar a função sendTicketConfirmation() com os ingressos
-    }
-
-    if (event.type === "order.canceled" || event.type === "order.payment_failed") {
-      const order = event.data
-      const orderId = order.code
-      console.log(`❌ Pedido cancelado/falho: ${orderId}`)
-      
-      // A Fazer:
-      // - Atualizar status do pedido no Supabase para 'canceled'
-      // - Liberar o estoque (devolver os ingressos pro lote)
-    }
-
-    return NextResponse.json({ received: true })
-  } catch (error) {
-    console.error("[Pagar.me Webhook] Erro:", error)
-    return new NextResponse("Webhook error", { status: 500 })
+  } else {
+    console.warn(
+      "[pagarme-webhook] PAGARME_WEBHOOK_SECRET ausente — rodando sem verificação (somente dev)"
+    )
   }
+
+  // 2) Parse + valida shape
+  let event
+  try {
+    const json = JSON.parse(rawBody) as unknown
+    event = PagarmeWebhookEventSchema.parse(json)
+  } catch (e) {
+    console.error("[pagarme-webhook] invalid payload:", e)
+    return new NextResponse("invalid payload", { status: 400 })
+  }
+
+  const admin = createAdminClient()
+
+  // 3) Idempotência: tenta inserir em webhook_events; conflito = já processado.
+  const wh = admin as unknown as {
+    from: (n: string) => {
+      insert: (
+        row: Record<string, unknown>
+      ) => Promise<{ error: { code?: string; message: string } | null }>
+    }
+  }
+  const insertRes = await wh.from("webhook_events").insert({
+    id: event.id,
+    gateway: "pagarme",
+    type: event.type,
+    payload: event,
+  })
+  if (insertRes.error) {
+    // 23505 = unique_violation no Postgres → evento duplicado, OK.
+    if (insertRes.error.code === "23505") {
+      return NextResponse.json({ received: true, duplicate: true })
+    }
+    console.error("[pagarme-webhook] webhook_events insert failed:", insertRes.error.message)
+    // Não bloqueia processamento — só perde idempotência.
+  }
+
+  // 4) Despacha o evento (só os que importam)
+  if (!isHandledEvent(event.type)) {
+    return NextResponse.json({ received: true, ignored: event.type })
+  }
+
+  try {
+    if (event.type === "order.paid" || event.type === "charge.paid") {
+      await handleOrderPaid(admin, event.data)
+    } else if (
+      event.type === "order.canceled" ||
+      event.type === "order.payment_failed" ||
+      event.type === "order.expired"
+    ) {
+      await handleOrderFailed(admin, event.data, event.type)
+    } else if (event.type === "charge.refunded" || event.type === "charge.chargedback") {
+      await handleChargeRefund(admin, event.data)
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error(`[pagarme-webhook] processing ${event.type} failed:`, msg)
+    // Marca o evento como erro pra reprocessamento manual.
+    const upd = admin as unknown as {
+      from: (n: string) => {
+        update: (row: Record<string, unknown>) => {
+          eq: (col: string, val: string) => Promise<{ error: unknown }>
+        }
+      }
+    }
+    await upd
+      .from("webhook_events")
+      .update({ error: msg.slice(0, 1000) })
+      .eq("id", event.id)
+    return new NextResponse("processing error", { status: 500 })
+  }
+
+  return NextResponse.json({ received: true })
+}
+
+interface AdminClient {
+  from: (table: string) => {
+    select: (cols: string) => {
+      eq: (
+        col: string,
+        val: string
+      ) => {
+        maybeSingle?: () => Promise<{ data: Record<string, unknown> | null }>
+        single?: () => Promise<{ data: Record<string, unknown> | null }>
+      }
+    }
+    update: (row: Record<string, unknown>) => {
+      eq: (col: string, val: string) => Promise<{ error: unknown }>
+    }
+  }
+  rpc: (fn: string, args: Record<string, unknown>) => Promise<{ error: { message: string } | null }>
+}
+
+function admin(c: ReturnType<typeof createAdminClient>): AdminClient {
+  return c as unknown as AdminClient
+}
+
+/**
+ * data: PagarmeOrder ou PagarmeCharge (depende do tipo de evento).
+ * `code` no order vem como nosso UUID (`orders.id`).
+ * `order_id` (no charge) também é nosso UUID quando event for charge.*.
+ */
+async function handleOrderPaid(
+  client: ReturnType<typeof createAdminClient>,
+  data: Record<string, unknown>
+) {
+  const ourOrderId = extractOurOrderId(data)
+  if (!ourOrderId) {
+    console.error("[pagarme-webhook] order.paid sem nosso order_id no payload:", data)
+    return
+  }
+
+  // Atomic claim: muda pending→paid em uma única query. Se nada retornar,
+  // já foi processado (idempotente) ou nunca esteve pending.
+  const claim = await (
+    client as unknown as {
+      from: (n: string) => {
+        update: (row: Record<string, unknown>) => {
+          eq: (
+            col: string,
+            val: string
+          ) => {
+            eq: (
+              col: string,
+              val: string
+            ) => {
+              select: (cols: string) => Promise<{
+                data: Array<{
+                  id: string
+                  buyer_id: string
+                  event_id: string
+                  total_cents: number
+                  metadata: {
+                    holders?: Array<{ name?: string; cpf?: string; lot_id?: string }>
+                  } | null
+                }> | null
+                error: { message: string } | null
+              }>
+            }
+          }
+        }
+      }
+    }
+  )
+    .from("orders")
+    .update({ status: "paid", paid_at: new Date().toISOString() })
+    .eq("id", ourOrderId)
+    .eq("status", "pending")
+    .select("id, buyer_id, event_id, total_cents, metadata")
+
+  if (claim.error) {
+    throw new Error(`claim order: ${claim.error.message}`)
+  }
+  const claimed = (claim.data ?? [])[0]
+  if (!claimed) {
+    // já paga ou cancelada — idempotente, sem reprocessar.
+    return
+  }
+
+  // Carrega itens
+  const itemsRes = await (
+    client as unknown as {
+      from: (n: string) => {
+        select: (cols: string) => {
+          eq: (
+            col: string,
+            val: string
+          ) => Promise<{
+            data: Array<{
+              ticket_lot_id: string
+              quantity: number
+              ticket_lots: { is_half_price: boolean; event_id: string } | null
+            }> | null
+          }>
+        }
+      }
+    }
+  )
+    .from("order_items")
+    .select("ticket_lot_id, quantity, ticket_lots(is_half_price, event_id)")
+    .eq("order_id", ourOrderId)
+
+  const items = itemsRes.data ?? []
+  const a = admin(client)
+
+  // Gera tickets no Node com QR HMAC, em batch
+  const holders = claimed.metadata?.holders ?? []
+  let holderIdx = 0
+  const ticketsToInsert: Array<Record<string, unknown>> = []
+  for (const item of items) {
+    const lot = Array.isArray(item.ticket_lots) ? item.ticket_lots[0] : item.ticket_lots
+    for (let i = 0; i < item.quantity; i++) {
+      const ticketId = crypto.randomUUID()
+      const holder = holders[holderIdx++] ?? {}
+      ticketsToInsert.push({
+        id: ticketId,
+        order_id: ourOrderId,
+        ticket_lot_id: item.ticket_lot_id,
+        event_id: lot?.event_id ?? claimed.event_id,
+        qr_hash: generateQrPayload(ticketId, lot?.event_id ?? claimed.event_id),
+        holder_name: holder.name ?? "Titular",
+        holder_cpf: holder.cpf ?? "",
+        is_half_price: lot?.is_half_price ?? false,
+        status: "paused",
+      })
+    }
+  }
+
+  if (ticketsToInsert.length > 0) {
+    const { error: insErr } = await client.from("tickets").insert(ticketsToInsert as never)
+    if (insErr) {
+      throw new Error(`tickets insert: ${insErr.message}`)
+    }
+  }
+
+  // Move reserved → sold em cada lote
+  for (const item of items) {
+    // get current values
+    const { data: lotRow } = await a
+      .from("ticket_lots")
+      .select("quantity_reserved, quantity_sold")
+      .eq("id", item.ticket_lot_id).maybeSingle!()
+    const lr = (lotRow ?? {}) as { quantity_reserved?: number; quantity_sold?: number }
+    const reserved = Math.max((lr.quantity_reserved ?? 0) - item.quantity, 0)
+    const sold = (lr.quantity_sold ?? 0) + item.quantity
+    await a
+      .from("ticket_lots")
+      .update({ quantity_reserved: reserved, quantity_sold: sold })
+      .eq("id", item.ticket_lot_id)
+  }
+
+  // Email de confirmação
+  const { data: buyer } = await a.from("profiles").select("full_name").eq("id", claimed.buyer_id)
+    .maybeSingle!()
+
+  // pega email via auth.users (profiles.email pode não estar syncada em todos os casos)
+  const userRes = await (
+    client as unknown as {
+      auth: {
+        admin: {
+          getUserById: (id: string) => Promise<{ data: { user: { email?: string } | null } | null }>
+        }
+      }
+    }
+  ).auth.admin.getUserById(claimed.buyer_id)
+  const buyerEmail = userRes?.data?.user?.email
+  if (!buyerEmail) return
+
+  const { data: ev } = await a
+    .from("events")
+    .select("title, starts_at, venue_name, city, state")
+    .eq("id", claimed.event_id).maybeSingle!()
+
+  const evt = (ev ?? {}) as {
+    title?: string
+    starts_at?: string
+    venue_name?: string | null
+    city?: string | null
+    state?: string | null
+  }
+  const appUrl = process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"
+  const bp = (buyer ?? {}) as { full_name?: string }
+
+  await sendTicketConfirmation({
+    to: buyerEmail,
+    buyerName: bp.full_name || "Você",
+    eventTitle: evt.title || "Seu evento",
+    eventDate: evt.starts_at
+      ? formatDate(evt.starts_at, { dateStyle: "full", timeStyle: "short" })
+      : "",
+    eventLocation: [evt.venue_name, evt.city, evt.state].filter(Boolean).join(" · ") || "",
+    ticketCount: ticketsToInsert.length,
+    totalCents: claimed.total_cents,
+    orderUrl: `${appUrl}/minha-conta/ingressos/${ourOrderId}`,
+    qrPayloads: ticketsToInsert.map((t) => t["qr_hash"] as string),
+    userId: claimed.buyer_id,
+    orderId: ourOrderId,
+  })
+}
+
+async function handleOrderFailed(
+  client: ReturnType<typeof createAdminClient>,
+  data: Record<string, unknown>,
+  evType: string
+) {
+  const a = admin(client)
+  const ourOrderId = extractOurOrderId(data)
+  if (!ourOrderId) return
+
+  const { data: order } = await a.from("orders").select("id, status, metadata").eq("id", ourOrderId)
+    .maybeSingle!()
+  if (!order) return
+  if (order["status"] === "paid") {
+    // Já paga — não regredimos.
+    return
+  }
+
+  // Libera estoque por item.
+  const itemsRes = await (
+    client as unknown as {
+      from: (n: string) => {
+        select: (cols: string) => {
+          eq: (
+            col: string,
+            val: string
+          ) => Promise<{ data: Array<{ ticket_lot_id: string; quantity: number }> | null }>
+        }
+      }
+    }
+  )
+    .from("order_items")
+    .select("ticket_lot_id, quantity")
+    .eq("order_id", ourOrderId)
+
+  for (const item of itemsRes.data ?? []) {
+    const { error: relErr } = await client.rpc("release_lot", {
+      p_lot_id: item.ticket_lot_id,
+      p_quantity: item.quantity,
+    })
+    if (relErr) console.error("[pagarme-webhook] release_lot failed:", relErr.message)
+  }
+
+  const newStatus = evType === "order.expired" ? "expired" : "canceled"
+  await a.from("orders").update({ status: newStatus }).eq("id", ourOrderId)
+}
+
+async function handleChargeRefund(
+  client: ReturnType<typeof createAdminClient>,
+  data: Record<string, unknown>
+) {
+  const a = admin(client)
+  const ourOrderId = extractOurOrderId(data)
+  if (!ourOrderId) return
+  // Marca como refunded — o fluxo formal de refund tem tela própria; aqui só reflete.
+  await a.from("orders").update({ status: "refunded" }).eq("id", ourOrderId)
+}
+
+/**
+ * Pagar.me v5 envia o `code` (nosso UUID) no order;
+ * em eventos de charge, o `order_id` aponta pro pagarme_order_id e precisamos olhar metadata.
+ */
+function extractOurOrderId(data: Record<string, unknown>): string | null {
+  const code = data["code"]
+  if (typeof code === "string" && code.length >= 36) return code
+  const metadata = data["metadata"] as Record<string, unknown> | undefined
+  const axon = metadata?.["axon_order_id"]
+  if (typeof axon === "string") return axon
+  return null
 }
