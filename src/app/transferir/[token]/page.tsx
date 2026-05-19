@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { SiteHeader } from "@/components/shared/SiteHeader"
 import { ClaimForm } from "./ClaimForm"
+import { LoginForm } from "@/components/shared/LoginForm"
 import { formatDate } from "@/lib/utils"
-import { Calendar, MapPin, Ticket as TicketIcon, Clock } from "lucide-react"
+import { Calendar, MapPin, Ticket as TicketIcon, Clock, LogIn } from "lucide-react"
 
 export const metadata: Metadata = { title: "Transferência de ingresso · AXON" }
 
@@ -68,10 +68,6 @@ export default async function TransferirPage({ params }: PageProps) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect(`/entrar?redirectTo=/transferir/${token}`)
-  }
-
   const isInvalid =
     !ticket ||
     ticket.status !== "paused" ||
@@ -117,6 +113,7 @@ export default async function TransferirPage({ params }: PageProps) {
             isHalfPrice={ticket!.is_half_price}
             originalHolderName={ticket!.holder_name}
             expiresAt={ticket!.transfer_expires_at as string}
+            isAuthenticated={!!user}
           />
         )}
       </div>
@@ -137,6 +134,7 @@ function ValidClaim({
   isHalfPrice,
   originalHolderName,
   expiresAt,
+  isAuthenticated,
 }: {
   token: string
   event: {
@@ -153,6 +151,7 @@ function ValidClaim({
   isHalfPrice: boolean
   originalHolderName: string
   expiresAt: string
+  isAuthenticated: boolean
 }) {
   const tName = typeof typeName === "string" ? typeName : (typeName?.name ?? "Ingresso")
   const expDate = formatDate(expiresAt, { dateStyle: "medium", timeStyle: "short" })
@@ -233,7 +232,34 @@ function ValidClaim({
         </div>
       )}
 
-      <ClaimForm token={token} />
+      {isAuthenticated ? (
+        <ClaimForm token={token} />
+      ) : (
+        <div
+          className="rounded-2xl border p-6"
+          style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
+        >
+          <div
+            className="mb-4 flex items-start gap-3 rounded-xl border p-3"
+            style={{
+              borderColor: "var(--pulse)",
+              backgroundColor: "var(--pulse-soft)",
+              color: "var(--pulse-deep)",
+            }}
+          >
+            <LogIn size={16} className="mt-0.5 shrink-0" />
+            <div>
+              <p className="text-xs font-bold">
+                Pra finalizar a transferência, entra ou cria sua conta
+              </p>
+              <p className="mt-1 text-[11px] opacity-80">
+                O ingresso fica registrado no seu nome assim que você clicar em Aceitar.
+              </p>
+            </div>
+          </div>
+          <LoginForm redirectTo={`/transferir/${token}`} />
+        </div>
+      )}
 
       <p className="text-center text-[11px]" style={{ color: "var(--mute)" }}>
         O link expira em {expDate}.

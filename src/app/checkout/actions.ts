@@ -26,6 +26,7 @@ const buyDemoSchema = z.object({
     .regex(/^[A-Z0-9]{4,12}$/)
     .optional()
     .or(z.literal("")),
+  useWalletCredit: z.coerce.boolean().optional(),
 })
 
 export type BuyDemoState = { ok: true; orderId: string } | { ok: false; error: string } | null
@@ -117,10 +118,70 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
 
   const subtotal = lot.price_cents * parsed.data.quantity
   const fee = Math.round(subtotal * 0.1)
-  const total = subtotal + fee
+  const baseTotal = subtotal + fee
+
+  // Aplica créditos AXON se o user pediu (não pode exceder o total)
+  let creditApplied = 0
+  if (parsed.data.useWalletCredit) {
+    const profileUnsafe = admin as unknown as {
+      from: (n: string) => {
+        select: (cols: string) => {
+          eq: (
+            col: string,
+            val: string
+          ) => {
+            maybeSingle: () => Promise<{ data: { wallet_credit_cents?: number } | null }>
+          }
+        }
+      }
+    }
+    const { data: pf } = await profileUnsafe
+      .from("profiles")
+      .select("wallet_credit_cents")
+      .eq("id", user.id)
+      .maybeSingle()
+    const available = (pf?.wallet_credit_cents ?? 0) as number
+    creditApplied = Math.min(available, baseTotal)
+  }
+  const total = baseTotal - creditApplied
 
   const rollbackStock = async () => {
     await admin.from("ticket_lots").update({ quantity_sold: lot.quantity_sold }).eq("id", lot.id)
+  }
+  const rollbackCredit = async () => {
+    if (creditApplied === 0) return
+    const updUnsafe = admin as unknown as {
+      rpc: (
+        fn: string,
+        args: Record<string, unknown>
+      ) => Promise<{ error: { message: string } | null }>
+    }
+    // best-effort: re-credita
+    await updUnsafe.rpc("increment_wallet_credit", {
+      p_user_id: user.id,
+      p_amount: creditApplied,
+    })
+  }
+
+  // Debita o crédito ANTES de criar a order (se o user pediu usar)
+  if (creditApplied > 0) {
+    const updUnsafe = admin as unknown as {
+      rpc: (
+        fn: string,
+        args: Record<string, unknown>
+      ) => Promise<{ error: { message: string } | null }>
+    }
+    const { error: debitErr } = await updUnsafe.rpc("debit_wallet_credit", {
+      p_user_id: user.id,
+      p_amount: creditApplied,
+    })
+    if (debitErr) {
+      await rollbackStock()
+      return {
+        ok: false,
+        error: "Não foi possível aplicar seu crédito. Tente novamente.",
+      }
+    }
   }
 
   const { data: order, error: orderErr } = await admin
@@ -134,13 +195,18 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
       total_cents: total,
       payment_method: "pix",
       paid_at: new Date().toISOString(),
-      metadata: { demo: true, source: "buy_demo" },
+      metadata: {
+        demo: true,
+        source: "buy_demo",
+        ...(creditApplied > 0 ? { credit_applied_cents: creditApplied } : {}),
+      },
     })
     .select("id")
     .single()
 
   if (orderErr || !order) {
     await rollbackStock()
+    await rollbackCredit()
     return { ok: false, error: orderErr?.message ?? "Falha ao criar pedido." }
   }
 
