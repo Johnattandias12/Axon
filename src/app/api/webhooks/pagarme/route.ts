@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
-import { verifyPagarmeSignature } from "@/lib/payments/pagarme/webhook-verify"
+import {
+  verifyPagarmeBasicAuth,
+  verifyPagarmeSignature,
+} from "@/lib/payments/pagarme/webhook-verify"
 import { PagarmeWebhookEventSchema, isHandledEvent } from "@/lib/payments/pagarme/types"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { sendTicketConfirmation } from "@/lib/email/send"
@@ -12,29 +15,45 @@ export const dynamic = "force-dynamic"
  * Webhook Pagar.me v5.
  *
  * Garantias:
- *  - Assinatura HMAC-SHA256 conferida com timingSafeEqual (header X-Hub-Signature)
+ *  - Auth Basic (user+password) OU HMAC-SHA256 — escolhido por env presentes
  *  - Idempotência por event.id (insert UNIQUE em webhook_events; duplicado = 200 OK silencioso)
- *  - confirm_order() RPC roda em transaction com lock pessimista (FOR UPDATE)
+ *  - Claim atomico pending→paid no Node (sem dependência de app.qr_secret)
  *  - release_lot() devolve estoque em cancel/fail/expire
  *  - Email de confirmação enviado apenas no 1º processamento do evento
  *  - Falha de processamento NÃO marca evento como processado (fica gravado com .error)
  */
 export async function POST(req: Request) {
   const rawBody = await req.text()
-  const signature = req.headers.get("x-hub-signature") || req.headers.get("pagarme-signature")
-  const secret = process.env["PAGARME_WEBHOOK_SECRET"]
 
-  // 1) Assinatura — em prod EXIGE; em dev sem secret avisa mas processa.
-  if (secret) {
-    const ok = verifyPagarmeSignature(rawBody, signature, secret)
-    if (!ok) {
-      console.error("[pagarme-webhook] invalid signature")
+  // 1) Autenticação. Pagar.me v5 atualmente usa Basic Auth (user+password
+  //    definidos por nós ao criar o webhook). Mantemos fallback pra HMAC.
+  const whUser = process.env["PAGARME_WEBHOOK_USER"]
+  const whPass = process.env["PAGARME_WEBHOOK_PASSWORD"]
+  const hmacSecret = process.env["PAGARME_WEBHOOK_SECRET"]
+  const auth = req.headers.get("authorization")
+  const signature = req.headers.get("x-hub-signature") || req.headers.get("pagarme-signature")
+
+  let authed = false
+  if (whUser && whPass && auth) {
+    authed = verifyPagarmeBasicAuth(auth, whUser, whPass)
+    if (!authed) {
+      console.error("[pagarme-webhook] basic auth inválido")
+      return new NextResponse("invalid auth", { status: 401 })
+    }
+  } else if (hmacSecret && signature) {
+    authed = verifyPagarmeSignature(rawBody, signature, hmacSecret)
+    if (!authed) {
+      console.error("[pagarme-webhook] HMAC signature inválido")
       return new NextResponse("invalid signature", { status: 401 })
     }
-  } else {
+  } else if (!whUser && !whPass && !hmacSecret) {
     console.warn(
-      "[pagarme-webhook] PAGARME_WEBHOOK_SECRET ausente — rodando sem verificação (somente dev)"
+      "[pagarme-webhook] sem PAGARME_WEBHOOK_USER+PASSWORD nem PAGARME_WEBHOOK_SECRET — rodando sem verificação (dev only)"
     )
+  } else {
+    // env definida mas header ausente
+    console.error("[pagarme-webhook] credenciais configuradas mas header ausente")
+    return new NextResponse("missing auth", { status: 401 })
   }
 
   // 2) Parse + valida shape
