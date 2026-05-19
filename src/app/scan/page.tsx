@@ -25,6 +25,7 @@ interface HistoryItem extends Extract<ValidateResult, { ok: true }> {
 
 export default function ScanAppPage() {
   const [activeTab, setActiveTab] = useState<"scan" | "history">("scan")
+  const [gate, setGate] = useState("Portaria Principal")
   const [input, setInput] = useState("")
   const [result, setResult] = useState<ValidateResult | null>(null)
   const [pending, startTransition] = useTransition()
@@ -40,7 +41,7 @@ export default function ScanAppPage() {
     if (!payload.trim()) return
     setResult(null)
     startTransition(async () => {
-      const r = await validateQr(payload.trim())
+      const r = await validateQr(payload.trim(), gate)
       setResult(r)
       setTimeout(() => setResult(null), 5000)
     })
@@ -96,6 +97,29 @@ export default function ScanAppPage() {
           </p>
         </div>
       </header>
+
+      {/* Seletor de Portão */}
+      <div
+        className="border-b px-4 py-2"
+        style={{ borderColor: "rgba(255,255,255,0.08)", backgroundColor: "var(--ink)" }}
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-semibold tracking-wider text-neutral-400 uppercase">
+            Local/Portão:
+          </span>
+          <select
+            value={gate}
+            onChange={(e) => setGate(e.target.value)}
+            className="cursor-pointer border-none bg-transparent p-0 text-xs text-white outline-none focus:ring-0"
+          >
+            <option value="Portaria Principal">Portaria Principal</option>
+            <option value="Portaria VIP">Portaria VIP</option>
+            <option value="Camarote">Camarote</option>
+            <option value="Estacionamento">Estacionamento</option>
+            <option value="Acesso Pista">Acesso Pista</option>
+          </select>
+        </div>
+      </div>
 
       <main className="relative flex flex-1 flex-col overflow-hidden">
         {activeTab === "scan" ? (

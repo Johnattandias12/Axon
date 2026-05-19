@@ -27,7 +27,7 @@ export type ValidateResult =
  * Permissões: validator, organizer ou admin.
  * Em modo demo (sem auth completa) ainda valida o HMAC e marca usado.
  */
-export async function validateQr(payload: string): Promise<ValidateResult> {
+export async function validateQr(payload: string, gate?: string): Promise<ValidateResult> {
   const parsed = payloadSchema.safeParse({ payload })
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "QR inválido." }
@@ -90,6 +90,7 @@ export async function validateQr(payload: string): Promise<ValidateResult> {
       event_id: ticket.event_id,
       validator_id: user.id,
       result: outStatus,
+      gate: gate || null,
     })
     return {
       ok: true,
@@ -107,7 +108,7 @@ export async function validateQr(payload: string): Promise<ValidateResult> {
   const usedAt = new Date().toISOString()
   await admin
     .from("tickets")
-    .update({ status: "used", used_at: usedAt, used_by: user.id })
+    .update({ status: "used", used_at: usedAt, used_by: user.id, gate: gate || null })
     .eq("id", ticket.id)
 
   await admin.from("check_ins").insert({
@@ -115,6 +116,7 @@ export async function validateQr(payload: string): Promise<ValidateResult> {
     event_id: ticket.event_id,
     validator_id: user.id,
     result: "valid",
+    gate: gate || null,
   })
 
   return {

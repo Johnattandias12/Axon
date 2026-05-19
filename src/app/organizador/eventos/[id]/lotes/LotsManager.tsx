@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createClient } from "@/lib/supabase/client"
 import { centsToBRL } from "@/lib/utils"
-import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react"
+import { Plus, Trash2, Pencil, ChevronDown, ChevronUp } from "lucide-react"
 
 type TicketLot = {
   id: string
@@ -53,6 +53,8 @@ export function LotsManager({ eventId, initialTypes }: Props) {
   const [types, setTypes] = useState<TicketType[]>(initialTypes)
   const [addingType, setAddingType] = useState(false)
   const [addingLotForType, setAddingLotForType] = useState<string | null>(null)
+  const [editingTypeId, setEditingTypeId] = useState<string | null>(null)
+  const [editingLotId, setEditingLotId] = useState<string | null>(null)
   const [expandedTypes, setExpandedTypes] = useState<Set<string>>(
     new Set(initialTypes.map((t) => t.id))
   )
@@ -73,8 +75,17 @@ export function LotsManager({ eventId, initialTypes }: Props) {
   const halfPct = totalTickets > 0 ? Math.round((halfTickets / totalTickets) * 100) : 0
   const halfOk = halfPct >= 40
 
-  const addType = async (data: TypeForm) => {
+  const saveType = async (data: TypeForm) => {
     const supabase = createClient()
+
+    if (editingTypeId) {
+      await supabase.from("ticket_types").update({ name: data.name }).eq("id", editingTypeId)
+      setTypes((prev) => prev.map((t) => (t.id === editingTypeId ? { ...t, name: data.name } : t)))
+      setEditingTypeId(null)
+      typeForm.reset()
+      return
+    }
+
     const { data: newType, error } = await supabase
       .from("ticket_types")
       .insert({ event_id: eventId, name: data.name, position: types.length })
@@ -95,21 +106,45 @@ export function LotsManager({ eventId, initialTypes }: Props) {
     setTypes((prev) => prev.filter((t) => t.id !== typeId))
   }
 
-  const addLot = async (typeId: string, data: LotForm) => {
+  const saveLot = async (typeId: string, data: LotForm) => {
     const supabase = createClient()
     const priceCents = Math.round(parseFloat(data.price.replace(",", ".")) * 100)
+
+    const lotData = {
+      name: data.name,
+      price_cents: priceCents,
+      quantity_total: data.quantity,
+      is_half_price: data.is_half_price,
+      starts_at: new Date(data.starts_at).toISOString(),
+      ends_at: data.ends_at ? new Date(data.ends_at).toISOString() : null,
+    }
+
+    if (editingLotId) {
+      await supabase.from("ticket_lots").update(lotData).eq("id", editingLotId)
+      setTypes((prev) =>
+        prev.map((t) =>
+          t.id === typeId
+            ? {
+                ...t,
+                ticket_lots:
+                  t.ticket_lots?.map((l) => (l.id === editingLotId ? { ...l, ...lotData } : l)) ??
+                  [],
+              }
+            : t
+        )
+      )
+      setEditingLotId(null)
+      lotForm.reset()
+      router.refresh()
+      return
+    }
 
     const { data: newLot, error } = await supabase
       .from("ticket_lots")
       .insert({
         ticket_type_id: typeId,
         event_id: eventId,
-        name: data.name,
-        price_cents: priceCents,
-        quantity_total: data.quantity,
-        is_half_price: data.is_half_price,
-        starts_at: new Date(data.starts_at).toISOString(),
-        ends_at: data.ends_at ? new Date(data.ends_at).toISOString() : null,
+        ...lotData,
         position: types.find((t) => t.id === typeId)?.ticket_lots?.length ?? 0,
       })
       .select("id, name, price_cents, quantity_total, is_half_price, position, starts_at, ends_at")
@@ -194,17 +229,31 @@ export function LotsManager({ eventId, initialTypes }: Props) {
                 {(type.ticket_lots ?? []).reduce((s, l) => s + l.quantity_total, 0)} ingressos
               </p>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                deleteType(type.id)
-              }}
-              className="rounded-lg p-1.5 transition-colors hover:bg-black/5"
-              style={{ color: "var(--danger)" }}
-              title="Remover tipo"
-            >
-              <Trash2 size={14} />
-            </button>
+            <div className="flex gap-1">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setEditingTypeId(type.id)
+                  typeForm.reset({ name: type.name })
+                }}
+                className="rounded-lg p-1.5 transition-colors hover:bg-black/5"
+                style={{ color: "var(--ink-3)" }}
+                title="Editar tipo"
+              >
+                <Pencil size={14} />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  deleteType(type.id)
+                }}
+                className="rounded-lg p-1.5 transition-colors hover:bg-black/5"
+                style={{ color: "var(--danger)" }}
+                title="Remover tipo"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
             {expandedTypes.has(type.id) ? (
               <ChevronUp size={15} style={{ color: "var(--mute)" }} />
             ) : (
@@ -245,19 +294,38 @@ export function LotsManager({ eventId, initialTypes }: Props) {
                         {lot.price_cents === 0 ? "Grátis" : centsToBRL(lot.price_cents)}
                       </p>
                     </div>
-                    <button
-                      onClick={() => deleteLot(type.id, lot.id)}
-                      className="rounded-lg p-1.5 transition-colors hover:bg-black/5"
-                      style={{ color: "var(--danger)" }}
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => {
+                          setEditingLotId(lot.id)
+                          lotForm.reset({
+                            name: lot.name,
+                            price: (lot.price_cents / 100).toFixed(2).replace(".", ","),
+                            quantity: lot.quantity_total,
+                            is_half_price: lot.is_half_price,
+                            starts_at: lot.starts_at.slice(0, 16),
+                            ends_at: lot.ends_at ? lot.ends_at.slice(0, 16) : undefined,
+                          })
+                        }}
+                        className="rounded-lg p-1.5 transition-colors hover:bg-black/5"
+                        style={{ color: "var(--ink-3)" }}
+                      >
+                        <Pencil size={13} />
+                      </button>
+                      <button
+                        onClick={() => deleteLot(type.id, lot.id)}
+                        className="rounded-lg p-1.5 transition-colors hover:bg-black/5"
+                        style={{ color: "var(--danger)" }}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
                   </div>
                 ))}
 
-              {addingLotForType === type.id ? (
+              {addingLotForType === type.id || editingLotId ? (
                 <form
-                  onSubmit={lotForm.handleSubmit((data) => addLot(type.id, data))}
+                  onSubmit={lotForm.handleSubmit((data) => saveLot(type.id, data))}
                   className="space-y-3 rounded-xl border p-4"
                   style={{ borderColor: "var(--pulse)" }}
                 >
@@ -265,7 +333,7 @@ export function LotsManager({ eventId, initialTypes }: Props) {
                     className="text-xs font-semibold tracking-wider uppercase"
                     style={{ color: "var(--mute)", letterSpacing: "0.1em" }}
                   >
-                    Novo lote
+                    {editingLotId ? "Editar lote" : "Novo lote"}
                   </p>
 
                   <div className="grid grid-cols-2 gap-3">
@@ -312,6 +380,7 @@ export function LotsManager({ eventId, initialTypes }: Props) {
                       size="sm"
                       onClick={() => {
                         setAddingLotForType(null)
+                        setEditingLotId(null)
                         lotForm.reset()
                       }}
                     >
@@ -326,7 +395,7 @@ export function LotsManager({ eventId, initialTypes }: Props) {
                         fontWeight: 600,
                       }}
                     >
-                      Adicionar lote
+                      {editingLotId ? "Salvar lote" : "Adicionar lote"}
                     </Button>
                   </div>
                 </form>
@@ -348,14 +417,14 @@ export function LotsManager({ eventId, initialTypes }: Props) {
       ))}
 
       {/* Adicionar tipo */}
-      {addingType ? (
+      {addingType || editingTypeId ? (
         <form
-          onSubmit={typeForm.handleSubmit(addType)}
+          onSubmit={typeForm.handleSubmit(saveType)}
           className="space-y-3 rounded-xl border p-4"
           style={{ borderColor: "var(--pulse)", backgroundColor: "var(--paper-pure)" }}
         >
           <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
-            Novo tipo
+            {editingTypeId ? "Editar tipo" : "Novo tipo"}
           </p>
           <LotField label="Nome do tipo" error={typeForm.formState.errors.name?.message}>
             <Input
@@ -371,6 +440,7 @@ export function LotsManager({ eventId, initialTypes }: Props) {
               size="sm"
               onClick={() => {
                 setAddingType(false)
+                setEditingTypeId(null)
                 typeForm.reset()
               }}
             >
@@ -385,7 +455,7 @@ export function LotsManager({ eventId, initialTypes }: Props) {
                 fontWeight: 600,
               }}
             >
-              Criar tipo
+              {editingTypeId ? "Salvar" : "Criar tipo"}
             </Button>
           </div>
         </form>

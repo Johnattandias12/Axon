@@ -22,7 +22,9 @@ interface TicketDetails {
   is_half_price: boolean
   status: string
   used_at: string | null
+  gate: string | null
   ticket_lots: { title: string } | null
+  validator: { full_name: string | null } | null
 }
 
 interface BuyerDetails {
@@ -298,9 +300,11 @@ export function SalesList({ initialOrders }: SalesListProps) {
                                       </span>
                                     )}
                                     {t.used_at && (
-                                      <p className="mt-1 text-[9px] text-neutral-500">
-                                        Lido em {formatDate(t.used_at)}
-                                      </p>
+                                      <div className="mt-1 flex flex-col text-[9px] text-neutral-500">
+                                        <span>Lido em {formatDate(t.used_at)}</span>
+                                        <span>Local: {t.gate ?? "Não informado"}</span>
+                                        <span>Por: {t.validator?.full_name ?? "Sistema"}</span>
+                                      </div>
                                     )}
                                   </div>
                                 </div>

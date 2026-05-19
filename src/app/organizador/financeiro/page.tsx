@@ -21,7 +21,9 @@ interface TicketDetails {
   is_half_price: boolean
   status: string
   used_at: string | null
+  gate: string | null
   ticket_lots: { title: string } | null
+  validator: { full_name: string | null } | null
 }
 
 interface BuyerDetails {
@@ -86,7 +88,7 @@ export default async function FinanceiroPage() {
         status,
         events(id, title, slug),
         buyer:buyer_id(id, full_name, phone, cpf),
-        tickets(id, holder_name, holder_cpf, is_half_price, status, used_at, used_by, ticket_lots:ticket_lot_id(title))
+        tickets(id, holder_name, holder_cpf, is_half_price, status, used_at, gate, used_by, ticket_lots:ticket_lot_id(title), validator:used_by(full_name))
       `
       )
       .in("event_id", eventIds)
