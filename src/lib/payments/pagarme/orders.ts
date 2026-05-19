@@ -4,11 +4,40 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 
 type AnyClient = SupabaseClient
 
+/**
+ * Quebra um telefone BR em {country_code, area_code, number} no formato exigido
+ * pela Pagar.me v5. Aceita "84999999999", "5584999999999", "(84) 99999-9999".
+ * Fallback safe: se faltar DDD ou número, devolve celular default sandbox.
+ */
+function parseBrPhone(raw: string): { country_code: string; area_code: string; number: string } {
+  const digits = (raw || "").replace(/\D/g, "")
+  let rest = digits
+  let cc = "55"
+  if (rest.length > 11) {
+    cc = rest.slice(0, rest.length - 11)
+    rest = rest.slice(rest.length - 11)
+  }
+  const area = rest.slice(0, 2)
+  const number = rest.slice(2)
+  if (area.length !== 2 || number.length < 8) {
+    return { country_code: "55", area_code: "11", number: "999999999" }
+  }
+  return { country_code: cc, area_code: area, number }
+}
+
 export interface CreatePixOrderInput {
   orderId: string // nossa UUID
   buyerName: string
   buyerEmail: string
   buyerCpf: string
+  /**
+   * Telefone do cliente — Pagar.me v5 EXIGE pelo menos um phone, senão a charge
+   * volta com status='failed' e gateway_response.errors com mensagem
+   * "At least one customer phone is required."
+   *
+   * Aceita só dígitos (ex: "84999999999") ou com DDI (ex: "5584999999999").
+   */
+  buyerPhone: string
   amountCents: number
   description: string
   expiresInMinutes?: number
@@ -56,6 +85,7 @@ export async function createPagarmePixOrder(input: CreatePixOrderInput): Promise
       type: "individual" as const,
       document_type: "CPF" as const,
       document: input.buyerCpf.replace(/\D/g, ""),
+      phones: { mobile_phone: parseBrPhone(input.buyerPhone) },
     },
     items: input.items.map((i) => ({
       amount: i.amount,

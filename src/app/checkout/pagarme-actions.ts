@@ -65,6 +65,15 @@ export async function createPixChargeAction(formData: FormData): Promise<PixChar
 
   const admin = createAdminClient()
 
+  // Phone do comprador é OBRIGATÓRIO na Pagar.me v5. Tenta pegar do profile;
+  // se vazio, manda string vazia (parseBrPhone aplica fallback safe).
+  const { data: profileRow } = await admin
+    .from("profiles")
+    .select("phone")
+    .eq("id", user.id)
+    .maybeSingle()
+  const buyerPhone = (profileRow?.phone as string | null) ?? ""
+
   const { data: lot, error: lotErr } = await admin
     .from("ticket_lots")
     .select("*, ticket_types(name), events!inner(id, title, status, organizer_id, starts_at)")
@@ -153,6 +162,7 @@ export async function createPixChargeAction(formData: FormData): Promise<PixChar
       buyerName: parsed.data.holderName,
       buyerEmail: user.email,
       buyerCpf: parsed.data.holderCpf,
+      buyerPhone,
       amountCents: total,
       description: `${event.title} - ${typeName}`,
       expiresInMinutes: 15,
