@@ -29,7 +29,7 @@ async function getAuthedTicket(ticketId: string) {
   if (!user) return { error: "Faça login.", user: null, ticket: null }
 
   const admin = createAdminClient()
-  const { data: ticket } = await admin
+  const { data: ticket, error } = await admin
     .from("tickets")
     .select(
       "id, status, transfer_token, refund_requested_at, holder_name, order_id, orders(buyer_id)"
@@ -37,7 +37,11 @@ async function getAuthedTicket(ticketId: string) {
     .eq("id", ticketId)
     .single()
 
-  if (!ticket) return { error: "Ingresso não encontrado.", user, ticket: null }
+  if (error) {
+    console.error("[getAuthedTicket] error:", error)
+    return { error: `Erro no banco: ${error.message}`, user, ticket: null }
+  }
+  if (!ticket) return { error: "Ingresso não encontrado no banco.", user, ticket: null }
   const order = Array.isArray(ticket.orders) ? ticket.orders[0] : ticket.orders
   if (!order || order.buyer_id !== user.id) {
     return { error: "Este ingresso não é seu.", user, ticket: null }

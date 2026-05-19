@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { ReactNode } from "react"
 
 interface Props {
@@ -19,44 +19,11 @@ interface Props {
  * título grande + ações à direita.
  * Aplicável a qualquer rota interna pra dar consistência de UX.
  */
-export function PageHeader({ back, eyebrow, title, description, actions, className = "" }: Props) {
+export function PageHeader({ eyebrow, title, description, actions, className = "" }: Props) {
   const router = useRouter()
-  const backLabel = typeof back === "object" ? (back.label ?? "Voltar") : "Voltar"
-  const backHref =
-    typeof back === "object" ? back.href : typeof back === "string" ? back : undefined
-
-  function handleBack() {
-    if (backHref) {
-      router.push(backHref)
-    } else if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back()
-    } else {
-      router.push("/")
-    }
-  }
 
   return (
     <div className={`mb-6 space-y-3 ${className}`}>
-      {back !== undefined && (
-        <button
-          type="button"
-          onClick={handleBack}
-          className="group inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold backdrop-blur-md transition-all hover:scale-[1.03] hover:border-[var(--pulse)] hover:shadow-[0_4px_16px_-4px_rgba(200,255,0,0.4)]"
-          style={{
-            borderColor: "var(--rule)",
-            backgroundColor: "color-mix(in srgb, var(--paper-pure) 60%, transparent)",
-            color: "var(--ink-4)",
-          }}
-        >
-          <ChevronLeft
-            size={12}
-            className="transition-transform group-hover:-translate-x-0.5"
-            style={{ color: "var(--pulse-deep)" }}
-          />
-          {backLabel}
-        </button>
-      )}
-
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0 flex-1 space-y-1">
           {eyebrow && (
@@ -88,6 +55,48 @@ export function PageHeader({ back, eyebrow, title, description, actions, classNa
           )}
         </div>
         {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+      </div>
+
+      {/* Barra de controle de histórico abaixo da caixa de títulos */}
+      <div
+        className="mt-4 flex items-center justify-between border-t pt-3"
+        style={{ borderColor: "var(--rule-strong)" }}
+      >
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="group flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-bold transition-all hover:scale-[1.02] hover:border-white/20 active:scale-[0.98]"
+          style={{
+            borderColor: "var(--rule)",
+            backgroundColor: "var(--paper-pure)",
+            color: "var(--ink-3)",
+          }}
+        >
+          <ChevronLeft
+            size={14}
+            className="transition-transform group-hover:-translate-x-0.5"
+            style={{ color: "var(--pulse)" }}
+          />
+          Voltar
+        </button>
+
+        <button
+          type="button"
+          onClick={() => router.forward()}
+          className="group flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-bold transition-all hover:scale-[1.02] hover:border-white/20 active:scale-[0.98]"
+          style={{
+            borderColor: "var(--rule)",
+            backgroundColor: "var(--paper-pure)",
+            color: "var(--ink-3)",
+          }}
+        >
+          Avançar
+          <ChevronRight
+            size={14}
+            className="transition-transform group-hover:translate-x-0.5"
+            style={{ color: "var(--pulse)" }}
+          />
+        </button>
       </div>
     </div>
   )

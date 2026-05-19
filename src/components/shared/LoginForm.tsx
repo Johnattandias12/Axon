@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -67,15 +67,6 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
     defaultValues: { email: "" },
   })
 
-  // Pré-preenche email com o último usado (poupa digitação em re-login)
-  useEffect(() => {
-    const last = localStorage.getItem("axon_last_email")
-    if (last) {
-      loginForm.setValue("email", last)
-      resetForm.setValue("email", last)
-    }
-  }, [loginForm, resetForm])
-
   const handleLogin = async (data: LoginData) => {
     const loadingId = toast.loading("Entrando...")
     try {
@@ -89,7 +80,17 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
         toast.error(mapSupabaseError(error.message))
         return
       }
-      localStorage.setItem("axon_last_email", data.email.trim().toLowerCase())
+
+      // Notifica login via email em background (best-effort)
+      fetch("/api/auth/login-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userAgent: window.navigator.userAgent,
+          location: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
+      }).catch(console.error)
+
       toast.success("Bem-vindo de volta! Bora encher o carrinho.", { duration: 2200 })
       // Hard navigation pra garantir que o header server-side reflita o login
       window.location.href = redirectTo
@@ -118,7 +119,6 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
         return
       }
       // Quando confirmação por e-mail está habilitada, session vem null
-      localStorage.setItem("axon_last_email", data.email.trim().toLowerCase())
       if (!signupData.session) {
         setSignupSuccessEmail(data.email.trim().toLowerCase())
         toast.success("Conta criada! Verifique seu e-mail para ativar.")
@@ -138,15 +138,17 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
       const supabase = createClient()
       const appUrl = process.env["NEXT_PUBLIC_APP_URL"] ?? window.location.origin
       const { error } = await supabase.auth.resetPasswordForEmail(data.email.trim().toLowerCase(), {
-        redirectTo: `${appUrl}/api/auth/callback?next=/minha-conta`,
+        redirectTo: `${appUrl}/api/auth/callback?next=/redefinir-senha`,
       })
       toast.dismiss(loadingId)
       if (error) {
-        toast.error(mapSupabaseError(error.message))
-        return
+        console.warn(
+          "Supabase login page resetPasswordForEmail error (mocked success for UX):",
+          error.message
+        )
       }
       setResetSent(true)
-      toast.success("Link enviado!")
+      toast.success("E-mail de redefinição enviado! Verifique sua caixa de entrada.")
     } catch {
       toast.dismiss(loadingId)
       toast.error("Erro inesperado. Tente novamente.")
@@ -335,14 +337,14 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
                 type={showPass ? "text" : "password"}
                 autoComplete="new-password"
                 placeholder="Mínimo 6 caracteres"
-                className="h-10 pr-12 text-base md:h-9 md:text-sm"
+                className="pr-10"
                 aria-invalid={!!signupForm.formState.errors.password}
               />
               <button
                 type="button"
                 aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
                 onClick={() => setShowPass(!showPass)}
-                className="absolute top-1/2 right-2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md transition-colors hover:bg-black/5"
+                className="absolute top-1/2 right-3 -translate-y-1/2"
                 style={{ color: "var(--mute)" }}
               >
                 {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -435,14 +437,14 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
               type={showPass ? "text" : "password"}
               autoComplete="current-password"
               placeholder="Sua senha"
-              className="h-10 pr-12 text-base md:h-9 md:text-sm"
+              className="pr-10"
               aria-invalid={!!loginForm.formState.errors.password}
             />
             <button
               type="button"
               aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
               onClick={() => setShowPass(!showPass)}
-              className="absolute top-1/2 right-2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md transition-colors hover:bg-black/5"
+              className="absolute top-1/2 right-3 -translate-y-1/2"
               style={{ color: "var(--mute)" }}
             >
               {showPass ? <EyeOff size={15} /> : <Eye size={15} />}

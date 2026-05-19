@@ -14,6 +14,7 @@ import { CheckCircle2 } from "lucide-react"
 const schema = z.object({
   full_name: z.string().min(3, "Nome muito curto"),
   phone: z.string().optional(),
+  birth_date: z.string().optional(),
   cpf: z
     .string()
     .optional()
@@ -24,7 +25,7 @@ type FormData = z.infer<typeof schema>
 
 interface Props {
   userId: string
-  initialData: { full_name: string; phone: string; cpf: string }
+  initialData: { full_name: string; phone: string; cpf: string; birth_date: string }
 }
 
 export function ProfileForm({ userId, initialData }: Props) {
@@ -49,6 +50,7 @@ export function ProfileForm({ userId, initialData }: Props) {
         full_name: data.full_name,
         phone: data.phone?.replace(/\D/g, "") ?? null,
         cpf: data.cpf?.replace(/\D/g, "") ?? null,
+        birth_date: data.birth_date ? data.birth_date : null,
       })
       .eq("id", userId)
 
@@ -80,6 +82,17 @@ export function ProfileForm({ userId, initialData }: Props) {
           placeholder="(84) 99999-9999"
           onChange={(e) => setValue("phone", formatPhone(e.target.value), { shouldDirty: true })}
         />
+        <p className="text-xs" style={{ color: "var(--mute-2)" }}>
+          Importante para integrações futuras (receber ingressos e códigos por WhatsApp/SMS).
+        </p>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label style={{ color: "var(--ink)" }}>Data de Nascimento</Label>
+        <Input type="date" {...register("birth_date")} className="w-full" />
+        <p className="text-xs" style={{ color: "var(--mute-2)" }}>
+          Necessário para eventos com restrição de faixa etária.
+        </p>
       </div>
 
       <div className="space-y-1.5">

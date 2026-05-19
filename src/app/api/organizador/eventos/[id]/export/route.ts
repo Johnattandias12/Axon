@@ -49,14 +49,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const eventSlug = event.slug ?? eventId.slice(0, 8)
 
   if (type === "sales") {
-    const { data: tickets } = await admin
+    const { data: tickets, error: ticketsErr } = await admin
       .from("tickets")
       .select(
-        `id, holder_name, holder_cpf, is_half_price, status, qr_hash,
-         orders(id, total_cents, paid_at, payment_method, buyer_id, profiles(email, full_name)),
+        `id, holder_name, holder_cpf, is_half_price, half_price_doc_type, status, qr_hash,
+         orders(id, total_cents, paid_at, payment_method, buyer_id, profiles:buyer_id(email, full_name)),
          ticket_lots(name, price_cents, ticket_types(name))`
       )
       .eq("event_id", eventId)
+
+    if (ticketsErr) {
+      console.error("[CSV Export Sales] erro:", ticketsErr)
+      return NextResponse.json({ error: ticketsErr.message }, { status: 500 })
+    }
 
     const rows = [
       [
@@ -66,6 +71,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         "lote",
         "preco_centavos",
         "meia",
+        "tipo_doc_meia",
         "titular",
         "documento",
         "comprador_email",
@@ -75,6 +81,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         "pago_em",
       ].join(","),
     ]
+
+    if (tickets && tickets.length > 0) {
+      console.log("[CSV Export Sales] Primeiro ticket:", JSON.stringify(tickets[0], null, 2))
+    }
+
     for (const t of tickets ?? []) {
       const lot = Array.isArray(t.ticket_lots) ? t.ticket_lots[0] : t.ticket_lots
       const tt = lot && Array.isArray(lot.ticket_types) ? lot.ticket_types[0] : lot?.ticket_types
@@ -88,6 +99,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
           esc(lot?.name ?? ""),
           String(lot?.price_cents ?? 0),
           t.is_half_price ? "sim" : "nao",
+          esc(t.half_price_doc_type ?? ""),
           esc(t.holder_name),
           esc(t.holder_cpf),
           esc(buyer?.email ?? ""),
@@ -103,15 +115,20 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   }
 
   if (type === "checkins") {
-    const { data: checks } = await admin
+    const { data: checks, error: checksErr } = await admin
       .from("check_ins")
       .select(
         `id, scanned_at, result,
          tickets(id, holder_name, holder_cpf, ticket_lots(name, ticket_types(name))),
-         profiles(email, full_name)`
+         profiles:validator_id(email, full_name)`
       )
       .eq("event_id", eventId)
       .order("scanned_at", { ascending: true })
+
+    if (checksErr) {
+      console.error("[CSV Export Checkins] erro:", checksErr)
+      return NextResponse.json({ error: checksErr.message }, { status: 500 })
+    }
 
     const rows = [
       [

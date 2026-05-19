@@ -401,32 +401,67 @@ export function OrganizerOnboarding({ userId }: Props) {
           </div>
 
           <div
-            className="max-h-48 space-y-3 overflow-y-auto rounded-xl border p-4 text-sm"
+            className="max-h-56 space-y-3 overflow-y-auto rounded-xl border p-4 text-sm"
             style={{ borderColor: "var(--rule)", color: "var(--ink-4)" }}
           >
             <p className="font-semibold" style={{ color: "var(--ink)" }}>
-              Termos de uso do organizador AXON
+              Termos do organizador AXON
             </p>
+
+            {/* Taxa em destaque */}
+            <div
+              className="space-y-2 rounded-lg border p-3"
+              style={{ borderColor: "var(--pulse)", backgroundColor: "rgba(200,255,0,0.05)" }}
+            >
+              <p
+                className="text-xs font-semibold tracking-wider uppercase"
+                style={{ color: "var(--pulse)" }}
+              >
+                Estrutura de taxas
+              </p>
+              <ul className="space-y-1 text-xs" style={{ color: "var(--ink-3)" }}>
+                <li>
+                  <strong style={{ color: "var(--ink)" }}>Pix:</strong> R$ 1,00 por pedido
+                  (comprador) · recebimento instantâneo
+                </li>
+                <li>
+                  <strong style={{ color: "var(--ink)" }}>Cartão 1x:</strong> +5% (comprador) ·
+                  recebimento D+17
+                </li>
+                <li>
+                  <strong style={{ color: "var(--ink)" }}>Cartão 2–12x:</strong> +8% a +18%
+                  (comprador) · recebimento D+17
+                </li>
+                <li>
+                  <strong style={{ color: "var(--ink)" }}>Comissão AXON:</strong> 9% sobre o valor
+                  do ingresso
+                </li>
+              </ul>
+            </div>
+
             <p>
-              Ao criar eventos na plataforma AXON, você concorda em ser o responsável pela
+              Ao criar eventos na plataforma AXON, você concorda em ser o responsável exclusivo pela
               qualidade, segurança e realização do evento. A AXON atua como marketplace
               intermediário.
             </p>
             <p>
-              <strong>Repasse:</strong> Pix em D+1 após confirmação do pagamento; cartão em D+30.
-              Taxa de serviço: definida no contrato de adesão.
+              <strong style={{ color: "var(--ink)" }}>Repasse:</strong> via Pix disponível em D+1
+              após confirmação do pagamento; via cartão em D+17 (2 dias após o recebimento do
+              gateway). A comissão AXON de 9% é retida automaticamente no split — você já recebe o
+              valor líquido.
             </p>
             <p>
-              <strong>Cancelamentos:</strong> Em caso de cancelamento do evento, reembolso integral
-              de todos os compradores em até 12 dias (CDC).
+              <strong style={{ color: "var(--ink)" }}>Cancelamentos:</strong> em caso de
+              cancelamento do evento, reembolso integral a todos os compradores dentro do prazo
+              legal (CDC).
             </p>
             <p>
-              <strong>Meia-entrada:</strong> 40% dos ingressos devem ser reservados para
-              meia-entrada, conforme Lei 12.933/2013.
+              <strong style={{ color: "var(--ink)" }}>Meia-entrada:</strong> 40% dos ingressos devem
+              ser reservados para meia-entrada, conforme Lei 12.933/2013.
             </p>
             <p>
-              <strong>LGPD:</strong> Dados dos compradores são tratados conforme a política de
-              privacidade AXON. Vedado uso para outros fins.
+              <strong style={{ color: "var(--ink)" }}>LGPD:</strong> dados dos compradores são
+              tratados conforme a Política de Privacidade AXON. Vedado uso para outros fins.
             </p>
           </div>
 

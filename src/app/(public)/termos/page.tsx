@@ -14,14 +14,15 @@ const sections = [
     content: (
       <>
         <p>
-          Estes Termos regulam a relação entre a <strong className="text-[var(--ink)]">AXON</strong> — plataforma
-          operada por Francisco Johnattan Dias da Silva Costa (CNPJ em processo de abertura), com sede em
-          Currais Novos — RN — e os usuários que acessam <strong className="text-[var(--ink)]">axonia.vercel.app</strong>{" "}
-          e domínios associados.
+          Estes Termos regulam a relação entre a <strong className="text-[var(--ink)]">AXON</strong>{" "}
+          — plataforma gerida pelo CEO Johnattan Dias (CNPJ em processo de abertura), com sede em
+          Natal — RN — e os usuários que acessam{" "}
+          <strong className="text-[var(--ink)]">axonia.vercel.app</strong> e domínios associados.
         </p>
         <p>
-          Ao criar uma conta, comprar ou publicar um evento, você declara ter lido e aceito integralmente estes Termos.
-          A AXON pode alterá-los a qualquer tempo; a continuidade do uso após a publicação das alterações implica aceite tácito.
+          Ao criar uma conta, comprar ou publicar um evento, você declara ter lido e aceito
+          integralmente estes Termos. A AXON pode alterá-los a qualquer tempo; a continuidade do uso
+          após a publicação das alterações implica aceite tácito.
         </p>
       </>
     ),
@@ -31,12 +32,30 @@ const sections = [
     title: "Definições",
     content: (
       <ul>
-        <li><strong className="text-[var(--ink)]">Comprador:</strong> pessoa física que adquire ingressos pela plataforma.</li>
-        <li><strong className="text-[var(--ink)]">Organizador:</strong> pessoa física ou jurídica que cadastra e gerencia eventos.</li>
-        <li><strong className="text-[var(--ink)]">Validador:</strong> membro da equipe do Organizador autorizado a escanear ingressos.</li>
-        <li><strong className="text-[var(--ink)]">Ingresso:</strong> documento digital com QR Code HMAC único gerado após pagamento confirmado.</li>
-        <li><strong className="text-[var(--ink)]">Gateway:</strong> Pagar.me (Stone Group) — processador financeiro homologado.</li>
-        <li><strong className="text-[var(--ink)]">Split:</strong> divisão automática do valor pago entre AXON e Organizador.</li>
+        <li>
+          <strong className="text-[var(--ink)]">Comprador:</strong> pessoa física que adquire
+          ingressos pela plataforma.
+        </li>
+        <li>
+          <strong className="text-[var(--ink)]">Organizador:</strong> pessoa física ou jurídica que
+          cadastra e gerencia eventos.
+        </li>
+        <li>
+          <strong className="text-[var(--ink)]">Validador:</strong> membro da equipe do Organizador
+          autorizado a escanear ingressos.
+        </li>
+        <li>
+          <strong className="text-[var(--ink)]">Ingresso:</strong> documento digital com QR Code
+          HMAC único gerado após pagamento confirmado.
+        </li>
+        <li>
+          <strong className="text-[var(--ink)]">Gateway:</strong> Pagar.me (Stone Group) —
+          processador financeiro homologado.
+        </li>
+        <li>
+          <strong className="text-[var(--ink)]">Split:</strong> divisão automática do valor pago
+          entre AXON e Organizador.
+        </li>
       </ul>
     ),
   },
@@ -45,10 +64,19 @@ const sections = [
     title: "Cadastro e Conta",
     content: (
       <ul>
-        <li>O cadastro exige e-mail válido e aceite expresso destes Termos e da Política de Privacidade.</li>
+        <li>
+          O cadastro exige e-mail válido e aceite expresso destes Termos e da Política de
+          Privacidade.
+        </li>
         <li>Você é responsável pela veracidade dos dados e pela segurança das suas credenciais.</li>
-        <li>Menores de 18 anos somente podem utilizar a plataforma com autorização do responsável legal.</li>
-        <li>A AXON pode suspender ou encerrar contas que violem estes Termos, sem aviso prévio ou indenização.</li>
+        <li>
+          Menores de 18 anos somente podem utilizar a plataforma com autorização do responsável
+          legal.
+        </li>
+        <li>
+          A AXON pode suspender ou encerrar contas que violem estes Termos, sem aviso prévio ou
+          indenização.
+        </li>
       </ul>
     ),
   },
@@ -58,25 +86,31 @@ const sections = [
     content: (
       <>
         <p>
-          A AXON atua como <strong className="text-[var(--ink)]">intermediadora</strong>. A responsabilidade pelo evento é exclusivamente do Organizador.
+          A AXON atua como <strong className="text-[var(--ink)]">intermediadora</strong>. A
+          responsabilidade pelo evento é exclusivamente do Organizador.
         </p>
         <ul>
           <li>
-            <strong className="text-[var(--ink)]">Taxa de serviço AXON:</strong> 9% sobre o valor do ingresso, retida automaticamente no split.
-            O valor líquido repassado ao Organizador já é deduzido desta taxa.
+            <strong className="text-[var(--ink)]">Taxa de serviço AXON:</strong> 9% sobre o valor do
+            ingresso, retida automaticamente no split. O valor líquido repassado ao Organizador já é
+            deduzido desta taxa.
           </li>
           <li>
-            <strong className="text-[var(--ink)]">Taxa de conveniência (Comprador):</strong> R$ 1,00 fixo por pedido via Pix;
-            adicional percentual no cartão de crédito (5% a 18% conforme parcelas), exibido no checkout antes da finalização.
+            <strong className="text-[var(--ink)]">Taxa de conveniência (Comprador):</strong> R$ 1,00
+            fixo por pedido via Pix; adicional percentual no cartão de crédito (5% a 18% conforme
+            parcelas), exibido no checkout antes da finalização.
           </li>
           <li>
-            Pagamento processado pela Pagar.me em ambiente PCI-DSS certificado. A AXON <strong className="text-[var(--ink)]">não armazena</strong> dados de cartão de crédito.
+            Pagamento processado pela Pagar.me em ambiente PCI-DSS certificado. A AXON{" "}
+            <strong className="text-[var(--ink)]">não armazena</strong> dados de cartão de crédito.
           </li>
           <li>
-            O ingresso é gerado com QR Code HMAC único e assinado imediatamente após confirmação do pagamento.
+            O ingresso é gerado com QR Code HMAC único e assinado imediatamente após confirmação do
+            pagamento.
           </li>
           <li>
-            É proibida a revenda de ingressos fora da plataforma ou por valor acima do praticado. Contas em revenda irregular serão suspensas.
+            É proibida a revenda de ingressos fora da plataforma ou por valor acima do praticado.
+            Contas em revenda irregular serão suspensas.
           </li>
         </ul>
       </>
@@ -87,9 +121,7 @@ const sections = [
     title: "Meia-Entrada (Lei 12.933/2013)",
     content: (
       <>
-        <p>
-          Ao menos 40% dos ingressos de cada evento devem ser destinados à meia-entrada para:
-        </p>
+        <p>Ao menos 40% dos ingressos de cada evento devem ser destinados à meia-entrada para:</p>
         <ul>
           <li>Estudantes portadores de CIE válida</li>
           <li>Idosos com 60 anos ou mais (Estatuto do Idoso)</li>
@@ -97,7 +129,8 @@ const sections = [
           <li>Jovens de 15 a 29 anos em situação de vulnerabilidade (ID Jovem)</li>
         </ul>
         <p>
-          O documento comprobatório é obrigatório na entrada. A não-apresentação invalida o ingresso de meia-entrada.
+          O documento comprobatório é obrigatório na entrada. A não-apresentação invalida o ingresso
+          de meia-entrada.
         </p>
       </>
     ),
@@ -108,22 +141,27 @@ const sections = [
     content: (
       <ul>
         <li>
-          <strong className="text-[var(--ink)]">Direito de arrependimento (CDC, art. 49):</strong> cancelamento em até 7 dias corridos
-          da compra, com reembolso integral, desde que o evento não tenha ocorrido e o pedido seja feito com mais de 48h de antecedência.
+          <strong className="text-[var(--ink)]">Direito de arrependimento (CDC, art. 49):</strong>{" "}
+          cancelamento em até 7 dias corridos da compra, com reembolso integral, desde que o evento
+          não tenha ocorrido e o pedido seja feito com mais de 48h de antecedência.
         </li>
         <li>
-          <strong className="text-[var(--ink)]">Cancelamento pelo Organizador:</strong> reembolso integral ao Comprador, incluindo
-          taxa de conveniência. Pix: até 3 dias úteis; Cartão: até 2 faturas.
+          <strong className="text-[var(--ink)]">Cancelamento pelo Organizador:</strong> reembolso
+          integral ao Comprador, incluindo taxa de conveniência. Pix: até 3 dias úteis; Cartão: até
+          2 faturas.
         </li>
         <li>
-          <strong className="text-[var(--ink)]">Adiamento:</strong> ingresso mantém validade para a nova data. Se o Comprador não puder
-          comparecer, tem direito ao reembolso integral em até 7 dias após o anúncio do adiamento.
+          <strong className="text-[var(--ink)]">Adiamento:</strong> ingresso mantém validade para a
+          nova data. Se o Comprador não puder comparecer, tem direito ao reembolso integral em até 7
+          dias após o anúncio do adiamento.
         </li>
         <li>
-          <strong className="text-[var(--ink)]">Não comparecimento:</strong> ausência do Comprador não gera direito a reembolso.
+          <strong className="text-[var(--ink)]">Não comparecimento:</strong> ausência do Comprador
+          não gera direito a reembolso.
         </li>
         <li>
-          A taxa de serviço da AXON (9%) não é reembolsável após o prazo legal, exceto em cancelamento do evento pelo Organizador.
+          A taxa de serviço da AXON (9%) não é reembolsável após o prazo legal, exceto em
+          cancelamento do evento pelo Organizador.
         </li>
       </ul>
     ),
@@ -134,7 +172,9 @@ const sections = [
     content: (
       <ul>
         <li>Transferência gratuita via plataforma, disponível até 2 horas antes do evento.</li>
-        <li>Gera novo QR Code vinculado ao novo titular — o anterior é invalidado imediatamente.</li>
+        <li>
+          Gera novo QR Code vinculado ao novo titular — o anterior é invalidado imediatamente.
+        </li>
         <li>O destinatário deve possuir ou criar conta na AXON.</li>
         <li>Ingressos de meia-entrada exigem verificação do perfil do novo titular.</li>
       </ul>
@@ -146,22 +186,26 @@ const sections = [
     content: (
       <ul>
         <li>
-          O Organizador é responsável exclusivo pelo conteúdo do evento, cumprimento das condições anunciadas, segurança do local
-          e atendimento a todas as legislações aplicáveis (alvarás, AVCB, PPCI, etc.).
+          O Organizador é responsável exclusivo pelo conteúdo do evento, cumprimento das condições
+          anunciadas, segurança do local e atendimento a todas as legislações aplicáveis (alvarás,
+          AVCB, PPCI, etc.).
         </li>
         <li>
-          Para receber repasses, o Organizador deve completar o KYC e cadastrar dados bancários de titularidade própria.
+          Para receber repasses, o Organizador deve completar o KYC e cadastrar dados bancários de
+          titularidade própria.
         </li>
         <li>
-          <strong className="text-[var(--ink)]">Prazo de repasse:</strong> via Pix disponível em D+1 a D+2 após a venda;
-          via cartão em D+17. O Organizador recebe o valor líquido já deduzida a comissão da AXON.
+          <strong className="text-[var(--ink)]">Prazo de repasse:</strong> via Pix disponível em D+1
+          a D+2 após a venda; via cartão em D+17. O Organizador recebe o valor líquido já deduzida a
+          comissão da AXON.
         </li>
         <li>
-          A AXON pode reter repasses em caso de suspeita de fraude, chargebacks em aberto ou investigações em andamento.
+          A AXON pode reter repasses em caso de suspeita de fraude, chargebacks em aberto ou
+          investigações em andamento.
         </li>
         <li>
-          Eventos que violem leis, promovam discriminação ou incitação ao ódio serão removidos imediatamente e o Organizador
-          poderá ser banido permanentemente.
+          Eventos que violem leis, promovam discriminação ou incitação ao ódio serão removidos
+          imediatamente e o Organizador poderá ser banido permanentemente.
         </li>
       </ul>
     ),
@@ -177,7 +221,8 @@ const sections = [
         <li>Webhook idempotente — evita geração duplicada de ingressos</li>
         <li>Monitoramento de comportamento suspeito e bloqueio automático</li>
         <li>
-          Em caso de chargeback indevido, a AXON reserva-se o direito de cobrar o valor contestado e suspender a conta do Comprador.
+          Em caso de chargeback indevido, a AXON reserva-se o direito de cobrar o valor contestado e
+          suspender a conta do Comprador.
         </li>
       </ul>
     ),
@@ -187,9 +232,10 @@ const sections = [
     title: "Propriedade Intelectual",
     content: (
       <p>
-        Todo o conteúdo da plataforma — código, design, marca, logotipo, textos e funcionalidades — é propriedade exclusiva da AXON,
-        protegido pelas leis brasileiras (Lei 9.279/1996 e Lei 9.610/1998). É vedada a cópia, reprodução, engenharia reversa
-        ou uso comercial sem autorização prévia e expressa.
+        Todo o conteúdo da plataforma — código, design, marca, logotipo, textos e funcionalidades —
+        é propriedade exclusiva da AXON, protegido pelas leis brasileiras (Lei 9.279/1996 e Lei
+        9.610/1998). É vedada a cópia, reprodução, engenharia reversa ou uso comercial sem
+        autorização prévia e expressa.
       </p>
     ),
   },
@@ -206,7 +252,8 @@ const sections = [
           <li>Danos indiretos decorrentes da indisponibilidade temporária da plataforma</li>
         </ul>
         <p>
-          Em qualquer caso, a responsabilidade máxima da AXON fica limitada ao valor total pago na transação que originou o dano.
+          Em qualquer caso, a responsabilidade máxima da AXON fica limitada ao valor total pago na
+          transação que originou o dano.
         </p>
       </>
     ),
@@ -216,8 +263,9 @@ const sections = [
     title: "Foro e Legislação Aplicável",
     content: (
       <p>
-        Estes Termos são regidos pelas leis da República Federativa do Brasil. Fica eleito o foro da Comarca de Natal — RN
-        para dirimir quaisquer litígios, com renúncia expressa a qualquer outro foro, por mais privilegiado que seja.
+        Estes Termos são regidos pelas leis da República Federativa do Brasil. Fica eleito o foro da
+        Comarca de Natal — RN para dirimir quaisquer litígios, com renúncia expressa a qualquer
+        outro foro, por mais privilegiado que seja.
       </p>
     ),
   },
@@ -233,17 +281,30 @@ export default function TermosPage() {
       >
         <div
           className="pointer-events-none absolute top-[-80px] left-[-80px] h-[300px] w-[300px] rounded-full opacity-20"
-          style={{ background: "radial-gradient(circle, rgba(200,255,0,0.3) 0%, transparent 70%)", filter: "blur(60px)" }}
+          style={{
+            background: "radial-gradient(circle, rgba(200,255,0,0.3) 0%, transparent 70%)",
+            filter: "blur(60px)",
+          }}
           aria-hidden="true"
         />
         <div className="relative mx-auto max-w-3xl">
           <div className="mb-4 inline-flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "var(--pulse)" }} />
-            <span className="text-[11px] font-semibold tracking-[0.12em] text-white/50 uppercase">Documento legal</span>
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: "var(--pulse)" }}
+            />
+            <span className="text-[11px] font-semibold tracking-[0.12em] text-white/50 uppercase">
+              Documento legal
+            </span>
           </div>
-          <h1 className="mb-3 text-4xl font-black tracking-tight text-white md:text-5xl" style={{ letterSpacing: "-0.04em" }}>
+          <h1
+            className="mb-3 text-4xl font-black tracking-tight text-white md:text-5xl"
+            style={{ letterSpacing: "-0.04em" }}
+          >
             Termos de{" "}
-            <span style={{ color: "var(--pulse)", textShadow: "0 0 20px rgba(200,255,0,0.3)" }}>Uso</span>
+            <span style={{ color: "var(--pulse)", textShadow: "0 0 20px rgba(200,255,0,0.3)" }}>
+              Uso
+            </span>
           </h1>
           <p className="text-[15px] text-white/50">
             Última atualização: 18 de maio de 2026 · Versão 1.0
@@ -263,30 +324,44 @@ export default function TermosPage() {
                 >
                   {s.id}
                 </span>
-                <h2 className="text-lg font-bold tracking-tight" style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}>
+                <h2
+                  className="text-lg font-bold tracking-tight"
+                  style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
+                >
                   {s.title}
                 </h2>
               </div>
               <div
-                className="pl-8 space-y-3 text-[15px] leading-relaxed [&_ul]:space-y-2 [&_ul]:pl-5 [&_ul]:list-none [&_li]:flex [&_li]:gap-2 [&_li]:before:content-['–'] [&_li]:before:shrink-0"
+                className="space-y-3 pl-8 text-[15px] leading-relaxed [&_li]:flex [&_li]:gap-2 [&_li]:before:shrink-0 [&_li]:before:content-['–'] [&_ul]:list-none [&_ul]:space-y-2 [&_ul]:pl-5"
                 style={{ color: "var(--ink-3)" }}
               >
                 {s.content}
               </div>
-              <div className="pl-8 border-b" style={{ borderColor: "var(--rule)" }} />
+              <div className="border-b pl-8" style={{ borderColor: "var(--rule)" }} />
             </section>
           ))}
         </div>
 
         {/* Rodapé */}
-        <div className="mt-12 rounded-2xl border p-6" style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}>
+        <div
+          className="mt-12 rounded-2xl border p-6"
+          style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}
+        >
           <p className="text-[13px] leading-relaxed" style={{ color: "var(--mute)" }}>
             Dúvidas sobre estes Termos?{" "}
-            <a href="mailto:contato@axonia.com.br" className="underline underline-offset-2" style={{ color: "var(--ink)" }}>
+            <a
+              href="mailto:contato@axonia.com.br"
+              className="underline underline-offset-2"
+              style={{ color: "var(--ink)" }}
+            >
               contato@axonia.com.br
             </a>{" "}
             · Você também pode acessar nossa{" "}
-            <Link href="/privacidade" className="underline underline-offset-2" style={{ color: "var(--ink)" }}>
+            <Link
+              href="/privacidade"
+              className="underline underline-offset-2"
+              style={{ color: "var(--ink)" }}
+            >
               Política de Privacidade
             </Link>
             .

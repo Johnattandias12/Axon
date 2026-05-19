@@ -95,11 +95,11 @@ export default async function AdminEventoDetalhePage({
 
       {/* Hero */}
       <div
-        className="relative overflow-hidden rounded-3xl border"
+        className="relative rounded-3xl border"
         style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
       >
         <div
-          className="relative aspect-[21/8] w-full overflow-hidden"
+          className="relative aspect-[21/8] w-full overflow-hidden rounded-t-[22px]"
           style={{ backgroundColor: "var(--paper-soft)" }}
         >
           {event.banner_url ? (
