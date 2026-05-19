@@ -1,7 +1,8 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Download, Search, FileDown, ListChecks } from "lucide-react"
+import { toast } from "sonner"
+import { Download, Search, FileDown, ListChecks, Copy } from "lucide-react"
 
 export interface GuestRow {
   ticket_id: string
@@ -18,6 +19,23 @@ export interface GuestRow {
   payment_method: string
   paid_at: string | null
   used_at: string | null
+}
+
+const dateTimeFmt = new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+})
+
+async function copyToClipboard(text: string, label = "ID") {
+  try {
+    await navigator.clipboard.writeText(text)
+    toast.success(`${label} copiado.`)
+  } catch {
+    toast.error("Não foi possível copiar.")
+  }
 }
 
 interface Props {
@@ -258,15 +276,15 @@ export function GuestsListClient({ eventId, eventTitle, rows }: Props) {
           style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-pure)" }}
         >
           <div
-            className="hidden grid-cols-[28px_2fr_1.4fr_1fr_0.6fr_0.7fr] gap-3 border-b px-4 py-2 text-[10px] font-semibold tracking-wider uppercase sm:grid"
+            className="hidden grid-cols-[28px_2fr_1.4fr_1fr_0.6fr_0.9fr] gap-3 border-b px-4 py-2 text-[10px] font-semibold tracking-wider uppercase sm:grid"
             style={{ borderColor: "var(--rule)", color: "var(--mute)" }}
           >
             <span />
-            <span>Titular</span>
+            <span>Titular · ID</span>
             <span>Lote</span>
             <span>CPF</span>
             <span className="text-center">Status</span>
-            <span className="text-right">Pago em</span>
+            <span className="text-right">Comprado em</span>
           </div>
           {filtered.map((r) => {
             const isSel = selected.has(r.ticket_id)
@@ -275,7 +293,7 @@ export function GuestsListClient({ eventId, eventTitle, rows }: Props) {
             return (
               <label
                 key={r.ticket_id}
-                className="block cursor-pointer border-b px-4 py-3 transition-colors last:border-b-0 hover:bg-black/[0.02] sm:grid sm:grid-cols-[28px_2fr_1.4fr_1fr_0.6fr_0.7fr] sm:items-center sm:gap-3"
+                className="block cursor-pointer border-b px-4 py-3 transition-colors last:border-b-0 hover:bg-black/[0.02] sm:grid sm:grid-cols-[28px_2fr_1.4fr_1fr_0.6fr_0.9fr] sm:items-center sm:gap-3"
                 style={{
                   borderColor: "var(--rule)",
                   backgroundColor: isSel ? "var(--pulse-soft)" : undefined,
@@ -304,8 +322,46 @@ export function GuestsListClient({ eventId, eventTitle, rows }: Props) {
                     )}
                   </p>
                   <p className="truncate text-[10px]" style={{ color: "var(--mute)" }}>
+                    {r.buyer_name && r.buyer_name !== r.holder_name ? `${r.buyer_name} · ` : ""}
                     {r.buyer_email || "—"}
                   </p>
+                  {/* IDs e timestamp pra rastreio */}
+                  <div
+                    className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[10px]"
+                    style={{ color: "var(--mute-2)" }}
+                  >
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        copyToClipboard(r.ticket_id, "Ticket ID")
+                      }}
+                      className="inline-flex items-center gap-1 rounded px-1 py-0.5 transition-colors hover:bg-black/5"
+                      title={`Ticket ID: ${r.ticket_id}`}
+                    >
+                      #{r.ticket_id.slice(0, 8)}
+                      <Copy size={9} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        copyToClipboard(r.order_id, "Order ID")
+                      }}
+                      className="inline-flex items-center gap-1 rounded px-1 py-0.5 transition-colors hover:bg-black/5"
+                      title={`Order ID: ${r.order_id}`}
+                    >
+                      pedido {r.order_id.slice(0, 6)}
+                      <Copy size={9} />
+                    </button>
+                    {r.payment_method && (
+                      <span className="rounded bg-black/5 px-1 py-0.5 uppercase">
+                        {r.payment_method}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <p className="mt-1 truncate text-[11px] sm:mt-0" style={{ color: "var(--ink-4)" }}>
                   {r.type_name} · {r.lot_name}
@@ -334,15 +390,11 @@ export function GuestsListClient({ eventId, eventTitle, rows }: Props) {
                   {isUsed ? "Usado" : isCancelled ? "Cancelado" : "Válido"}
                 </span>
                 <span
-                  className="mt-1 font-mono text-[10px] sm:mt-0 sm:text-right"
+                  className="mt-1 font-mono text-[10px] tabular-nums sm:mt-0 sm:text-right"
                   style={{ color: "var(--mute)" }}
+                  title={r.paid_at ? new Date(r.paid_at).toISOString() : "Não pago ainda"}
                 >
-                  {r.paid_at
-                    ? new Date(r.paid_at).toLocaleDateString("pt-BR", {
-                        day: "2-digit",
-                        month: "short",
-                      })
-                    : "—"}
+                  {r.paid_at ? dateTimeFmt.format(new Date(r.paid_at)) : "—"}
                 </span>
               </label>
             )
