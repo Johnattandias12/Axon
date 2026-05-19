@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { LogOut, ExternalLink } from "lucide-react"
 import { AxonLogo } from "@/components/shared/AxonLogo"
 import { OrganizadorSidebarNav } from "./OrganizadorSidebarNav"
+import { OrganizadorMobileNav } from "./OrganizadorMobileNav"
 
 export default async function OrganizadorLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
@@ -82,8 +83,10 @@ export default async function OrganizadorLayout({ children }: { children: ReactN
           </Link>
         </header>
 
-        <main className="mx-auto w-full max-w-5xl flex-1 p-4 sm:p-6">{children}</main>
+        <main className="mx-auto w-full max-w-5xl flex-1 p-4 pb-24 sm:p-6">{children}</main>
       </div>
+
+      <OrganizadorMobileNav />
     </div>
   )
 }
