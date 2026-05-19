@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       "Desconhecido") as string
     if (ip && ip.includes(",")) ip = ip.split(",")[0]?.trim() || ip
 
-    let location = body?.location
+    let location: string = typeof body?.location === "string" ? body.location : ""
     if (!location && ip && ip !== "Desconhecido" && ip !== "127.0.0.1" && ip !== "::1") {
       try {
         const res = await fetch(`https://ipapi.co/${ip}/json/`)
