@@ -102,10 +102,6 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
         doc.setFont("helvetica", "bold")
         doc.setFontSize(20)
 
-        // Chromatic aberration logo text shadow (offset right/bottom)
-        doc.setTextColor(0, 240, 255)
-        doc.text("AXON", contentX + 30.3, wmCy + 2.3)
-
         // Main white logo text
         doc.setTextColor(...PAPER)
         doc.text("AXON", contentX + 30, wmCy + 2)

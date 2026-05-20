@@ -23,12 +23,21 @@ function diff(target: number) {
  */
 export function EventCountdown({ startsAt, compact = false }: Props) {
   const target = new Date(startsAt).getTime()
-  const [t, setT] = useState(() => diff(target))
+  const [t, setT] = useState<{
+    ms: number
+    days: number
+    hours: number
+    mins: number
+    secs: number
+  } | null>(null)
 
   useEffect(() => {
+    setT(diff(target))
     const id = setInterval(() => setT(diff(target)), 1000)
     return () => clearInterval(id)
   }, [target])
+
+  if (!t) return null
 
   if (t.ms === 0) {
     return (
