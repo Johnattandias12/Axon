@@ -48,9 +48,9 @@ export default async function CarrinhoPage() {
     const lot = Array.isArray(item.ticket_lots) ? item.ticket_lots[0] : item.ticket_lots
     if (lot) subtotal += lot.price_cents * item.quantity
   }
-  const fee = Math.round(subtotal * 0.0899)
-  const total = subtotal + fee
   const totalItems = list.reduce((s, i) => s + i.quantity, 0)
+  const fee = Math.round(subtotal * 0.0899) + (totalItems * 100)
+  const total = subtotal + fee
 
   // Agrupa por evento
   const byEvent = new Map<
@@ -142,7 +142,7 @@ export default async function CarrinhoPage() {
                     value={centsToBRL(subtotal)}
                     muted
                   />
-                  <Row label="Taxa AXON (8,99%)" value={centsToBRL(fee)} muted />
+                  <Row label="Taxa de serviço AXON" value={centsToBRL(fee)} muted />
                   <div className="my-2 border-t" style={{ borderColor: "var(--rule)" }} />
                   <div className="flex items-baseline justify-between">
                     <span className="text-base font-bold" style={{ color: "var(--ink)" }}>

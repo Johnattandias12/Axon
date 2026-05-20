@@ -65,6 +65,14 @@ export default async function FinanceiroPage() {
 
   const admin = createAdminClient()
 
+  // Buscar configurações da plataforma
+  const { data: settingsRows } = await (admin as any)
+    .from("system_settings")
+    .select("key, value")
+  const settingsMap = new Map<string, string>((settingsRows ?? []).map((r: any) => [r.key as string, String(r.value)]))
+  const minWithdrawalCents = parseInt(settingsMap.get("min_withdrawal_cents") ?? "5000", 10)
+  const withdrawalFeeCents = parseInt(settingsMap.get("withdrawal_fee_cents") ?? "650", 10)
+
   // Busca eventos do organizador
   const { data: events } = await admin
     .from("events")
@@ -240,7 +248,7 @@ export default async function FinanceiroPage() {
               icon={<Receipt size={16} />}
               label="Próximo repasse"
               value="D+1"
-              hint="Pix · 24/7 · taxa R$ 3,67"
+              hint={`Pix · 24/7 · taxa ${centsToBRL(withdrawalFeeCents)}`}
             />
           </div>
 
@@ -340,8 +348,8 @@ export default async function FinanceiroPage() {
         <ul className="space-y-1 text-xs" style={{ color: "var(--mute)" }}>
           <li>• Saques via PIX caem na hora, 24/7.</li>
           <li>• TED em até 1 dia útil.</li>
-          <li>• Taxa: R$ 3,67 por saque.</li>
-          <li>• Saque mínimo: R$ 50,00.</li>
+          <li>• Taxa: {centsToBRL(withdrawalFeeCents)} por saque.</li>
+          <li>• Saque mínimo: {centsToBRL(minWithdrawalCents)}.</li>
           <li>• Comissão de afiliado é deduzida automaticamente do líquido.</li>
         </ul>
       </div>

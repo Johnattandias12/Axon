@@ -13,16 +13,7 @@ export function CelebrateOnMount({ id, message }: { id: string; message?: string
     if (window.sessionStorage.getItem(key)) return
     window.sessionStorage.setItem(key, "1")
 
-    // Toca som de plateia/show comemorando
-    try {
-      const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3")
-      audio.volume = 0.5
-      audio.play().catch(() => {
-        // Ignora bloqueios de autoplay do navegador
-      })
-    } catch (err) {
-      console.warn("Audio playback failed:", err)
-    }
+    // Confete e celebração sem som
 
     let cancelled = false
     ;(async () => {

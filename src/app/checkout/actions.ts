@@ -117,7 +117,7 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
   }
 
   const subtotal = lot.price_cents * parsed.data.quantity
-  const fee = Math.round(subtotal * 0.0899)
+  const fee = Math.round(subtotal * 0.0899) + (parsed.data.quantity * 100)
   const baseTotal = subtotal + fee
 
   // Aplica créditos AXON se o user pediu (não pode exceder o total)

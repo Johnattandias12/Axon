@@ -46,10 +46,17 @@ export async function joinAffiliate(): Promise<JoinState> {
 
     if (!code) return { ok: false, error: "Falha ao gerar código. Tente novamente." }
 
+    const { data: commissionSetting } = await (admin as any)
+      .from("system_settings")
+      .select("value")
+      .eq("key", "default_affiliate_commission")
+      .maybeSingle()
+    const defaultPct = commissionSetting?.value ? parseFloat(commissionSetting.value) : 5.0
+
     const { error } = await insertAffiliate(admin, {
       user_id: user.id,
       code,
-      commission_pct: 5.0,
+      commission_pct: defaultPct,
     })
     if (error) {
       // Migration 008 não aplicada — mensagem amigável

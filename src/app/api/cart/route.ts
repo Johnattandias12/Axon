@@ -118,9 +118,9 @@ export async function GET() {
     })
     .filter((x): x is NonNullable<typeof x> => x !== null)
 
-  const fee = Math.round(subtotal * 0.0899)
-  const total = subtotal + fee
   const totalItems = flat.reduce((s, i) => s + i.quantity, 0)
+  const fee = Math.round(subtotal * 0.0899) + (totalItems * 100)
+  const total = subtotal + fee
 
   return NextResponse.json({
     authenticated: true,

@@ -234,7 +234,7 @@ export function SalesList({ initialOrders }: SalesListProps) {
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-neutral-400">Taxa de Serviço AXON (8,99%)</span>
+                          <span className="text-neutral-400">Taxa de Serviço AXON</span>
                           <span className="font-mono text-neutral-300">
                             {centsToBRL(selectedOrder.service_fee_cents)}
                           </span>

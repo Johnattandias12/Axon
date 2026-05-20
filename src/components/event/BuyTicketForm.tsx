@@ -70,7 +70,7 @@ export function BuyTicketForm({
   }, [holderCpf])
 
   const subtotal = pricePerUnit * qty
-  const fee = Math.round(subtotal * 0.0899)
+  const fee = Math.round(subtotal * 0.0899) + (qty * 100)
   const total = subtotal + fee
 
   const cap = Math.min(maxQuantity, 6)
@@ -242,7 +242,7 @@ export function BuyTicketForm({
                   <span>{centsToBRL(subtotal)}</span>
                 </div>
                 <div className="flex justify-between" style={{ color: "var(--mute)" }}>
-                  <span>Taxa AXON (8,99%)</span>
+                  <span>Taxa de serviço AXON</span>
                   <span>{centsToBRL(fee)}</span>
                 </div>
                 <div

@@ -417,7 +417,7 @@ export function CheckoutClient({
                   style={{ color: "var(--mute)", borderColor: "var(--rule)" }}
                 >
                   <span className="flex items-center gap-1">
-                    Taxa AXON (8.99%)
+                    Taxa de serviço AXON
                     <div className="group relative cursor-help">
                       <div className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gray-800 text-[9px] font-bold text-gray-400 hover:bg-gray-700">
                         ?
@@ -440,7 +440,7 @@ export function CheckoutClient({
 
               <div className="mt-6 rounded-lg border border-gray-800 bg-gray-900/50 p-4 text-xs text-gray-400">
                 Ao concluir, você concorda com os termos de compra e com a taxa de processamento
-                online de 8,99% inclusa no valor total.
+                online inclusa no valor total.
               </div>
             </div>
           </div>

@@ -294,7 +294,8 @@ export async function checkoutDemo(
     })
   }
 
-  const fee = Math.round(subtotal * 0.0899)
+  const ticketCount = ticketsToCreate.reduce((s, t) => s + t.qty, 0)
+  const fee = Math.round(subtotal * 0.0899) + (ticketCount * 100)
   const total = subtotal + fee
 
   // Reserva atômica de estoque por lote. Se algum lote esgotar entre o read e

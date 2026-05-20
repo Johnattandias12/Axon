@@ -154,7 +154,7 @@ export function CartDrawer() {
                 value={centsToBRL(data.subtotal)}
                 muted
               />
-              <Row label="Taxa AXON (8,99%)" value={centsToBRL(data.fee)} muted />
+              <Row label="Taxa de serviço AXON" value={centsToBRL(data.fee)} muted />
               <div className="my-1 border-t" style={{ borderColor: "var(--rule)" }} />
               <div className="flex items-baseline justify-between">
                 <span className="text-sm font-bold" style={{ color: "var(--ink)" }}>

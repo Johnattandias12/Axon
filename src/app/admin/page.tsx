@@ -16,6 +16,7 @@ import {
   ScanLine,
 } from "lucide-react"
 import { PaymentModeToggle } from "./PaymentModeToggle"
+import { PlatformSettings } from "./PlatformSettings"
 
 export const metadata: Metadata = { title: "Dashboard · AXON Admin" }
 
@@ -66,15 +67,16 @@ interface RecentEvent {
 export default async function AdminPage() {
   const supabase = await createClient()
 
-  // Obter modo de pagamento atual
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: paymentModeSetting } = await (supabase as any)
+  // Obter configurações do sistema
+  const { data: settingsRows } = await (supabase as any)
     .from("system_settings")
-    .select("value")
-    .eq("key", "payment_mode")
-    .maybeSingle()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const currentMode = ((paymentModeSetting as any)?.value ?? "real") as "real" | "test"
+    .select("key, value")
+
+  const settingsMap = new Map((settingsRows ?? []).map((r: any) => [r.key, r.value as string]))
+  const currentMode = (settingsMap.get("payment_mode") ?? "real") as "real" | "test"
+  const defaultAffiliateCommission = (settingsMap.get("default_affiliate_commission") ?? "5.0") as string
+  const minWithdrawalCents = (settingsMap.get("min_withdrawal_cents") ?? "5000") as string
+  const withdrawalFeeCents = (settingsMap.get("withdrawal_fee_cents") ?? "650") as string
 
   const since30 = new Date()
   since30.setDate(since30.getDate() - 30)
@@ -211,6 +213,13 @@ export default async function AdminPage() {
 
       {/* Gateway Toggle Section */}
       <PaymentModeToggle initialMode={currentMode} hasApiKey={!!process.env["PAGARME_API_KEY"]} />
+
+      {/* Configurações da Plataforma */}
+      <PlatformSettings
+        initialCommission={defaultAffiliateCommission}
+        initialMinWithdrawal={minWithdrawalCents}
+        initialWithdrawalFee={withdrawalFeeCents}
+      />
 
       {/* Receita + Gráficos */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

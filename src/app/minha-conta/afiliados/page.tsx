@@ -19,6 +19,13 @@ export default async function AfiliadosPage() {
   if (!user) redirect("/entrar?redirectTo=/minha-conta/afiliados")
 
   const admin = createAdminClient()
+  const { data: commissionSetting } = await (admin as any)
+    .from("system_settings")
+    .select("value")
+    .eq("key", "default_affiliate_commission")
+    .maybeSingle()
+  const defaultCommissionPct = commissionSetting?.value ? parseFloat(commissionSetting.value) : 5.0
+
   const affiliate = await getAffiliateByUserId(admin, user.id)
 
   const referrals = affiliate ? await getReferralsForAffiliate(admin, affiliate.id, 50) : []
@@ -69,7 +76,7 @@ export default async function AfiliadosPage() {
               Vire afiliado AXON
             </h2>
             <p className="mx-auto mt-2 max-w-md text-sm" style={{ color: "var(--mute)" }}>
-              Você ganha 5% sobre cada ingresso vendido por meio do seu link único.
+              Você ganha {defaultCommissionPct}% sobre cada ingresso vendido por meio do seu link único.
               O valor não é em dinheiro vivo, ele se converte em Créditos na Plataforma
               para você usar como quiser.
             </p>
