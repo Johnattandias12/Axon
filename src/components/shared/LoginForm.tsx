@@ -111,7 +111,9 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
         }),
       }).catch(console.error)
 
-      toast.success("Bem-vindo de volta! Bora encher o carrinho.", { duration: 2200 })
+      toast.success("Que bom ter você de volta! Seus próximos ingressos te esperam.", {
+        duration: 2200,
+      })
       // Hard navigation pra garantir que o header server-side reflita o login
       window.location.href = redirectTo
     } catch {
@@ -141,10 +143,10 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
       // Quando confirmação por e-mail está habilitada, session vem null
       if (!signupData.session) {
         setSignupSuccessEmail(data.email.trim().toLowerCase())
-        toast.success("Conta criada! Verifique seu e-mail para ativar.")
+        toast.success("Conta criada com sucesso! Verifique seu e-mail para ativar.")
         return
       }
-      toast.success("Conta criada! Bora explorar.", { duration: 2200 })
+      toast.success("Conta criada com sucesso! Aproveite os melhores rolês.", { duration: 2200 })
       window.location.href = redirectTo
     } catch {
       toast.dismiss(loadingId)
@@ -223,7 +225,7 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
             Recuperar senha
           </h2>
           <p className="text-sm" style={{ color: "var(--mute)" }}>
-            Enviaremos um link para redefinir.
+            Informe seu e-mail para receber um link seguro de redefinição de senha.
           </p>
         </div>
         {resetSent ? (
@@ -308,7 +310,7 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
             Criar conta
           </h2>
           <p className="text-sm" style={{ color: "var(--mute)" }}>
-            Gratuito. Sem cartão.
+            Crie sua conta e garanta seu lugar nos melhores eventos.
           </p>
         </div>
         <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4" noValidate>
@@ -403,7 +405,7 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
             className="relative px-3 text-xs uppercase"
             style={{ backgroundColor: "var(--paper-pure)", color: "var(--mute)" }}
           >
-            ou continue com
+            Ou continue com
           </span>
         </div>
 
@@ -468,7 +470,7 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
           Entrar
         </h2>
         <p className="text-sm" style={{ color: "var(--mute)" }}>
-          Acesse sua conta AXON.
+          Entre para garantir seus ingressos e gerenciar seus eventos.
         </p>
       </div>
       <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4" noValidate>
@@ -556,7 +558,7 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
           className="relative px-3 text-xs uppercase"
           style={{ backgroundColor: "var(--paper-pure)", color: "var(--mute)" }}
         >
-          ou continue com
+          Ou continue com
         </span>
       </div>
 
@@ -607,7 +609,7 @@ export function LoginForm({ redirectTo = "/" }: { redirectTo?: string }) {
           className="font-semibold underline underline-offset-2"
           style={{ color: "var(--ink)" }}
         >
-          Criar conta grátis
+          Fazer meu cadastro gratuito
         </button>
       </p>
     </div>

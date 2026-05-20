@@ -639,7 +639,7 @@ export default async function EventoPage({ params }: Props) {
                                     {isSoldOut
                                       ? "Esgotado"
                                       : avail <= 20
-                                        ? `${avail} restantes`
+                                        ? `⚠️ Apenas ${avail} disponíveis!`
                                         : "Disponível"}
                                   </p>
                                 </div>
@@ -680,7 +680,7 @@ export default async function EventoPage({ params }: Props) {
                   {isRealPayment ? (
                     <>
                       <Shield size={10} className="text-[#c8ff00]" />
-                      🔒 Pagamento 100% Seguro — Suas informações estão criptografadas.
+                      🔒 Compra 100% Segura · Seus ingressos são emitidos na hora!
                     </>
                   ) : (
                     <>

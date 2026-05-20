@@ -173,24 +173,24 @@ export default function HomePage() {
               {[
                 {
                   n: "01",
-                  title: "Acha a sua noite",
-                  desc: "Shows, vaquejadas, festivais, futsal. Filtra por cidade, categoria, data.",
+                  title: "Escolha seu destino",
+                  desc: "Os melhores shows, festas, esporte e rolês em segundos. Filtre o que combina com você.",
                   badgeBg: "var(--pulse)",
                   badgeColor: "var(--pulse-ink)",
                   glow: "rgba(200,255,0,0.6)",
                 },
                 {
                   n: "02",
-                  title: "Paga no Pix",
-                  desc: "Cai na hora. Sem taxa surpresa, sem boleto, sem espera.",
+                  title: "Pague num piscar de olhos",
+                  desc: "Pix rápido e sem taxas surpresas no checkout. O que você vê é o que você paga.",
                   badgeBg: "linear-gradient(135deg, var(--pulse) 0%, var(--pulse-deep) 100%)",
                   badgeColor: "var(--pulse-ink)",
                   glow: "rgba(162,217,0,0.5)",
                 },
                 {
                   n: "03",
-                  title: "Entra pelo QR",
-                  desc: "Ingresso no celular. Mostra na porta e some pra dentro. Funciona offline.",
+                  title: "Esqueça as filas",
+                  desc: "Ingresso na tela do seu celular e validação offline instantânea na portaria. Mostre o QR code e curta.",
                   badgeBg: "var(--ink)",
                   badgeColor: "var(--pulse)",
                   glow: "rgba(10,10,11,0.6)",
@@ -338,29 +338,29 @@ export default function HomePage() {
                   </p>
                 </div>
                 <h2 className="mb-5 text-[clamp(26px,3.5vw,46px)] leading-[1.05] font-black tracking-[-0.04em] text-white">
-                  Você cria. A AXON{" "}
+                  Seu evento lotado. Seu repasse sem{" "}
                   <span
                     style={{
                       color: "var(--pulse)",
                       textShadow: "0 0 20px color-mix(in srgb, var(--pulse) 30%, transparent)",
                     }}
                   >
-                    transmite.
+                    complicação.
                   </span>
                 </h2>
                 <p className="mb-10 max-w-[480px] text-[16px] leading-relaxed text-white/60">
-                  Do evento criado ao ingresso vendido em minutos. Dashboard em tempo real, repasse
-                  D+2 via Pix ou 17 dias via Cartão, e validação de QR na portaria. Taxa base
-                  competitiva de 8,99%.
+                  Crie lotes, venda ingressos e gerencie tudo em minutos. Dashboard em tempo real
+                  para acompanhar as vendas, repasse rápido em D+2 via Pix e suporte total. A menor
+                  taxa do mercado.
                 </p>
 
                 <ul className="mb-10 space-y-3">
                   {[
-                    "Criação de evento em menos de 5 minutos",
+                    "Crie seu evento em menos de 5 minutos",
                     "Lotes com preços e datas configuráveis",
-                    "Meia-entrada automática (Lei 12.933/2013)",
-                    "Repasse D+2 (Pix) e 17 dias (Cartão) na conta",
-                    "App de validação offline para a portaria",
+                    "Controle de meia-entrada automático",
+                    "Receba via Pix em D+2 na sua conta",
+                    "App de portaria com validação offline",
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-3 text-[14px] text-white/60">
                       <svg
@@ -399,10 +399,10 @@ export default function HomePage() {
 
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { v: "0%", l: "Taxa de adesão", a: "var(--pulse)" },
-                  { v: "8,99%", l: "Taxa por ingresso vendido", a: "var(--info)" },
-                  { v: "Pix", l: "Pagamento instantâneo", a: "var(--success)" },
-                  { v: "QR", l: "Validação segura", a: "var(--warning)" },
+                  { v: "R$ 0", l: "Adesão Gratuita", a: "var(--pulse)" },
+                  { v: "8,99%", l: "Apenas taxa base", a: "var(--info)" },
+                  { v: "Pix D+2", l: "Repasse ágil", a: "var(--success)" },
+                  { v: "Portaria", l: "Validação offline", a: "var(--warning)" },
                 ].map(({ v, l, a }) => (
                   <div
                     key={l}

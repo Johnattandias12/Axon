@@ -175,7 +175,7 @@ export function CartDrawer() {
               className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-transform hover:scale-[1.01]"
               style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
             >
-              Finalizar e bora
+              Ir para o carrinho
               <ArrowRight size={14} />
             </Link>
 
@@ -243,10 +243,10 @@ function NotLoggedState({ onContinue }: { onContinue: () => void }) {
         <ShoppingBag size={20} />
       </div>
       <p className="mt-3 text-sm font-bold" style={{ color: "var(--ink)" }}>
-        Entra primeiro pra guardar seus ingressos.
+        Acesse sua conta para continuar.
       </p>
       <p className="mt-1 text-xs" style={{ color: "var(--mute)" }}>
-        Um link mágico no email. Sem senha.
+        Enviamos um link de login rápido direto para a sua caixa de entrada.
       </p>
       <Link
         href="/entrar"
@@ -254,7 +254,7 @@ function NotLoggedState({ onContinue }: { onContinue: () => void }) {
         className="mt-4 inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold"
         style={{ backgroundColor: "var(--ink)", color: "var(--paper)" }}
       >
-        Entrar
+        Entrar agora
         <ArrowRight size={12} />
       </Link>
     </div>
@@ -271,10 +271,10 @@ function EmptyState({ onContinue }: { onContinue: () => void }) {
         <ShoppingBag size={20} />
       </div>
       <p className="mt-3 text-sm font-bold" style={{ color: "var(--ink)" }}>
-        Carrinho leve. Noite vazia.
+        Seu carrinho está vazio...
       </p>
       <p className="mt-1 text-xs" style={{ color: "var(--mute)" }}>
-        Cadê o que vai te tirar de casa?
+        Encontre os melhores shows, festas e espetáculos por aqui.
       </p>
       <Link
         href="/eventos"
@@ -282,7 +282,7 @@ function EmptyState({ onContinue }: { onContinue: () => void }) {
         className="mt-4 inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold transition-transform hover:scale-[1.02]"
         style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
       >
-        Ver eventos
+        Explorar eventos
         <ArrowRight size={12} />
       </Link>
     </div>

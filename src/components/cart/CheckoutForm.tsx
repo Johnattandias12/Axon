@@ -30,7 +30,7 @@ export function CheckoutForm({ defaultName = "", defaultCpf = "" }: Props) {
           style={{ backgroundColor: "var(--pulse-soft)", color: "var(--pulse-deep)" }}
         >
           <CheckCircle2 size={11} />
-          Seus dados já estão salvos. Editou? Será atualizado no perfil.
+          Dados preenchidos. Qualquer alteração atualizará seu perfil automaticamente.
         </div>
       ) : (
         <div
@@ -39,8 +39,8 @@ export function CheckoutForm({ defaultName = "", defaultCpf = "" }: Props) {
         >
           <Sparkles size={11} className="shrink-0" />
           <span>
-            Primeira compra? Preencha seus dados para salvar no perfil e facilitar as próximas
-            compras!
+            Primeira vez por aqui? Complete seus dados para salvar no perfil e garantir checkout em
+            1 clique nas próximas vezes!
           </span>
         </div>
       )}
@@ -125,7 +125,7 @@ export function CheckoutForm({ defaultName = "", defaultCpf = "" }: Props) {
         ) : (
           <>
             <ShieldCheck size={14} />
-            Confirma. Bora entrar.
+            🔒 Confirmar dados e pagar
           </>
         )}
       </button>

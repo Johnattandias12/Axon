@@ -93,11 +93,7 @@ export default async function CarrinhoPage() {
             className="text-3xl font-bold tracking-tight sm:text-4xl"
             style={{ color: "var(--ink)", letterSpacing: "-0.035em" }}
           >
-            {totalItems > 0
-              ? totalItems === 1
-                ? "1 noite na sua mão"
-                : `${totalItems} noites na sua mão`
-              : "Seu carrinho"}
+            Sua próxima noite épica
           </h1>
         </div>
 
@@ -352,17 +348,17 @@ function EmptyCart() {
           className="mt-4 text-xl font-bold tracking-tight"
           style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
         >
-          Carrinho leve. Noite vazia.
+          Seu carrinho está vazio...
         </h2>
         <p className="mt-1.5 text-sm" style={{ color: "var(--mute)" }}>
-          Encontra teu evento. Entra.
+          Bora mudar isso? O próximo evento incrível está te esperando.
         </p>
         <Link
           href="/eventos"
           className="mt-6 inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.02]"
           style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
         >
-          Bora ver
+          Explorar eventos
           <ArrowRight size={14} />
         </Link>
       </div>

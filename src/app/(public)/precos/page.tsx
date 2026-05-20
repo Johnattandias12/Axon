@@ -31,16 +31,15 @@ export default function PrecosPage() {
             className="mt-5 text-[clamp(36px,6vw,68px)] leading-[0.95] font-black tracking-[-0.04em]"
             style={{ color: "var(--ink)" }}
           >
-            Você cria. A AXON transmite
+            Você cria. A AXON impulsiona
             <span style={{ color: "var(--pulse-deep)" }}>.</span>
           </h1>
           <p
             className="mt-5 max-w-xl text-base leading-relaxed sm:text-lg"
             style={{ color: "var(--mute)" }}
           >
-            Do evento criado ao ingresso vendido em minutos. Dashboard em tempo real, repasse D+2
-            via Pix ou 17 dias via Cartão, e validação de QR na portaria. Taxa base competitiva de
-            8,99%.
+            Venda ingressos em minutos com a menor taxa do mercado. Dashboard inteligente, repasse
+            ágil em D+2 via Pix e aplicativo de portaria com validação offline incluso.
           </p>
         </header>
 
@@ -56,7 +55,7 @@ export default function PrecosPage() {
             />
             <PriceCard
               big="0%"
-              title="Taxa surpresa no checkout"
+              title="Sem taxas escondidas"
               desc="Sem boleto escondido. Sem mensalidade. Sem juros embutidos pra parcelar no Pix. O que você vê no carrinho é o que paga."
             />
           </div>
@@ -81,7 +80,7 @@ export default function PrecosPage() {
             />
             <PriceCard
               big="100%"
-              title="Do ingresso é teu"
+              title="Seu lucro é 100% seu"
               desc="A taxa de 8,99% é paga pelo comprador. Nada sai do teu repasse."
               accent
             />

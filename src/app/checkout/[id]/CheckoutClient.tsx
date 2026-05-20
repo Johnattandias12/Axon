@@ -129,7 +129,7 @@ export function CheckoutClient({
             Finalizar Pagamento
           </h1>
           <p className="mt-2 text-sm" style={{ color: "var(--mute)" }}>
-            Você está a um passo de garantir sua presença.
+            Sua compra é 100% segura. Conclua o pagamento para receber seus ingressos na hora.
           </p>
         </div>
 
@@ -184,7 +184,7 @@ export function CheckoutClient({
                     >
                       {isDemo
                         ? "Modo demonstração — QR ilustrativo, sem cobrança real."
-                        : "🔒 Compra 100% Segura · Seu ingresso é liberado e enviado na hora!"}
+                        : "🔒 Pagamento Seguro · Seus ingressos são liberados imediatamente após a confirmação!"}
                     </div>
 
                     {secondsLeft !== null && secondsLeft > 0 && (
@@ -439,8 +439,8 @@ export function CheckoutClient({
               </div>
 
               <div className="mt-6 rounded-lg border border-gray-800 bg-gray-900/50 p-4 text-xs text-gray-400">
-                Ao prosseguir, você concorda que o comprador assume a taxa de conveniência de 8.99%
-                referente ao processamento da venda online.
+                Ao concluir, você concorda com os termos de compra e com a taxa de processamento
+                online de 8,99% inclusa no valor total.
               </div>
             </div>
           </div>
