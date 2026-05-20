@@ -12,29 +12,32 @@ export default function HomePage() {
       <main>
         {/* Hero */}
         <section
-          className="relative overflow-hidden border-b px-5 pt-16 pb-12 sm:pt-24 sm:pb-20 md:px-8"
+          className="relative overflow-hidden border-b px-5 pt-16 pb-12 sm:pt-24 sm:pb-20 md:px-8 flex flex-col justify-center min-h-[85vh]"
           style={{ borderColor: "var(--rule)", backgroundColor: "#08080A" }}
         >
-          {/* Gradient orbs — leves no mobile, plenas no desktop */}
-          <div
-            className="pointer-events-none absolute top-[-120px] left-[-80px] h-[300px] w-[300px] rounded-full opacity-25 md:h-[500px] md:w-[500px] md:opacity-20"
-            style={{
-              background: "radial-gradient(circle, rgba(200,255,0,0.3) 0%, transparent 70%)",
-              filter: "blur(40px)",
-            }}
-            aria-hidden="true"
-          />
-          <div
-            className="pointer-events-none absolute right-[-80px] bottom-[-80px] hidden h-[400px] w-[400px] rounded-full opacity-15 md:block"
-            style={{
-              background: "radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%)",
-              filter: "blur(80px)",
-            }}
-            aria-hidden="true"
-          />
+          {/* Background Video */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 h-full w-full object-cover"
+          >
+            <source src="/videos/hero.mp4" type="video/mp4" />
+          </video>
 
-          {/* Neuron — sinapses + impulso elétrico viajando */}
-          <NeuronAnimation className="absolute inset-0 h-full w-full opacity-60 md:opacity-80" />
+          {/* Dark Overlay with Axon Colors Filter */}
+          <div 
+            className="absolute inset-0 bg-black/60" 
+            aria-hidden="true"
+          />
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(to bottom, rgba(8,8,10,0.4) 0%, rgba(200,255,0,0.05) 50%, rgba(8,8,10,1) 100%)",
+            }}
+            aria-hidden="true"
+          />
 
           <div className="animate-in fade-in slide-in-from-bottom-8 relative mx-auto max-w-[1200px] duration-1000">
             {/* Eyebrow */}
@@ -84,7 +87,7 @@ export default function HomePage() {
                 style={{ backgroundColor: "var(--pulse)", color: "var(--pulse-ink)" }}
               >
                 <div className="absolute inset-0 translate-y-full bg-white/20 transition-transform duration-300 ease-out group-hover:translate-y-0" />
-                <span className="relative z-10">Bora ver</span>
+                <span className="relative z-10">Ver eventos</span>
               </Link>
               <Link
                 href="/entrar"
