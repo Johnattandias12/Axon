@@ -8,7 +8,8 @@ export async function POST(request: Request) {
 
     if (action === "text") {
       const response = await generateText(prompt || "Diga olá!", {
-        systemInstruction: systemInstruction || "Você é um assistente da AXON, plataforma de ingressos online.",
+        systemInstruction:
+          systemInstruction || "Você é um assistente da AXON, plataforma de ingressos online.",
       })
       return NextResponse.json({ success: true, response })
     }
@@ -18,36 +19,38 @@ export async function POST(request: Request) {
       const schema = {
         type: "OBJECT",
         properties: {
-          sentiment: { 
-            type: "STRING", 
-            description: "O sentimento geral do feedback do cliente (positivo, neutro, negativo)" 
+          sentiment: {
+            type: "STRING",
+            description: "O sentimento geral do feedback do cliente (positivo, neutro, negativo)",
           },
           keyTakeaways: {
             type: "ARRAY",
             items: { type: "STRING" },
-            description: "Pontos chaves extraídos do feedback do cliente"
+            description: "Pontos chaves extraídos do feedback do cliente",
           },
-          suggestedReply: { 
-            type: "STRING", 
-            description: "Sugestão de resposta empática e profissional para o cliente" 
-          }
+          suggestedReply: {
+            type: "STRING",
+            description: "Sugestão de resposta empática e profissional para o cliente",
+          },
         },
-        required: ["sentiment", "keyTakeaways", "suggestedReply"]
+        required: ["sentiment", "keyTakeaways", "suggestedReply"],
       }
 
       const defaultPrompt = `Feedback do cliente: "O checkout por Pix foi super rápido, mas achei o QR Code do ingresso meio confuso na hora de validar na portaria."`
-      
+
       const response = await generateJson(prompt || defaultPrompt, {
         schema,
-        systemInstruction: "Você é um analista de suporte e especialista em experiência do usuário da plataforma de ingressos AXON.",
+        systemInstruction:
+          "Você é um analista de suporte e especialista em experiência do usuário da plataforma de ingressos AXON.",
       })
 
       return NextResponse.json({ success: true, response })
     }
 
     return NextResponse.json({ error: "Ação inválida. Use 'text' ou 'insights'." }, { status: 400 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("AI API Error:", error)
-    return NextResponse.json({ error: error.message || "Erro interno do servidor" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : "Erro interno do servidor"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

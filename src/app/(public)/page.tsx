@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { EventsCarousel } from "@/components/shared/EventsCarousel"
 import { CategoriesCarousel } from "@/components/shared/CategoriesCarousel"
-import { NeuronAnimation } from "@/components/shared/NeuronAnimation"
 
 export default function HomePage() {
   return (
@@ -12,7 +11,7 @@ export default function HomePage() {
       <main>
         {/* Hero */}
         <section
-          className="relative overflow-hidden border-b px-5 pt-16 pb-12 sm:pt-24 sm:pb-20 md:px-8 flex flex-col justify-center min-h-[85vh]"
+          className="relative flex min-h-[85vh] flex-col justify-center overflow-hidden border-b px-5 pt-16 pb-12 sm:pt-24 sm:pb-20 md:px-8"
           style={{ borderColor: "var(--rule)", backgroundColor: "#08080A" }}
         >
           {/* Background Video */}
@@ -27,14 +26,12 @@ export default function HomePage() {
           </video>
 
           {/* Dark Overlay with Axon Colors Filter */}
-          <div 
-            className="absolute inset-0 bg-black/60" 
-            aria-hidden="true"
-          />
-          <div 
+          <div className="absolute inset-0 bg-black/60" aria-hidden="true" />
+          <div
             className="absolute inset-0"
             style={{
-              background: "linear-gradient(to bottom, rgba(8,8,10,0.4) 0%, rgba(200,255,0,0.05) 50%, rgba(8,8,10,1) 100%)",
+              background:
+                "linear-gradient(to bottom, rgba(8,8,10,0.4) 0%, rgba(200,255,0,0.05) 50%, rgba(8,8,10,1) 100%)",
             }}
             aria-hidden="true"
           />

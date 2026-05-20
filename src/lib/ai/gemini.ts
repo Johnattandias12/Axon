@@ -14,7 +14,7 @@ const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL
 
 /**
  * Generates simple text using Google's Gemini 2.5 Flash model.
- * 
+ *
  * @param prompt - The input prompt for the model.
  * @param options - Configuration options such as temperature and system instruction.
  * @returns The generated text string.
@@ -71,7 +71,7 @@ export async function generateText(
 /**
  * Generates a structured JSON object conforming to a specific schema using Gemini 2.5 Flash.
  * Great for extracting insights, structured responses, or customer sentiment analysis.
- * 
+ *
  * @param prompt - The input prompt for the model.
  * @param options - Configuration options including the JSON schema.
  * @returns The parsed JSON object of type T.
@@ -79,7 +79,7 @@ export async function generateText(
 export async function generateJson<T>(
   prompt: string,
   options?: {
-    schema?: Record<string, any>
+    schema?: Record<string, unknown>
     systemInstruction?: string
     temperature?: number
   }
@@ -125,7 +125,7 @@ export async function generateJson<T>(
 
   try {
     return JSON.parse(text) as T
-  } catch (err) {
+  } catch {
     throw new Error(`Failed to parse Gemini JSON response: ${text}`)
   }
 }
