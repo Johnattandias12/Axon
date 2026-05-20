@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { createClient } from "@/lib/supabase/client"
 import { generateUniqueSlug } from "@/lib/utils"
 import { ArrowRight, ArrowLeft } from "lucide-react"
+import { triggerEventCreatedEmailAction } from "../[id]/actions"
 
 const step1Schema = z.object({
   title: z.string().min(5, "Título muito curto (mín. 5 caracteres)").max(100),
@@ -100,6 +101,12 @@ export function EventWizard({ organizerId }: Props) {
       setError("Erro ao criar evento. Tente novamente.")
       setSubmitting(false)
       return
+    }
+
+    try {
+      await triggerEventCreatedEmailAction(event.id)
+    } catch (e) {
+      console.error("Erro ao enviar e-mail de criação de evento:", e)
     }
 
     router.push(`/organizador/eventos/${event.id}/lotes`)

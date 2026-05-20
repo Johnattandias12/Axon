@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import type { Json } from "@/types/supabase"
+import { sendEventCreated } from "@/lib/email/send"
 
 export interface PaymentConfig {
   pix: boolean
@@ -75,4 +76,58 @@ export async function getEventPaymentMethods(eventId: string): Promise<PaymentCo
       convenience_fee_credit_pct: 5,
     }
   )
+}
+
+export async function triggerEventCreatedEmailAction(
+  eventId: string
+): Promise<{ ok: boolean; error?: string }> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: "Não autenticado." }
+
+  const admin = createAdminClient()
+
+  // Busca detalhes do evento e do organizador
+  const { data: event, error: eventErr } = await admin
+    .from("events")
+    .select("title, starts_at, venue_name, organizers(user_id, name)")
+    .eq("id", eventId)
+    .single()
+
+  if (eventErr || !event) return { ok: false, error: "Evento não encontrado." }
+
+  const organizer = Array.isArray(event.organizers) ? event.organizers[0] : event.organizers
+  if (organizer?.user_id !== user.id) {
+    return { ok: false, error: "Sem permissão." }
+  }
+
+  // Busca e-mail do organizador com segurança
+  const { data: userData, error: userErr } = await admin.auth.admin.getUserById(user.id)
+  if (userErr || !userData?.user?.email) {
+    return { ok: false, error: "E-mail do organizador não encontrado." }
+  }
+
+  const dateFormatted = new Date(event.starts_at).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://axonia.vercel.app"
+
+  await sendEventCreated({
+    to: userData.user.email,
+    organizerName: organizer.name || "Organizador",
+    eventTitle: event.title,
+    eventDate: dateFormatted,
+    eventLocation: event.venue_name || "",
+    eventUrl: `${baseUrl}/eventos/${eventId}`,
+    userId: user.id,
+  })
+
+  return { ok: true }
 }
