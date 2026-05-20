@@ -7,6 +7,9 @@ export default [
     ignores: [
       ".next/**",
       "node_modules/**",
+      ".claude/worktrees/**",
+      "scripts/**",
+      "e2e/**",
       "src/types/supabase.ts",
       "vitest.config.ts",
       "playwright.config.ts",

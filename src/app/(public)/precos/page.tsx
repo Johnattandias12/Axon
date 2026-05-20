@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Wallet, Receipt, Sparkles, ShieldCheck, CheckCircle2, ArrowRight, Banknote } from "lucide-react"
+import { Wallet, Receipt, Sparkles, ShieldCheck, CheckCircle2, ArrowRight } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Preços e taxas",
@@ -38,8 +38,8 @@ export default function PrecosPage() {
             className="mt-5 max-w-xl text-base leading-relaxed sm:text-lg"
             style={{ color: "var(--mute)" }}
           >
-            Taxa transparente, repasse ágil e zero mensalidade. Venda ingressos em minutos com dashboard em
-            tempo real e app de portaria incluso.
+            Taxa transparente, repasse ágil e zero mensalidade. Venda ingressos em minutos com
+            dashboard em tempo real e app de portaria incluso.
           </p>
         </header>
 
@@ -171,8 +171,9 @@ export default function PrecosPage() {
               R$ 1,00 por ingresso emitido.
             </p>
             <p className="mt-1.5 text-sm" style={{ color: "var(--mute)" }}>
-              Listas VIP e cortesias têm custo de R$ 1,00 por ingresso gerado. Não há taxa percentual
-              — só a emissão do QR Code de entrada. Lotes pagos por Pix ou Cartão seguem a tabela normal acima.
+              Listas VIP e cortesias têm custo de R$ 1,00 por ingresso gerado. Não há taxa
+              percentual — só a emissão do QR Code de entrada. Lotes pagos por Pix ou Cartão seguem
+              a tabela normal acima.
             </p>
           </div>
 
@@ -365,7 +366,10 @@ function InfoBlock({ label, value, desc }: { label: string; value: string; desc:
       className="rounded-xl border p-4"
       style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}
     >
-      <p className="text-[10px] font-semibold tracking-wider uppercase" style={{ color: "var(--mute)" }}>
+      <p
+        className="text-[10px] font-semibold tracking-wider uppercase"
+        style={{ color: "var(--mute)" }}
+      >
         {label}
       </p>
       <p

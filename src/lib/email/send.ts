@@ -86,11 +86,25 @@ async function logEmail(args: {
 async function sendEmail(args: SendEmailArgs): Promise<{ sent: boolean; error?: string }> {
   let { to, subject, html, text, type, userId, metadata } = args
 
-  if (to.toLowerCase() === "admin@axon.com.br") {
-    console.log(
-      `[email] Redirecionando e-mail de admin@axon.com.br para francisco.johnattan.103@ufrn.edu.br`
-    )
-    to = "francisco.johnattan.103@ufrn.edu.br"
+  // Suporte a redirect de e-mails de teste/admin via env (ex: em staging
+  // queremos que tudo destinado a admin@axon.com.br vá pro nosso inbox real).
+  // Formato: EMAIL_REDIRECT_MAP="admin@axon.com.br:meu@email.com,bot@axon:outro@email.com"
+  const redirectMap = process.env["EMAIL_REDIRECT_MAP"]
+  if (redirectMap) {
+    const pairs = redirectMap
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((p) => {
+        const [from, target] = p.split(":").map((s) => s.trim())
+        return { from: (from ?? "").toLowerCase(), target: target ?? "" }
+      })
+      .filter((p) => p.from && p.target)
+    const match = pairs.find((p) => p.from === to.toLowerCase())
+    if (match) {
+      console.warn(`[email] Redirect ${to} → ${match.target} (via EMAIL_REDIRECT_MAP)`)
+      to = match.target
+    }
   }
 
   const apiKey = process.env["RESEND_API_KEY"]

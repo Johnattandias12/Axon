@@ -125,7 +125,10 @@ export function CheckoutClient({
 
       <div className="mx-auto max-w-4xl px-4">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          <h1
+            className="text-2xl font-bold tracking-tight sm:text-3xl"
+            style={{ color: "var(--ink)" }}
+          >
             Finalizar Pagamento
           </h1>
           <p className="mt-2 text-sm" style={{ color: "var(--mute)" }}>
@@ -144,11 +147,9 @@ export function CheckoutClient({
               <div className="flex border-b" style={{ borderColor: "var(--rule)" }}>
                 <button
                   onClick={() => setMethod("pix")}
-                  className={`flex flex-1 items-center justify-center gap-2 py-4 text-sm font-bold transition-colors ${
-                    method === "pix" ? "text-white" : ""
-                  }`}
+                  className="flex flex-1 items-center justify-center gap-2 py-4 text-sm font-bold transition-colors"
                   style={{
-                    backgroundColor: method === "pix" ? "var(--rule)" : "transparent",
+                    backgroundColor: method === "pix" ? "var(--ink)" : "transparent",
                     color: method === "pix" ? "var(--pulse)" : "var(--mute)",
                   }}
                 >
@@ -157,9 +158,7 @@ export function CheckoutClient({
                 </button>
                 <button
                   onClick={() => setMethod("card")}
-                  className={`flex flex-1 items-center justify-center gap-2 border-l py-4 text-sm font-bold transition-colors ${
-                    method === "card" ? "text-white" : ""
-                  }`}
+                  className="flex flex-1 items-center justify-center gap-2 border-l py-4 text-sm font-bold transition-colors"
                   style={{
                     backgroundColor: method === "card" ? "var(--rule)" : "transparent",
                     borderColor: "var(--rule)",
@@ -176,11 +175,20 @@ export function CheckoutClient({
                 <div className="p-6 sm:p-8">
                   <div className="mx-auto max-w-sm text-center">
                     <div
-                      className={`mb-6 rounded-lg border p-3 text-sm font-medium ${
+                      className="mb-6 rounded-lg border p-3 text-sm font-medium"
+                      style={
                         isDemo
-                          ? "border-yellow-500/20 bg-yellow-500/10 text-yellow-400"
-                          : "border-green-500/20 bg-green-500/10 text-green-400"
-                      }`}
+                          ? {
+                              borderColor: "color-mix(in srgb, var(--warning) 20%, transparent)",
+                              backgroundColor: "var(--warning-soft)",
+                              color: "var(--warning)",
+                            }
+                          : {
+                              borderColor: "color-mix(in srgb, var(--success) 20%, transparent)",
+                              backgroundColor: "var(--success-soft)",
+                              color: "var(--success)",
+                            }
+                      }
                     >
                       {isDemo
                         ? "Modo demonstração — QR ilustrativo, sem cobrança real."
@@ -212,7 +220,13 @@ export function CheckoutClient({
                           />
                           {/* Logo da AXON no centro */}
                           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-gray-800 bg-black shadow-lg">
+                            <div
+                              className="flex h-12 w-12 items-center justify-center rounded-lg border shadow-lg"
+                              style={{
+                                backgroundColor: "var(--ink)",
+                                borderColor: "var(--ink-2)",
+                              }}
+                            >
                               <svg
                                 width="24"
                                 height="24"
@@ -234,7 +248,10 @@ export function CheckoutClient({
 
                     {/* Código Copia e Cola Visível */}
                     <div className="mb-4 text-left">
-                      <label className="mb-1 block text-[10px] font-bold tracking-wider text-gray-500 uppercase">
+                      <label
+                        className="mb-1 block text-[10px] font-bold tracking-wider uppercase"
+                        style={{ color: "var(--mute)" }}
+                      >
                         Código PIX Copia e Cola
                       </label>
                       <input
@@ -245,7 +262,12 @@ export function CheckoutClient({
                           ;(e.target as HTMLInputElement).select()
                           handleCopyPix()
                         }}
-                        className="w-full rounded-lg border border-gray-800 bg-gray-900/50 px-3 py-2.5 font-mono text-[10px] text-gray-300 outline-none focus:border-gray-700"
+                        className="w-full rounded-lg border px-3 py-2.5 font-mono text-[10px] transition-colors outline-none"
+                        style={{
+                          borderColor: "var(--rule)",
+                          backgroundColor: "var(--paper-soft)",
+                          color: "var(--ink-3)",
+                        }}
                       />
                     </div>
 
@@ -403,14 +425,17 @@ export function CheckoutClient({
               className="sticky top-24 rounded-2xl border p-6"
               style={{ backgroundColor: "var(--paper-pure)", borderColor: "var(--rule)" }}
             >
-              <h2 className="mb-4 text-sm font-bold tracking-wider text-white uppercase">
+              <h2
+                className="mb-4 text-sm font-bold tracking-wider uppercase"
+                style={{ color: "var(--ink)" }}
+              >
                 Resumo da Compra
               </h2>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between" style={{ color: "var(--mute)" }}>
                   <span>Ingresso (Subtotal)</span>
-                  <span className="text-white">{centsToBRL(subtotal)}</span>
+                  <span style={{ color: "var(--ink)" }}>{centsToBRL(subtotal)}</span>
                 </div>
                 <div
                   className="flex justify-between border-b pb-4"
@@ -419,26 +444,50 @@ export function CheckoutClient({
                   <span className="flex items-center gap-1">
                     Taxa de serviço AXON
                     <div className="group relative cursor-help">
-                      <div className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gray-800 text-[9px] font-bold text-gray-400 hover:bg-gray-700">
+                      <div
+                        className="flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] font-bold transition-colors"
+                        style={{
+                          backgroundColor: "var(--rule)",
+                          color: "var(--mute)",
+                        }}
+                      >
                         ?
                       </div>
-                      <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 w-48 -translate-x-1/2 rounded-md bg-gray-800 p-2 text-xs text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
+                      <div
+                        className="pointer-events-none absolute bottom-full left-1/2 mb-2 w-48 -translate-x-1/2 rounded-md p-2 text-xs opacity-0 shadow-xl transition-opacity group-hover:opacity-100"
+                        style={{
+                          backgroundColor: "var(--ink)",
+                          color: "var(--paper)",
+                        }}
+                      >
                         Taxa de serviço e processamento da plataforma.
                       </div>
                     </div>
                   </span>
-                  <span className="text-white">{centsToBRL(fee)}</span>
+                  <span style={{ color: "var(--ink)" }}>{centsToBRL(fee)}</span>
                 </div>
 
                 <div className="flex justify-between pt-2">
-                  <span className="font-bold text-white">Total a Pagar</span>
-                  <span className="font-mono text-xl font-bold" style={{ color: "var(--pulse)" }}>
+                  <span className="font-bold" style={{ color: "var(--ink)" }}>
+                    Total a Pagar
+                  </span>
+                  <span
+                    className="font-mono text-xl font-bold"
+                    style={{ color: "var(--pulse-deep)" }}
+                  >
                     {centsToBRL(total)}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-lg border border-gray-800 bg-gray-900/50 p-4 text-xs text-gray-400">
+              <div
+                className="mt-6 rounded-lg border p-4 text-xs"
+                style={{
+                  borderColor: "var(--rule)",
+                  backgroundColor: "var(--paper-soft)",
+                  color: "var(--mute)",
+                }}
+              >
                 Ao concluir, você concorda com os termos de compra e com a taxa de processamento
                 online inclusa no valor total.
               </div>

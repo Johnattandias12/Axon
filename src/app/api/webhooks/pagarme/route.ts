@@ -34,6 +34,7 @@ export async function POST(req: Request) {
   const signature = req.headers.get("x-hub-signature") || req.headers.get("pagarme-signature")
 
   const isSandbox = process.env["NEXT_PUBLIC_PAGARME_ENV"] === "sandbox"
+  const isProduction = process.env.NODE_ENV === "production"
 
   let authed = false
   if (whUser && whPass && auth) {
@@ -48,6 +49,11 @@ export async function POST(req: Request) {
       console.error("[pagarme-webhook] HMAC signature inválido")
       return new NextResponse("invalid signature", { status: 401 })
     }
+  } else if (isProduction) {
+    // Em produção, NUNCA aceitamos webhook sem auth — nem mesmo se as envs
+    // estiverem ausentes. Falha duro pra evitar confirmar pedido fake.
+    console.error("[pagarme-webhook] PRODUÇÃO sem credenciais configuradas — rejeitando")
+    return new NextResponse("webhook auth required", { status: 401 })
   } else if (!whUser && !whPass && !hmacSecret) {
     console.warn(
       "[pagarme-webhook] sem PAGARME_WEBHOOK_USER+PASSWORD nem PAGARME_WEBHOOK_SECRET — rodando sem verificação (dev only)"
@@ -57,7 +63,6 @@ export async function POST(req: Request) {
       "[pagarme-webhook] rodando em modo sandbox com credenciais incompletas no header — ignorando autenticação"
     )
   } else {
-    // env definida mas header ausente
     console.error("[pagarme-webhook] credenciais configuradas mas header ausente")
     return new NextResponse("missing auth", { status: 401 })
   }

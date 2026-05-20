@@ -27,21 +27,39 @@ function authHeader(): string {
   return "Basic " + Buffer.from(`${getApiKey()}:`).toString("base64")
 }
 
+const DEFAULT_TIMEOUT_MS = 15_000
+
 async function request<T>(
   method: "GET" | "POST" | "PUT" | "DELETE",
   path: string,
   body?: unknown
 ): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers: {
-      Authorization: authHeader(),
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-    cache: "no-store",
-  })
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), DEFAULT_TIMEOUT_MS)
+  let res: Response
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      method,
+      headers: {
+        Authorization: authHeader(),
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+      cache: "no-store",
+      signal: ctrl.signal,
+    })
+  } catch (e) {
+    if ((e as Error).name === "AbortError") {
+      const err = new Error(`Pagar.me ${method} ${path} timeout`) as PagarmeError
+      err.status = 504
+      err.body = null
+      throw err
+    }
+    throw e
+  } finally {
+    clearTimeout(timer)
+  }
 
   const text = await res.text()
   let parsed: unknown = null

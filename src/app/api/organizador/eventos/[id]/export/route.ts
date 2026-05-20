@@ -82,10 +82,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       ].join(","),
     ]
 
-    if (tickets && tickets.length > 0) {
-      console.log("[CSV Export Sales] Primeiro ticket:", JSON.stringify(tickets[0], null, 2))
-    }
-
     for (const t of tickets ?? []) {
       const lot = Array.isArray(t.ticket_lots) ? t.ticket_lots[0] : t.ticket_lots
       const tt = lot && Array.isArray(lot.ticket_types) ? lot.ticket_types[0] : lot?.ticket_types

@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { Pencil, Ticket, Users, Globe, Gift, ListChecks } from "lucide-react"
 import { PublishButton } from "./PublishButton"
 import { PageBackLink } from "@/components/shared/PageHeader"
-import { EventAnalyticsCard } from "@/components/organizer/EventAnalyticsCard"
+import { EventAnalyticsCard } from "@/components/organizador/EventAnalyticsCard"
 import { PaymentMethodsConfig } from "./payment-methods-config"
 
 export const metadata: Metadata = { title: "Evento" }
