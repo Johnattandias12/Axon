@@ -81,6 +81,9 @@ export function AxonLogo({
   const h = size
   const w = (size * 380) / 100
 
+  const triangleStroke = tone === "auto" ? "var(--pulse)" : stroke
+  const textFill = tone === "auto" ? "var(--ink)" : stroke
+
   return (
     <svg
       width={w}
@@ -95,11 +98,25 @@ export function AxonLogo({
       <path
         d="M50 13 L92 86 L8 86 Z"
         fill="none"
-        stroke={stroke}
-        strokeWidth="7"
+        stroke={triangleStroke}
+        strokeWidth="8"
         strokeLinejoin="miter"
       />
-      {/* Wordmark — alinhado pelo cap-height do triângulo */}
+      {/* Wordmark — Chromatic Aberration Shadow */}
+      {tone === "auto" && (
+        <text
+          x="118.5"
+          y="85.5"
+          fontFamily="Geist, 'Helvetica Neue', Inter, system-ui, sans-serif"
+          fontWeight="900"
+          fontSize="92"
+          letterSpacing="-2"
+          fill="#00f0ff"
+        >
+          AXON
+        </text>
+      )}
+      {/* Wordmark — Main Text */}
       <text
         x="116"
         y="83"
@@ -107,7 +124,7 @@ export function AxonLogo({
         fontWeight="900"
         fontSize="92"
         letterSpacing="-2"
-        fill={stroke}
+        fill={textFill}
       >
         AXON
       </text>

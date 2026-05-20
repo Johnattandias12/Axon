@@ -21,23 +21,19 @@ interface Props {
   tickets: TicketForPdf[]
 }
 
-const BG_DARK = [8, 8, 10] as const
-const BG_CARD = [18, 18, 20] as const
-const BG_STUB = [12, 12, 14] as const
+const BG_DARK = [10, 10, 12] as const
+const BG_CARD = [20, 20, 24] as const
+const BG_STUB = [14, 14, 16] as const
 const PAPER = [255, 255, 255] as const
 const PULSE = [200, 255, 0] as const
-const MUTE = [140, 140, 145] as const
-const WATERMARK = [16, 16, 18] as const
-const RULE = [30, 30, 35] as const
+const MUTE = [145, 145, 150] as const
+const WATERMARK = [16, 16, 20] as const
+const RULE = [32, 32, 38] as const
 
 /**
- * Gera PDF premium dos ingressos no padrão AXON.
- * Layout A4 retrato "Dark Mode":
- *  - Background escuro total
- *  - Único logo em triângulo
- *  - Watermark AXON repetido em diagonal sutil
- *  - QR grande com moldura pulse
- *  - Selo anti-fraude HMAC-SHA256
+ * Gera PDF premium de ingressos no padrão AXON.
+ * Layout A4 retrato "Dark Mode" com posições fixadas
+ * para evitar qualquer sobreposição de textos.
  */
 export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId, tickets }: Props) {
   const [pending, setPending] = useState(false)
@@ -93,7 +89,7 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
         })
 
         // ─── Top band com LOGO ÚNICO + pedido ──────────
-        const BAND_H = 34
+        const BAND_H = 28
         doc.setFillColor(...BG_CARD)
         doc.rect(contentX, 0, contentW, BAND_H, "F")
 
@@ -101,12 +97,18 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
         doc.setDrawColor(...PULSE)
         doc.setLineWidth(1.2)
         const wmCy = BAND_H / 2
-        doc.triangle(contentX + 16, wmCy - 7, contentX + 24, wmCy + 5, contentX + 8, wmCy + 5, "S")
+        doc.triangle(contentX + 16, wmCy - 6, contentX + 24, wmCy + 5, contentX + 8, wmCy + 5, "S")
 
-        doc.setTextColor(...PAPER)
         doc.setFont("helvetica", "bold")
-        doc.setFontSize(22)
-        doc.text("AXON", contentX + 30, wmCy + 3)
+        doc.setFontSize(20)
+
+        // Chromatic aberration logo text shadow (offset right/bottom)
+        doc.setTextColor(0, 240, 255)
+        doc.text("AXON", contentX + 30.3, wmCy + 2.3)
+
+        // Main white logo text
+        doc.setTextColor(...PAPER)
+        doc.text("AXON", contentX + 30, wmCy + 2)
 
         // Infos do pedido à direita
         doc.setTextColor(...PULSE)
@@ -115,7 +117,7 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
         doc.text(`INGRESSO ${i + 1} / ${tickets.length}`, PAGE_W - 12, wmCy - 1, { align: "right" })
         doc.setFontSize(7)
         doc.setTextColor(...MUTE)
-        doc.text(`#${orderId.slice(0, 12).toUpperCase()}`, PAGE_W - 12, wmCy + 5, {
+        doc.text(`#${orderId.slice(0, 12).toUpperCase()}`, PAGE_W - 12, wmCy + 4, {
           align: "right",
         })
 
@@ -125,27 +127,32 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
         doc.line(contentX, BAND_H, PAGE_W, BAND_H)
 
         // ─── Título do evento ──────────────────────────
-        const titleY = BAND_H + 24
+        const titleY = BAND_H + 18
         doc.setTextColor(...PAPER)
         doc.setFont("helvetica", "bold")
-        doc.setFontSize(28)
-        const titleLines = doc.splitTextToSize(eventTitle, contentW - 30) as string[]
-        titleLines.slice(0, 3).forEach((line, idx) => {
-          doc.text(line, contentX + contentW / 2, titleY + idx * 11, { align: "center" })
+        doc.setFontSize(22)
+
+        // Limita o título em até 2 linhas e adiciona reticências se passar
+        const titleLinesRaw = doc.splitTextToSize(eventTitle, contentW - 32) as string[]
+        const titleLines = titleLinesRaw.slice(0, 2)
+        if (titleLinesRaw.length > 2 && titleLines[1]) {
+          titleLines[1] = titleLines[1].slice(0, -3) + "..."
+        }
+
+        titleLines.forEach((line, idx) => {
+          doc.text(line, contentX + contentW / 2, titleY + idx * 8.5, { align: "center" })
         })
 
-        const afterTitle = titleY + Math.min(titleLines.length, 3) * 11
-
-        // Data + local
-        doc.setFont("helvetica", "normal")
-        doc.setFontSize(12)
+        // Data + local em posições fixas, independentes de layout dinâmico
+        doc.setFont("helvetica", "bold")
+        doc.setFontSize(11)
         doc.setTextColor(...PULSE)
-        doc.text(eventDate, contentX + contentW / 2, afterTitle + 4, { align: "center" })
-        
+        doc.text(eventDate, contentX + contentW / 2, BAND_H + 39, { align: "center" })
+
         if (eventLocation) {
           doc.setTextColor(...MUTE)
-          doc.setFontSize(10)
-          doc.text(eventLocation, contentX + contentW / 2, afterTitle + 10, { align: "center" })
+          doc.setFontSize(9)
+          doc.text(eventLocation, contentX + contentW / 2, BAND_H + 45, { align: "center" })
         }
 
         // ─── QR Code (Design Neon) ─────────────────────
@@ -153,46 +160,57 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
           errorCorrectionLevel: "M",
           margin: 1,
           width: 800,
-          color: { dark: "#08080A", light: "#C8FF00" }, // QR Code Verde Pulse com fundo Escuro? Não, fundo Pulse com QR escuro!
+          color: { dark: "#0A0A0C", light: "#C8FF00" },
         })
 
-        const QR_SIZE = 96
-        const qrY = afterTitle + 24
+        const QR_SIZE = 70
+        const qrY = BAND_H + 54
         const qrX = contentX + (contentW - QR_SIZE) / 2
 
         // Sombra / Glow Pulse
-        doc.setFillColor(30, 40, 0)
-        doc.roundedRect(qrX - 4, qrY - 4, QR_SIZE + 8, QR_SIZE + 8, 4, 4, "F")
+        doc.setFillColor(25, 30, 0)
+        doc.roundedRect(qrX - 3, qrY - 3, QR_SIZE + 6, QR_SIZE + 6, 4, 4, "F")
 
         doc.addImage(qrDataUrl, "PNG", qrX, qrY, QR_SIZE, QR_SIZE)
 
         // Cantos minimalistas (Brackets)
-        const corner = 10
+        const corner = 8
         doc.setDrawColor(...PAPER)
-        doc.setLineWidth(1.2)
+        doc.setLineWidth(1.0)
         // top-left
-        doc.line(qrX - 6, qrY - 6, qrX - 6 + corner, qrY - 6)
-        doc.line(qrX - 6, qrY - 6, qrX - 6, qrY - 6 + corner)
+        doc.line(qrX - 5, qrY - 5, qrX - 5 + corner, qrY - 5)
+        doc.line(qrX - 5, qrY - 5, qrX - 5, qrY - 5 + corner)
         // top-right
-        doc.line(qrX + QR_SIZE + 6, qrY - 6, qrX + QR_SIZE + 6 - corner, qrY - 6)
-        doc.line(qrX + QR_SIZE + 6, qrY - 6, qrX + QR_SIZE + 6, qrY - 6 + corner)
+        doc.line(qrX + QR_SIZE + 5, qrY - 5, qrX + QR_SIZE + 5 - corner, qrY - 5)
+        doc.line(qrX + QR_SIZE + 5, qrY - 5, qrX + QR_SIZE + 5, qrY - 5 + corner)
         // bottom-left
-        doc.line(qrX - 6, qrY + QR_SIZE + 6, qrX - 6 + corner, qrY + QR_SIZE + 6)
-        doc.line(qrX - 6, qrY + QR_SIZE + 6, qrX - 6, qrY + QR_SIZE + 6 - corner)
+        doc.line(qrX - 5, qrY + QR_SIZE + 5, qrX - 5 + corner, qrY + QR_SIZE + 5)
+        doc.line(qrX - 5, qrY + QR_SIZE + 5, qrX - 5, qrY + QR_SIZE + 5 - corner)
         // bottom-right
-        doc.line(qrX + QR_SIZE + 6, qrY + QR_SIZE + 6, qrX + QR_SIZE + 6 - corner, qrY + QR_SIZE + 6)
-        doc.line(qrX + QR_SIZE + 6, qrY + QR_SIZE + 6, qrX + QR_SIZE + 6, qrY + QR_SIZE + 6 - corner)
+        doc.line(
+          qrX + QR_SIZE + 5,
+          qrY + QR_SIZE + 5,
+          qrX + QR_SIZE + 5 - corner,
+          qrY + QR_SIZE + 5
+        )
+        doc.line(
+          qrX + QR_SIZE + 5,
+          qrY + QR_SIZE + 5,
+          qrX + QR_SIZE + 5,
+          qrY + QR_SIZE + 5 - corner
+        )
 
         // Hash curto embaixo do QR
-        const hashShort = t.qr_hash.length > 40 ? `${t.qr_hash.slice(0, 16)}…${t.qr_hash.slice(-16)}` : t.qr_hash
+        const hashShort =
+          t.qr_hash.length > 40 ? `${t.qr_hash.slice(0, 16)}…${t.qr_hash.slice(-16)}` : t.qr_hash
         doc.setFontSize(8)
         doc.setTextColor(...MUTE)
         doc.setFont("courier", "normal")
-        doc.text(hashShort, contentX + contentW / 2, qrY + QR_SIZE + 14, { align: "center" })
+        doc.text(hashShort, contentX + contentW / 2, qrY + QR_SIZE + 10, { align: "center" })
 
-        // ─── Card de dados do titular ──────────────────
-        const cardY = qrY + QR_SIZE + 24
-        const CARD_H = 50
+        // ─── Card de dados do titular (Posicionado com Y Fixo) ───
+        const cardY = BAND_H + 144
+        const CARD_H = 44
         const CARD_X = contentX + 16
         const CARD_W = contentW - 32
 
@@ -220,7 +238,7 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
           const col = r % 2
           const row = Math.floor(r / 2)
           const cx = CARD_X + 14 + col * COL_W
-          const cy = cardY + 12 + row * 22
+          const cy = cardY + 10 + row * 19
 
           doc.setFont("helvetica", "bold")
           doc.setFontSize(7)
@@ -228,29 +246,29 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
           doc.text(labels[r] ?? "", cx, cy)
 
           doc.setFont("helvetica", "bold")
-          doc.setFontSize(11)
+          doc.setFontSize(10)
           doc.setTextColor(...PAPER)
           const v = values[r] ?? ""
           const maxW = COL_W - 16
           const vTrim = doc.splitTextToSize(v, maxW)[0] ?? v
-          doc.text(vTrim, cx, cy + 7)
+          doc.text(vTrim, cx, cy + 6)
         }
 
-        // ─── Selo anti-fraude ──────────────────────────
-        const sealY = cardY + CARD_H + 10
+        // ─── Selo anti-fraude (Y Fixo) ──────────────────
+        const sealY = cardY + CARD_H + 8
         doc.setFillColor(...BG_STUB)
         doc.setDrawColor(...RULE)
         doc.setLineWidth(0.3)
-        doc.roundedRect(contentX + contentW / 2 - 40, sealY, 80, 10, 5, 5, "FD")
-        
+        doc.roundedRect(contentX + contentW / 2 - 40, sealY, 80, 8, 4, 4, "FD")
+
         doc.setTextColor(...PULSE)
         doc.setFont("helvetica", "bold")
-        doc.setFontSize(7)
-        doc.text("VERIFICADO · MODO OFFLINE · HMAC-SHA256", contentX + contentW / 2, sealY + 6.5, {
+        doc.setFontSize(6.5)
+        doc.text("VERIFICADO · MODO OFFLINE · HMAC-SHA256", contentX + contentW / 2, sealY + 5.5, {
           align: "center",
         })
 
-        // ─── Footer ────────────────────────────────────
+        // ─── Footer (Y Fixo próximo ao rodapé) ────────────
         doc.setTextColor(...PULSE)
         doc.setFont("helvetica", "bold")
         doc.setFontSize(9)
@@ -283,7 +301,7 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
       type="button"
       onClick={generate}
       disabled={pending}
-      className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold backdrop-blur-md transition-all hover:scale-[1.02] hover:shadow-[0_8px_24px_-8px_rgba(200,255,0,0.6)] disabled:opacity-60"
+      className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold backdrop-blur-md transition-all hover:scale-[1.02] hover:shadow-[0_8px_24px_-8px_rgba(200,255,0,0.6)] disabled:opacity-60"
       style={{
         backgroundColor: "var(--pulse)",
         color: "#000000",

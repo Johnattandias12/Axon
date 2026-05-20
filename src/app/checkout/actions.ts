@@ -194,7 +194,7 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
       service_fee_cents: fee,
       total_cents: total,
       payment_method: "pix",
-      paid_at: new Date().toISOString(),
+      paid_at: null,
       metadata: {
         demo: true,
         source: "buy_demo",
@@ -273,29 +273,6 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
     }
   }
 
-  // Envia email de confirmação (silencioso se sem RESEND_API_KEY)
-  if (user.email) {
-    const appUrl = process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"
-    const evt = event as {
-      title: string
-      starts_at: string
-      venue_name: string | null
-      city: string | null
-      state: string | null
-    }
-    void sendTicketConfirmation({
-      to: user.email,
-      buyerName: parsed.data.holderName,
-      eventTitle: evt.title,
-      eventDate: formatDate(evt.starts_at, { dateStyle: "full", timeStyle: "short" }),
-      eventLocation: [evt.venue_name, evt.city, evt.state].filter(Boolean).join(" · ") || "",
-      ticketCount: parsed.data.quantity,
-      totalCents: total,
-      orderUrl: `${appUrl}/minha-conta/ingressos/${order.id}`,
-      qrPayloads: ticketsToInsert.map((t) => t.qr_hash),
-    })
-  }
-
   revalidatePath("/minha-conta", "layout")
   redirect(`/checkout/${order.id}`)
 }
@@ -327,6 +304,50 @@ export async function approveDemoOrder(orderId: string) {
 
   if (updErr) {
     return { ok: false, error: updErr.message }
+  }
+
+  // Envia email de confirmação para o fluxo demo pós-aprovação
+  try {
+    const admin = createAdminClient()
+    const { data: fullOrder } = await admin
+      .from("orders")
+      .select("id, total_cents, event_id, buyer_id")
+      .eq("id", orderId)
+      .single()
+
+    if (fullOrder) {
+      const [{ data: event }, { data: profile }, { data: tickets }, { data: authUserRes }] =
+        await Promise.all([
+          admin
+            .from("events")
+            .select("title, starts_at, venue_name, city, state")
+            .eq("id", fullOrder.event_id)
+            .single(),
+          admin.from("profiles").select("full_name").eq("id", fullOrder.buyer_id).single(),
+          admin.from("tickets").select("qr_hash").eq("order_id", orderId),
+          admin.auth.admin.getUserById(fullOrder.buyer_id),
+        ])
+
+      const email = authUserRes?.user?.email
+
+      if (email && event && tickets) {
+        const appUrl = process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"
+        void sendTicketConfirmation({
+          to: email,
+          buyerName: profile?.full_name || "Cliente",
+          eventTitle: event.title,
+          eventDate: formatDate(event.starts_at, { dateStyle: "full", timeStyle: "short" }),
+          eventLocation:
+            [event.venue_name, event.city, event.state].filter(Boolean).join(" · ") || "",
+          ticketCount: tickets.length,
+          totalCents: fullOrder.total_cents,
+          orderUrl: `${appUrl}/minha-conta/ingressos/${orderId}`,
+          qrPayloads: tickets.map((t) => t.qr_hash),
+        })
+      }
+    }
+  } catch (emailErr) {
+    console.error("[approveDemoOrder] erro ao enviar email:", emailErr)
   }
 
   revalidatePath(`/checkout/${orderId}`)

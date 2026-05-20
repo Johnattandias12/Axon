@@ -48,6 +48,10 @@ export default async function PedidoPage({ params }: { params: Promise<{ orderId
     return <OrderNotFound orderId={orderId} reason={orderErr?.message} />
   }
 
+  if (order.status === "pending") {
+    redirect(`/checkout/${order.id}`)
+  }
+
   const { data: event, error: eventErr } = await admin
     .from("events")
     .select("id, title, slug, starts_at, venue_name, city, state, category, banner_url")

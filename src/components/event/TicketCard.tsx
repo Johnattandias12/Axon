@@ -189,6 +189,37 @@ export function TicketCard({
           className="relative flex flex-col items-center justify-center gap-3 sm:border-l sm:border-dashed sm:pl-4"
           style={{ borderColor: "var(--rule-strong)" }}
         >
+          {/* Canhoto divider for mobile */}
+          <div className="relative my-2 block w-full sm:hidden">
+            <div className="border-t border-dashed" style={{ borderColor: "var(--rule-strong)" }} />
+            <span
+              className="absolute rounded-full"
+              style={{
+                backgroundColor: "var(--paper)",
+                top: "-10px",
+                left: "-30px",
+                width: "20px",
+                height: "20px",
+                border: "1px solid var(--rule)",
+                clipPath: "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)",
+              }}
+              aria-hidden="true"
+            />
+            <span
+              className="absolute rounded-full"
+              style={{
+                backgroundColor: "var(--paper)",
+                top: "-10px",
+                right: "-30px",
+                width: "20px",
+                height: "20px",
+                border: "1px solid var(--rule)",
+                clipPath: "polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)",
+              }}
+              aria-hidden="true"
+            />
+          </div>
+
           <span
             className="absolute -top-2 -left-3 hidden h-5 w-5 rounded-full sm:block"
             style={{ backgroundColor: "var(--paper)" }}
