@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { dispatchMagicLink } from "@/lib/email/auth-via-admin"
+import { createClient } from "@/lib/supabase/server"
 import { verifyTurnstile, clientIpFromHeaders } from "@/lib/turnstile"
 import { z } from "zod"
 
@@ -9,7 +9,13 @@ const schema = z.object({
 })
 
 /**
- * Envia magic link de login via Resend (template AXON).
+ * Envia magic link de login via Supabase Auth (SMTP builtin do projeto).
+ *
+ * Estratégia: usa supabase.auth.signInWithOtp() — Supabase entrega o email
+ * pelo SMTP builtin (grátis, sem domínio próprio). Quando o domínio AXON
+ * ficar pronto e o Resend voltar, trocar pra dispatchMagicLink em
+ * lib/email/auth-via-admin.ts (template AXON personalizado).
+ *
  * Aceita JSON: { email }.
  */
 export async function POST(request: Request) {
@@ -32,10 +38,22 @@ export async function POST(request: Request) {
     )
   }
 
-  const result = await dispatchMagicLink(email)
+  const supabase = await createClient()
+  const appUrl = (process.env["NEXT_PUBLIC_APP_URL"] || new URL(request.url).origin).replace(
+    /\/$/,
+    ""
+  )
 
-  if (!result.ok) {
-    console.error("[magic-link] dispatch failed:", result.error)
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      shouldCreateUser: true,
+      emailRedirectTo: `${appUrl}/api/auth/callback?next=/`,
+    },
+  })
+
+  if (error) {
+    console.error("[magic-link] supabase error:", error.message)
     return NextResponse.json(
       {
         ok: false,

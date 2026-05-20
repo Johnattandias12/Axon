@@ -124,7 +124,7 @@ export default async function FinanceiroPage() {
   const grossCents = orders.reduce((s, o) => s + o.total_cents, 0)
   const subtotalCents = orders.reduce((s, o) => s + o.subtotal_cents, 0)
   const serviceFeeCents = orders.reduce((s, o) => s + o.service_fee_cents, 0)
-  // Líquido = subtotal − comissão afiliado paga. O service_fee é cobrado do comprador (10% sobre subtotal),
+  // Líquido = subtotal − comissão afiliado paga. O service_fee é cobrado do comprador (8.99% sobre subtotal),
   // ou seja, o organizador recebe o subtotal inteiro (salvo afiliados).
   const netToOrganizerCents = subtotalCents - totalAffiliateCommissionCents
   const availableCents = Math.max(0, netToOrganizerCents - 0) // placeholder pagamentos

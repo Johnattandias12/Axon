@@ -113,7 +113,7 @@ export async function createPixChargeAction(formData: FormData): Promise<PixChar
   }
 
   const subtotal = priceCents * qty
-  const fee = Math.round(subtotal * 0.1)
+  const fee = Math.round(subtotal * 0.0899)
   const total = subtotal + fee
 
   // Cria order LOCAL com status pending

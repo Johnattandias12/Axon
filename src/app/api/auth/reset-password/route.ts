@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { dispatchPasswordReset } from "@/lib/email/auth-via-admin"
+import { createClient } from "@/lib/supabase/server"
 import { verifyTurnstile, clientIpFromHeaders } from "@/lib/turnstile"
 import { z } from "zod"
 
@@ -10,8 +10,12 @@ const schema = z.object({
 
 /**
  * Endpoint server-side de redefinição de senha.
- * Gera link via Supabase Admin + envia via Resend (template AXON).
- * Aceita form-encoded (browser redirect) OU JSON (fetch do client).
+ *
+ * Estratégia: usa supabase.auth.resetPasswordForEmail() — Supabase envia pelo
+ * SMTP builtin do projeto (grátis, ~4 emails/hora no free tier). Funciona sem
+ * domínio próprio nem Resend verificado. Quando o domínio ficar pronto,
+ * trocar de volta pra dispatchPasswordReset (lib/email/auth-via-admin.ts) que
+ * usa template AXON via Resend.
  *
  * Resposta:
  *  - form: 303 redirect com ?success=true | ?error=msg
@@ -59,14 +63,26 @@ export async function POST(request: Request) {
     )
   }
 
-  const result = await dispatchPasswordReset(email.trim().toLowerCase())
+  const supabase = await createClient()
+  const appUrl = (process.env["NEXT_PUBLIC_APP_URL"] || new URL(request.url).origin).replace(
+    /\/$/,
+    ""
+  )
+  const { error: resetErr } = await supabase.auth.resetPasswordForEmail(
+    email.trim().toLowerCase(),
+    { redirectTo: `${appUrl}/api/auth/callback?next=/redefinir-senha` }
+  )
 
-  if (!result.ok) {
+  // Trata "user not found" como sucesso silencioso (evita user enumeration).
+  const isNotFound = resetErr && /not.*found|does not exist/i.test(resetErr.message)
+  const failed = resetErr && !isNotFound
+
+  if (failed) {
     const safeErr = encodeURIComponent(
       "Não foi possível enviar o link agora. Tente de novo em alguns minutos."
     )
-    console.error("[reset-password] dispatch failed:", result.error)
-    if (isJson) return NextResponse.json({ ok: false, error: result.error }, { status: 500 })
+    console.error("[reset-password] supabase error:", resetErr.message)
+    if (isJson) return NextResponse.json({ ok: false, error: resetErr.message }, { status: 500 })
     // Para o referer de minha-conta, volta com query de erro
     const referer = request.headers.get("referer") || ""
     if (referer.includes("/minha-conta")) {

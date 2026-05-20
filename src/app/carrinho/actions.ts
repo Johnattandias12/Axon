@@ -294,7 +294,7 @@ export async function checkoutDemo(
     })
   }
 
-  const fee = Math.round(subtotal * 0.1)
+  const fee = Math.round(subtotal * 0.0899)
   const total = subtotal + fee
 
   // Reserva atômica de estoque por lote. Se algum lote esgotar entre o read e
