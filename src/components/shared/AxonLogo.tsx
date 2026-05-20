@@ -34,6 +34,7 @@ interface BaseProps {
 /** Apenas o triângulo, sem texto. Sempre 1:1. */
 export function AxonSymbol({ size = 24, className = "", tone = "auto" }: BaseProps) {
   const stroke = TONE_COLOR[tone]
+  const triangleStroke = tone === "paper" ? stroke : "var(--pulse)"
   return (
     <svg
       width={size}
@@ -47,7 +48,7 @@ export function AxonSymbol({ size = 24, className = "", tone = "auto" }: BasePro
       <path
         d="M50 13 L92 86 L8 86 Z"
         fill="none"
-        stroke={stroke}
+        stroke={triangleStroke}
         strokeWidth="7"
         strokeLinejoin="miter"
       />
@@ -81,7 +82,7 @@ export function AxonLogo({
   const h = size
   const w = (size * 380) / 100
 
-  const triangleStroke = tone === "auto" ? "var(--pulse)" : stroke
+  const triangleStroke = tone === "paper" ? stroke : "var(--pulse)"
   const textFill = tone === "auto" ? "var(--ink)" : stroke
 
   return (

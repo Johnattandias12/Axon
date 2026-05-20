@@ -49,6 +49,15 @@ export async function GET() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Buscar configuração do modo de pagamento
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: settingRes } = await (supabase as any)
+    .from("system_settings")
+    .select("value")
+    .eq("key", "payment_mode")
+    .maybeSingle()
+  const paymentMode = settingRes?.value ?? "test"
+
   if (!user) {
     return NextResponse.json({
       authenticated: false,
@@ -57,6 +66,7 @@ export async function GET() {
       fee: 0,
       total: 0,
       totalItems: 0,
+      paymentMode,
     })
   }
 
@@ -119,5 +129,6 @@ export async function GET() {
     fee,
     total,
     totalItems,
+    paymentMode,
   })
 }

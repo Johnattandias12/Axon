@@ -73,6 +73,7 @@ export default async function EventoPage({ params }: Props) {
     {
       data: { user },
     },
+    paymentModeRes,
   ] = await Promise.all([
     supabase
       .from("events")
@@ -90,9 +91,17 @@ export default async function EventoPage({ params }: Props) {
       .eq("status", "published")
       .single(),
     supabase.auth.getUser(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
+      .from("system_settings")
+      .select("value")
+      .eq("key", "payment_mode")
+      .maybeSingle(),
   ])
 
   if (!event) notFound()
+
+  const isRealPayment = paymentModeRes?.data?.value === "real"
 
   // Código de afiliado do user logado (silencioso se tabela não existir)
   let viewerAffiliateCode: string | null = null
@@ -662,10 +671,23 @@ export default async function EventoPage({ params }: Props) {
 
                 <div
                   className="flex items-center justify-center gap-1.5 rounded-lg p-2 text-[10px]"
-                  style={{ backgroundColor: "var(--pulse-soft)", color: "var(--ink)" }}
+                  style={{
+                    backgroundColor: isRealPayment ? "rgba(200, 255, 0, 0.1)" : "var(--pulse-soft)",
+                    color: isRealPayment ? "#c8ff00" : "var(--ink)",
+                    border: isRealPayment ? "1px solid rgba(200, 255, 0, 0.2)" : "none",
+                  }}
                 >
-                  <Sparkles size={10} />
-                  Modo demonstração — sem cobrança real
+                  {isRealPayment ? (
+                    <>
+                      <Shield size={10} className="text-[#c8ff00]" />
+                      🔒 Pagamento 100% Seguro — Suas informações estão criptografadas.
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={10} />
+                      Modo demonstração — sem cobrança real
+                    </>
+                  )}
                 </div>
               </div>
             </div>

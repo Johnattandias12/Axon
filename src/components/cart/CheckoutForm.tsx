@@ -1,7 +1,7 @@
 "use client"
 
 import { useActionState, useTransition, useState } from "react"
-import { Loader2, ShieldCheck, CheckCircle2 } from "lucide-react"
+import { Loader2, ShieldCheck, CheckCircle2, Sparkles } from "lucide-react"
 import { checkoutDemo, type CheckoutState } from "@/app/carrinho/actions"
 import { formatCPF } from "@/lib/utils/validators"
 
@@ -24,13 +24,24 @@ export function CheckoutForm({ defaultName = "", defaultCpf = "" }: Props) {
 
   return (
     <form action={submit} className="space-y-3">
-      {hasSaved && (
+      {hasSaved ? (
         <div
           className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[10px]"
           style={{ backgroundColor: "var(--pulse-soft)", color: "var(--pulse-deep)" }}
         >
           <CheckCircle2 size={11} />
           Seus dados já estão salvos. Editou? Será atualizado no perfil.
+        </div>
+      ) : (
+        <div
+          className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[10px]"
+          style={{ backgroundColor: "rgba(200, 255, 0, 0.08)", color: "var(--pulse-deep)" }}
+        >
+          <Sparkles size={11} className="shrink-0" />
+          <span>
+            Primeira compra? Preencha seus dados para salvar no perfil e facilitar as próximas
+            compras!
+          </span>
         </div>
       )}
 

@@ -232,6 +232,23 @@ export function CheckoutClient({
                       )}
                     </div>
 
+                    {/* Código Copia e Cola Visível */}
+                    <div className="mb-4 text-left">
+                      <label className="mb-1 block text-[10px] font-bold tracking-wider text-gray-500 uppercase">
+                        Código PIX Copia e Cola
+                      </label>
+                      <input
+                        type="text"
+                        readOnly
+                        value={finalPixPayload}
+                        onClick={(e) => {
+                          ;(e.target as HTMLInputElement).select()
+                          handleCopyPix()
+                        }}
+                        className="w-full rounded-lg border border-gray-800 bg-gray-900/50 px-3 py-2.5 font-mono text-[10px] text-gray-300 outline-none focus:border-gray-700"
+                      />
+                    </div>
+
                     <button
                       onClick={handleCopyPix}
                       className="group flex w-full items-center justify-center gap-2 rounded-xl py-4 text-sm font-bold transition-all hover:scale-[1.02]"

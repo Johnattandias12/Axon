@@ -23,6 +23,7 @@ import {
   ArrowRight,
   X,
   Sparkles,
+  Shield,
 } from "lucide-react"
 import { useCartUI } from "./CartUIProvider"
 import { centsToBRL, formatDate } from "@/lib/utils"
@@ -54,6 +55,7 @@ type CartResponse = {
   fee: number
   total: number
   totalItems: number
+  paymentMode?: string
 }
 
 export function CartDrawer() {
@@ -188,10 +190,19 @@ export function CartDrawer() {
 
             <div
               className="flex items-center justify-center gap-1.5 pt-1 text-[10px]"
-              style={{ color: "var(--mute)" }}
+              style={{ color: data?.paymentMode === "real" ? "#c8ff00" : "var(--mute)" }}
             >
-              <Sparkles size={10} />
-              Modo demonstração. Sem cobrança real.
+              {data?.paymentMode === "real" ? (
+                <>
+                  <Shield size={10} className="text-[#c8ff00]" />
+                  🔒 Pagamento 100% Seguro
+                </>
+              ) : (
+                <>
+                  <Sparkles size={10} />
+                  Modo demonstração. Sem cobrança real.
+                </>
+              )}
             </div>
           </DrawerFooter>
         )}
