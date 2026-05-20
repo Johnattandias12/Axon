@@ -9,6 +9,24 @@ import {
  * Envia email via Resend se RESEND_API_KEY estiver configurado.
  * Em modo demo (sem key), apenas faz log no console — nunca lança.
  */
+/**
+ * Reescreve destinatário caso seja uma conta administrativa.
+ *
+ * Conta admin (ex.: admin@axon.com.br) é usada pra login e dashboard, mas
+ * as notificações em si precisam ir pro inbox real do owner — esse mapping
+ * é controlado por ADMIN_NOTIFICATIONS_EMAIL. Se a env não estiver setada,
+ * mantém o destinatário original.
+ */
+function resolveRecipient(to: string): string {
+  const adminList = (process.env["ADMIN_EMAILS"] ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+  const forward = process.env["ADMIN_NOTIFICATIONS_EMAIL"]
+  if (!forward) return to
+  return adminList.includes(to.trim().toLowerCase()) ? forward : to
+}
+
 async function sendEmail({
   to,
   subject,
@@ -22,9 +40,13 @@ async function sendEmail({
 }): Promise<{ sent: boolean; error?: string }> {
   const apiKey = process.env["RESEND_API_KEY"]
   const from = process.env["RESEND_FROM_EMAIL"] ?? "AXON <noreply@axon.com.br>"
+  const finalTo = resolveRecipient(to)
 
   if (!apiKey || apiKey.length === 0) {
-    console.warn("[email] RESEND_API_KEY ausente — modo demo, email não enviado:", { to, subject })
+    console.warn("[email] RESEND_API_KEY ausente — modo demo, email não enviado:", {
+      to: finalTo,
+      subject,
+    })
     return { sent: false, error: "no_api_key" }
   }
 
@@ -35,7 +57,7 @@ async function sendEmail({
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({ from, to, subject, html, text }),
+      body: JSON.stringify({ from, to: finalTo, subject, html, text }),
     })
 
     if (!res.ok) {
