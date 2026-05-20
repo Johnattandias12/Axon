@@ -5,6 +5,8 @@ import { Copy, CheckCircle2, ShieldCheck, CreditCard, Wallet, Loader2 } from "lu
 import QRCode from "qrcode"
 import { centsToBRL } from "@/lib/utils"
 import { SalesPopup } from "@/components/checkout/SalesPopup"
+import { approveDemoOrder } from "../actions"
+import { toast } from "sonner"
 
 interface CheckoutClientProps {
   orderId: string
@@ -33,6 +35,27 @@ export function CheckoutClient({
   const [copied, setCopied] = useState(false)
   const [loadingPix, setLoadingPix] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null)
+  const [approving, setApproving] = useState(false)
+
+  const handleApproveDemo = async () => {
+    setApproving(true)
+    try {
+      const res = await approveDemoOrder(orderId)
+      if (res.ok) {
+        toast.success("Pagamento fictício simulado com sucesso! Redirecionando...")
+        setTimeout(() => {
+          window.location.href = `/minha-conta/ingressos/${orderId}`
+        }, 1500)
+      } else {
+        toast.error(res.error || "Erro ao aprovar pedido simulado.")
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error("Ocorreu um erro ao simular o pagamento.")
+    } finally {
+      setApproving(false)
+    }
+  }
 
   // Sandbox/demo: payload bonito mas sem cobrança real. Produção: vem da Pagar.me.
   const finalPixPayload = pixPayload || DEMO_PIX_PAYLOAD
@@ -220,6 +243,31 @@ export function CheckoutClient({
                         </>
                       )}
                     </button>
+
+                    {isDemo && (
+                      <button
+                        onClick={handleApproveDemo}
+                        disabled={approving}
+                        className="group mt-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border py-4 text-sm font-bold transition-all hover:scale-[1.02]"
+                        style={{
+                          backgroundColor: "var(--success-soft)",
+                          borderColor: "var(--success)",
+                          color: "var(--success)",
+                        }}
+                      >
+                        {approving ? (
+                          <>
+                            <Loader2 size={18} className="animate-spin" />
+                            Liberando Ingressos...
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 size={18} />
+                            Simular Pagamento (Aprovar)
+                          </>
+                        )}
+                      </button>
+                    )}
 
                     <p
                       className="mt-4 flex items-center justify-center gap-1.5 text-xs"

@@ -24,6 +24,8 @@ import {
 import { SiteMobileNav } from "./SiteMobileNav"
 import { ThemeToggle } from "./ThemeToggle"
 import { HeaderCartButton } from "@/components/cart/HeaderCartButton"
+import { HeaderPaymentModeToggle } from "./HeaderPaymentModeToggle"
+import { getPaymentMode } from "@/lib/payments/settings"
 
 export async function SiteHeader() {
   const supabase = await createClient()
@@ -37,13 +39,16 @@ export async function SiteHeader() {
     avatar_url: string | null
   } | null = null
   let cartCount = 0
+  let paymentMode: "real" | "test" = "real"
   if (user) {
-    const [{ data: profileData }, { data: cartData }] = await Promise.all([
+    const [{ data: profileData }, { data: cartData }, mode] = await Promise.all([
       supabase.from("profiles").select("full_name, role, avatar_url").eq("id", user.id).single(),
       supabase.from("cart_items").select("quantity").eq("user_id", user.id),
+      getPaymentMode(),
     ])
     profile = profileData
     cartCount = (cartData ?? []).reduce((s, i) => s + (i.quantity ?? 0), 0)
+    paymentMode = mode
   }
 
   const initials = profile?.full_name
@@ -158,6 +163,7 @@ export async function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {profile?.role === "admin" && <HeaderPaymentModeToggle initialMode={paymentMode} />}
           <a
             href="https://www.instagram.com/axon.way/"
             target="_blank"

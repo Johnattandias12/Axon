@@ -299,3 +299,37 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
   revalidatePath("/minha-conta", "layout")
   redirect(`/checkout/${order.id}`)
 }
+
+export async function approveDemoOrder(orderId: string) {
+  const supabase = await createClient()
+
+  // Garante que a order realmente é demo para evitar fraudes em orders reais
+  const { data: order, error: findErr } = await supabase
+    .from("orders")
+    .select("status, metadata")
+    .eq("id", orderId)
+    .single()
+
+  if (findErr || !order) {
+    return { ok: false, error: "Pedido não encontrado." }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const isDemo = (order.metadata as any)?.demo === true
+  if (!isDemo) {
+    return { ok: false, error: "Este pedido não é simulado e não pode ser aprovado manualmente." }
+  }
+
+  const { error: updErr } = await supabase
+    .from("orders")
+    .update({ status: "paid", paid_at: new Date().toISOString() })
+    .eq("id", orderId)
+
+  if (updErr) {
+    return { ok: false, error: updErr.message }
+  }
+
+  revalidatePath(`/checkout/${orderId}`)
+  revalidatePath("/minha-conta")
+  return { ok: true }
+}
