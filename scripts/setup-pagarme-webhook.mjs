@@ -29,7 +29,7 @@ function authHeader() {
 }
 
 async function listWebhooks() {
-  const res = await fetch(`${BASE}/webhooks`, {
+  const res = await fetch(`${BASE}/hooks`, {
     headers: { Authorization: authHeader(), Accept: "application/json" },
   })
   const text = await res.text()
@@ -41,7 +41,7 @@ async function listWebhooks() {
 }
 
 async function createWebhook() {
-  const res = await fetch(`${BASE}/webhooks`, {
+  const res = await fetch(`${BASE}/hooks`, {
     method: "POST",
     headers: {
       Authorization: authHeader(),

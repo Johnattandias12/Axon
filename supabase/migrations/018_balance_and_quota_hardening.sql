@@ -125,5 +125,5 @@ CREATE INDEX IF NOT EXISTS idx_orders_event_status_paid_at
 CREATE INDEX IF NOT EXISTS idx_tickets_event_status
   ON public.tickets (event_id, status);
 
-CREATE INDEX IF NOT EXISTS idx_check_ins_event_created
-  ON public.check_ins (event_id, created_at DESC);
+-- Nota: já existe idx_checkins_event_time(event_id, scanned_at DESC) na migration 001.
+-- Mantemos índice em ticket_id já também existente (idx_checkins_ticket).

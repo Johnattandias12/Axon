@@ -89,6 +89,18 @@ export async function createPixChargeAction(formData: FormData): Promise<PixChar
     return { ok: false, error: "Evento indisponível." }
   }
 
+  // Carrega recipient_id do organizador pra montar split na Pagar.me.
+  // Se o organizador ainda não tem recipient, segue sem split (AXON recebe
+  // tudo e faz repasse manual). Esse caminho deve ser temporário —
+  // organizador precisa completar KYC pra entrar em produção real.
+  const { data: org } = await admin
+    .from("organizers")
+    .select("pagarme_recipient_id, kyc_status")
+    .eq("id", event.organizer_id)
+    .maybeSingle()
+  const organizerRecipientId = (org?.pagarme_recipient_id as string | null) ?? null
+  const axonRecipientId = process.env["PAGARME_RECIPIENT_AXON"] ?? null
+
   // Captura imutáveis pro closure de rollback
   const lotId = lot.id as string
   const qty = parsed.data.quantity
@@ -115,7 +127,7 @@ export async function createPixChargeAction(formData: FormData): Promise<PixChar
   }
 
   const subtotal = priceCents * qty
-  const fee = Math.round(subtotal * 0.0899) + (qty * 100)
+  const fee = Math.round(subtotal * 0.0899) + qty * 100
   const total = subtotal + fee
 
   // Cria order LOCAL com status pending
@@ -159,6 +171,35 @@ export async function createPixChargeAction(formData: FormData): Promise<PixChar
   try {
     const tt = lot.ticket_types
     const typeName = (Array.isArray(tt) ? tt[0] : tt)?.name ?? "Ingresso"
+    // Monta split: organizador recebe subtotal, AXON recebe fee.
+    // Só inclui split se ambos recipients estiverem disponíveis E o
+    // organizador estiver KYC aprovado (Pagar.me rejeita recipient inativo).
+    const splitEnabled = organizerRecipientId && axonRecipientId && org?.kyc_status === "approved"
+    const split = splitEnabled
+      ? [
+          {
+            recipient_id: organizerRecipientId as string,
+            amount: subtotal,
+            type: "flat" as const,
+            options: {
+              charge_processing_fee: false,
+              charge_remainder_fee: false,
+              liable: true,
+            },
+          },
+          {
+            recipient_id: axonRecipientId as string,
+            amount: fee,
+            type: "flat" as const,
+            options: {
+              charge_processing_fee: true,
+              charge_remainder_fee: true,
+              liable: true,
+            },
+          },
+        ]
+      : undefined
+
     const result = await createPagarmePixOrder({
       orderId: order.id,
       buyerName: parsed.data.holderName,
@@ -180,6 +221,7 @@ export async function createPixChargeAction(formData: FormData): Promise<PixChar
           quantity: 1,
         },
       ],
+      ...(split ? { split } : {}),
     })
 
     await linkOrderToGateway(admin, order.id, result.pagarme_order_id, {
