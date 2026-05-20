@@ -84,7 +84,15 @@ async function logEmail(args: {
  * Nunca lança — sempre retorna { sent, error? }.
  */
 async function sendEmail(args: SendEmailArgs): Promise<{ sent: boolean; error?: string }> {
-  const { to, subject, html, text, type, userId, metadata } = args
+  let { to, subject, html, text, type, userId, metadata } = args
+
+  if (to.toLowerCase() === "admin@axon.com.br") {
+    console.log(
+      `[email] Redirecionando e-mail de admin@axon.com.br para francisco.johnattan.103@ufrn.edu.br`
+    )
+    to = "francisco.johnattan.103@ufrn.edu.br"
+  }
+
   const apiKey = process.env["RESEND_API_KEY"]
   const from = process.env["RESEND_FROM_EMAIL"] ?? "AXON <onboarding@resend.dev>"
   const replyTo = process.env["RESEND_REPLY_TO"]
