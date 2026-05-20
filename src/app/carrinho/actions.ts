@@ -9,6 +9,8 @@ import { generateQrPayload } from "@/lib/qr/hmac"
 import { sendTicketConfirmation } from "@/lib/email/send"
 import { formatDate } from "@/lib/utils"
 import { validateCPF } from "@/lib/utils/validators"
+import { isRedirectError } from "next/dist/client/components/redirect-error"
+import { createPagarmePixOrder, linkOrderToGateway } from "@/lib/payments/pagarme/orders"
 
 // ─── Schemas ─────────────────────────────────────────────────
 const addSchema = z.object({
@@ -333,19 +335,27 @@ export async function checkoutDemo(
     }
   }
 
+  const isRealPayment = !!process.env["PAGARME_API_KEY"]
+  const initialStatus = isRealPayment ? "pending" : "paid"
+  const reservedUntil = isRealPayment ? new Date(Date.now() + 15 * 60 * 1000).toISOString() : null
+
   // Cria a order
   const { data: order, error: orderErr } = await admin
     .from("orders")
     .insert({
       buyer_id: user.id,
       event_id: event.id,
-      status: "paid",
+      status: initialStatus,
       subtotal_cents: subtotal,
       service_fee_cents: fee,
       total_cents: total,
       payment_method: "pix",
-      paid_at: new Date().toISOString(),
-      metadata: { demo: true, source: "cart_checkout" },
+      ...(isRealPayment
+        ? { reserved_until: reservedUntil }
+        : { paid_at: new Date().toISOString() }),
+      metadata: isRealPayment
+        ? { source: "cart_checkout" }
+        : { demo: true, source: "cart_checkout" },
     })
     .select("id")
     .single()
@@ -355,66 +365,140 @@ export async function checkoutDemo(
     return { ok: false, error: orderErr?.message ?? "Falha ao criar pedido." }
   }
 
-  // Order items + tickets
-  const allQrs: string[] = []
-  for (const t of ticketsToCreate) {
-    const { error: itemErr } = await admin.from("order_items").insert({
-      order_id: order.id,
-      ticket_lot_id: t.lotId,
-      quantity: t.qty,
-      unit_price_cents: t.pricePerUnit,
-    })
-    if (itemErr) {
-      await rollbackEverything(order.id)
-      return { ok: false, error: itemErr.message }
-    }
+  if (isRealPayment) {
+    // Phone do comprador é OBRIGATÓRIO na Pagar.me v5. Tenta pegar do profile;
+    // se vazio, manda string vazia (parseBrPhone aplica fallback safe).
+    const { data: profileRow } = await admin
+      .from("profiles")
+      .select("phone")
+      .eq("id", user.id)
+      .maybeSingle()
+    const buyerPhone = (profileRow?.phone as string | null) ?? ""
 
-    const ticketRows = Array.from({ length: t.qty }, () => {
-      const ticketId = crypto.randomUUID()
-      const qr = generateQrPayload(ticketId, event.id)
-      allQrs.push(qr)
-      return {
-        id: ticketId,
+    // Apenas insere os order items
+    for (const t of ticketsToCreate) {
+      const { error: itemErr } = await admin.from("order_items").insert({
         order_id: order.id,
         ticket_lot_id: t.lotId,
-        event_id: event.id,
-        qr_hash: qr,
-        holder_name: holderName,
-        holder_cpf: holderCpf,
-        is_half_price: t.isHalf,
-        status: "valid" as const,
+        quantity: t.qty,
+        unit_price_cents: t.pricePerUnit,
+      })
+      if (itemErr) {
+        await rollbackEverything(order.id)
+        return { ok: false, error: itemErr.message }
       }
+    }
+
+    try {
+      const pagarmeItems = ticketsToCreate.map((t) => {
+        const tt = t.lot.ticket_types
+        const typeName = (Array.isArray(tt) ? tt[0] : tt)?.name ?? "Ingresso"
+        return {
+          amount: t.pricePerUnit,
+          description: `${typeName} - ${t.lot.name}`,
+          quantity: t.qty,
+        }
+      })
+
+      if (fee > 0) {
+        pagarmeItems.push({
+          amount: fee,
+          description: "Taxa de serviço AXON",
+          quantity: 1,
+        })
+      }
+
+      const result = await createPagarmePixOrder({
+        orderId: order.id,
+        buyerName: holderName,
+        buyerEmail: user.email,
+        buyerCpf: holderCpf,
+        buyerPhone,
+        amountCents: total,
+        description: `${event.title} - Ingressos`,
+        expiresInMinutes: 15,
+        items: pagarmeItems,
+      })
+
+      await linkOrderToGateway(admin, order.id, result.pagarme_order_id, {
+        qr_code: result.qr_code,
+        ...(result.qr_code_url ? { qr_code_url: result.qr_code_url } : {}),
+        expires_at: result.expires_at,
+      })
+
+      // Esvazia carrinho
+      await admin.from("cart_items").delete().eq("user_id", user.id)
+
+      revalidatePath("/carrinho")
+      revalidatePath("/minha-conta")
+      redirect(`/checkout/${order.id}`)
+    } catch (err) {
+      if (isRedirectError(err)) throw err
+      await rollbackEverything(order.id)
+      console.error("[checkoutReal] erro pagarme:", err)
+      return { ok: false, error: "Não foi possível gerar o Pix. Tente novamente." }
+    }
+  } else {
+    // Fluxo Demo original: cria tickets e envia confirmação na hora
+    const allQrs: string[] = []
+    for (const t of ticketsToCreate) {
+      const { error: itemErr } = await admin.from("order_items").insert({
+        order_id: order.id,
+        ticket_lot_id: t.lotId,
+        quantity: t.qty,
+        unit_price_cents: t.pricePerUnit,
+      })
+      if (itemErr) {
+        await rollbackEverything(order.id)
+        return { ok: false, error: itemErr.message }
+      }
+
+      const ticketRows = Array.from({ length: t.qty }, () => {
+        const ticketId = crypto.randomUUID()
+        const qr = generateQrPayload(ticketId, event.id)
+        allQrs.push(qr)
+        return {
+          id: ticketId,
+          order_id: order.id,
+          ticket_lot_id: t.lotId,
+          event_id: event.id,
+          qr_hash: qr,
+          holder_name: holderName,
+          holder_cpf: holderCpf,
+          is_half_price: t.isHalf,
+          status: "valid" as const,
+        }
+      })
+
+      const { error: ticketsErr } = await admin.from("tickets").insert(ticketRows)
+      if (ticketsErr) {
+        await rollbackEverything(order.id)
+        return { ok: false, error: ticketsErr.message }
+      }
+    }
+
+    // Esvazia carrinho
+    const { error: clearErr } = await admin.from("cart_items").delete().eq("user_id", user.id)
+    if (clearErr) {
+      console.error("[checkoutDemo] falha ao limpar carrinho:", clearErr)
+    }
+
+    // Email de confirmação
+    const appUrl = process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"
+    void sendTicketConfirmation({
+      to: user.email,
+      buyerName: holderName,
+      eventTitle: event.title,
+      eventDate: formatDate(event.starts_at, { dateStyle: "full", timeStyle: "short" }),
+      eventLocation: [event.venue_name, event.city, event.state].filter(Boolean).join(" · "),
+      ticketCount: ticketsToCreate.reduce((s, t) => s + t.qty, 0),
+      totalCents: total,
+      orderUrl: `${appUrl}/minha-conta/ingressos/${order.id}`,
+      qrPayloads: allQrs,
     })
 
-    const { error: ticketsErr } = await admin.from("tickets").insert(ticketRows)
-    if (ticketsErr) {
-      await rollbackEverything(order.id)
-      return { ok: false, error: ticketsErr.message }
-    }
+    revalidatePath("/carrinho")
+    revalidatePath("/minha-conta")
+    redirect(`/minha-conta/ingressos/${order.id}`)
   }
-
-  // Esvazia carrinho (não bloqueia o sucesso se falhar — items órfãos não
-  // dão problema, e a próxima leitura do carrinho ignora itens já comprados)
-  const { error: clearErr } = await admin.from("cart_items").delete().eq("user_id", user.id)
-  if (clearErr) {
-    console.error("[checkoutDemo] falha ao limpar carrinho:", clearErr)
-  }
-
-  // Email de confirmação (silencioso se sem Resend)
-  const appUrl = process.env["NEXT_PUBLIC_APP_URL"] || "http://localhost:3000"
-  void sendTicketConfirmation({
-    to: user.email,
-    buyerName: holderName,
-    eventTitle: event.title,
-    eventDate: formatDate(event.starts_at, { dateStyle: "full", timeStyle: "short" }),
-    eventLocation: [event.venue_name, event.city, event.state].filter(Boolean).join(" · "),
-    ticketCount: ticketsToCreate.reduce((s, t) => s + t.qty, 0),
-    totalCents: total,
-    orderUrl: `${appUrl}/minha-conta/ingressos/${order.id}`,
-    qrPayloads: allQrs,
-  })
-
-  revalidatePath("/carrinho")
-  revalidatePath("/minha-conta")
-  redirect(`/minha-conta/ingressos/${order.id}`)
 }
