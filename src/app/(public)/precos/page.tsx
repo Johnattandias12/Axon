@@ -5,7 +5,7 @@ import { Wallet, Receipt, Sparkles, ShieldCheck, CheckCircle2, ArrowRight } from
 export const metadata: Metadata = {
   title: "Preços e taxas",
   description:
-    "Como a AXON cobra: 10% pago pelo comprador, organizar é grátis, afiliado ganha por venda.",
+    "Você cria. A AXON transmite. Do evento criado ao ingresso vendido em minutos. Dashboard em tempo real, repasse D+2 via Pix ou 17 dias via Cartão, e validação de QR na portaria. Taxa base competitiva de 8,99%.",
 }
 
 export default function PrecosPage() {
@@ -31,14 +31,16 @@ export default function PrecosPage() {
             className="mt-5 text-[clamp(36px,6vw,68px)] leading-[0.95] font-black tracking-[-0.04em]"
             style={{ color: "var(--ink)" }}
           >
-            Transparência desde o primeiro clique
+            Você cria. A AXON transmite
             <span style={{ color: "var(--pulse-deep)" }}>.</span>
           </h1>
           <p
             className="mt-5 max-w-xl text-base leading-relaxed sm:text-lg"
             style={{ color: "var(--mute)" }}
           >
-            Nada de letra miúda. Aqui você sabe exatamente quanto paga, quanto recebe, e por quê.
+            Do evento criado ao ingresso vendido em minutos. Dashboard em tempo real, repasse D+2
+            via Pix ou 17 dias via Cartão, e validação de QR na portaria. Taxa base competitiva de
+            8,99%.
           </p>
         </header>
 
@@ -47,9 +49,9 @@ export default function PrecosPage() {
           <SectionHeading icon={<Wallet size={14} />} label="Pra quem compra" />
           <div className="grid gap-4 sm:grid-cols-2">
             <PriceCard
-              big="10%"
+              big="8,99%"
               title="Taxa de serviço AXON"
-              desc="Cobrada do comprador, calculada sobre o valor do ingresso. Cobre processamento Pix/cartão, antifraude, validação na porta e suporte."
+              desc="Cobrada do comprador, calculada sobre o valor do ingresso. Cobre processamento Pix/cartão, antifraude, validação na portaria e suporte."
               accent
             />
             <PriceCard
@@ -62,8 +64,8 @@ export default function PrecosPage() {
             label="Conta na ponta do lápis"
             rows={[
               { k: "Ingresso (definido pelo organizador)", v: "R$ 100,00" },
-              { k: "Taxa AXON (10%)", v: "R$ 10,00" },
-              { k: "Total no Pix", v: "R$ 110,00", strong: true },
+              { k: "Taxa AXON (8,99%)", v: "R$ 8,99" },
+              { k: "Total no Pix", v: "R$ 108,99", strong: true },
             ]}
           />
         </section>
@@ -80,20 +82,20 @@ export default function PrecosPage() {
             <PriceCard
               big="100%"
               title="Do ingresso é teu"
-              desc="A taxa de 10% é paga pelo comprador. Nada sai do teu repasse."
+              desc="A taxa de 8,99% é paga pelo comprador. Nada sai do teu repasse."
               accent
             />
             <PriceCard
-              big="70%"
-              title="Antecipado antes do evento"
-              desc="Solicita até 70% das vendas confirmadas antes da data. O resto cai em até 3 dias úteis pós-evento."
+              big="D+2"
+              title="Repasse rápido"
+              desc="Seu dinheiro na conta em D+2 via Pix ou 17 dias via Cartão."
             />
           </div>
           <Example
             label="Você definiu R$ 100, vendeu 50 ingressos"
             rows={[
               { k: "Vendido (50 × R$ 100)", v: "R$ 5.000,00" },
-              { k: "Taxa AXON (paga pelos compradores)", v: "+ R$ 500,00" },
+              { k: "Taxa AXON (paga pelos compradores)", v: "+ R$ 449,50" },
               { k: "Repasse pra você", v: "R$ 5.000,00", strong: true },
             ]}
           />
@@ -121,15 +123,15 @@ export default function PrecosPage() {
               Cobra menos. Entrega mais.
             </p>
             <p className="mt-1.5 text-sm" style={{ color: "var(--mute)" }}>
-              Coisas que outras plataformas cobram à parte. Aqui já vêm dentro dos 10%.
+              Coisas que outras plataformas cobram à parte. Aqui já vêm dentro da taxa base.
             </p>
             <ul className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
-              <Bullet>Saques ilimitados, todos gratuitos</Bullet>
-              <Bullet>Cortesias e listas de convidados ilimitadas</Bullet>
-              <Bullet>Ingressos manuais por email sem cobrança extra</Bullet>
-              <Bullet>Antifraude e validação na porta inclusas</Bullet>
-              <Bullet>Equipe de validadores sem custo por pessoa</Bullet>
-              <Bullet>Suporte humano até a hora do evento</Bullet>
+              <Bullet>Criação de evento em menos de 5 minutos</Bullet>
+              <Bullet>Lotes com preços e datas configuráveis</Bullet>
+              <Bullet>Meia-entrada automática (Lei 12.933/2013)</Bullet>
+              <Bullet>Repasse D+2 (Pix) e 17 dias (Cartão) na conta</Bullet>
+              <Bullet>App de validação offline para a portaria</Bullet>
+              <Bullet>Dashboard em tempo real de vendas</Bullet>
             </ul>
           </div>
         </section>
@@ -166,15 +168,15 @@ export default function PrecosPage() {
           <div className="space-y-4">
             <Faq
               q="Posso embutir a taxa no preço do ingresso?"
-              a="Pode. Quem define o preço é você. Cobre R$ 110 e o comprador paga R$ 121 (R$ 110 + R$ 11 de taxa). A AXON repassa R$ 110."
+              a="Pode. Quem define o preço é você. Se o ingresso custa R$ 100, o comprador pagará R$ 108,99 (R$ 100 + R$ 8,99 de taxa base). A AXON repassa os R$ 100 integralmente para você."
             />
             <Faq
               q="Quanto tempo leva pra cair o dinheiro?"
-              a="Você pode solicitar até 70% das vendas confirmadas antes do evento, sem limite de solicitações por semana e sem taxa de saque. O saldo restante cai em até 3 dias úteis pós-evento. Cartão segue o prazo do gateway (em torno de D+30 sem antecipação)."
+              a="O repasse das vendas por Pix é feito em D+2 (2 dias corridos) diretamente na sua conta. Para vendas em Cartão de Crédito, o prazo é de 17 dias."
             />
             <Faq
               q="Lista de convidados e cortesias custam?"
-              a="Não. Você gera cortesia ilimitada, manda email manual pra convidados, e usa o app de validação na porta sem nenhum custo adicional. Tudo já está dentro dos 10%."
+              a="Não. Você gera cortesia ilimitada, manda email manual pra convidados, e usa o app de validação na portaria sem nenhum custo adicional. Tudo já está dentro da taxa base de 8,99%."
             />
             <Faq
               q="Tem multa pra cancelar evento?"
