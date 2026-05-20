@@ -335,7 +335,8 @@ export async function checkoutDemo(
     }
   }
 
-  const isRealPayment = !!process.env["PAGARME_API_KEY"]
+  const { getPaymentMode } = await import("@/lib/payments/settings")
+  const isRealPayment = (await getPaymentMode()) === "real"
   const initialStatus = isRealPayment ? "pending" : "paid"
   const reservedUntil = isRealPayment ? new Date(Date.now() + 15 * 60 * 1000).toISOString() : null
 

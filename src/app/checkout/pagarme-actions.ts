@@ -48,10 +48,12 @@ export async function createPixChargeAction(formData: FormData): Promise<PixChar
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." }
   }
 
-  if (!process.env["PAGARME_API_KEY"]) {
+  const { getPaymentMode } = await import("@/lib/payments/settings")
+  const mode = await getPaymentMode()
+  if (mode !== "real") {
     return {
       ok: false,
-      error: "Pagamento real desativado. Configure PAGARME_API_KEY pra ativar.",
+      error: "Pagamento real desativado no painel do administrador.",
     }
   }
 

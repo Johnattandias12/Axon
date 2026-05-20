@@ -15,6 +15,7 @@ import {
   ArrowUpRight,
   ScanLine,
 } from "lucide-react"
+import { PaymentModeToggle } from "./PaymentModeToggle"
 
 export const metadata: Metadata = { title: "Dashboard · AXON Admin" }
 
@@ -64,6 +65,16 @@ interface RecentEvent {
 
 export default async function AdminPage() {
   const supabase = await createClient()
+
+  // Obter modo de pagamento atual
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: paymentModeSetting } = await (supabase as any)
+    .from("system_settings")
+    .select("value")
+    .eq("key", "payment_mode")
+    .maybeSingle()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const currentMode = ((paymentModeSetting as any)?.value ?? "real") as "real" | "test"
 
   const since30 = new Date()
   since30.setDate(since30.getDate() - 30)
@@ -197,6 +208,9 @@ export default async function AdminPage() {
           accent="var(--pulse)"
         />
       </div>
+
+      {/* Gateway Toggle Section */}
+      <PaymentModeToggle initialMode={currentMode} hasApiKey={!!process.env["PAGARME_API_KEY"]} />
 
       {/* Receita + Gráficos */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

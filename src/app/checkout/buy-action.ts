@@ -18,8 +18,9 @@ export type BuyTicketState = BuyDemoState
  * pra UX mostrar a tela de PIX antes de redirecionar pra ingresso).
  */
 export async function buyTicket(prev: BuyTicketState, formData: FormData): Promise<BuyTicketState> {
-  // Modo demo (sem API key): mantém comportamento atual
-  if (!process.env["PAGARME_API_KEY"]) {
+  const { getPaymentMode } = await import("@/lib/payments/settings")
+  const mode = await getPaymentMode()
+  if (mode === "test") {
     return buyDemo(prev, formData)
   }
 
