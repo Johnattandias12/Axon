@@ -8,6 +8,10 @@ import {
   scannerInviteEmail,
   crewInviteEmail,
   affiliateCommissionEmail,
+  eventCreatedEmail,
+  abandonedCartEmail,
+  eventReminderEmail,
+  eventFeedbackEmail,
 } from "./templates"
 import { createAdminClient } from "@/lib/supabase/admin"
 
@@ -22,6 +26,10 @@ type EmailType =
   | "scanner_invite"
   | "crew_invite"
   | "affiliate_commission"
+  | "event_created"
+  | "abandoned_cart"
+  | "event_reminder"
+  | "event_feedback"
 
 interface SendEmailArgs {
   to: string
@@ -356,5 +364,94 @@ export async function sendAffiliateCommission(args: SendAffiliateCommissionArgs)
       amountCents: args.amountCents,
       ratePct: args.commissionRatePct,
     },
+  })
+}
+
+interface SendEventCreatedArgs {
+  to: string
+  organizerName: string
+  eventTitle: string
+  eventDate: string
+  eventLocation: string
+  eventUrl: string
+  userId?: string | null
+}
+
+export async function sendEventCreated(args: SendEventCreatedArgs) {
+  const { subject, html, text } = eventCreatedEmail(args)
+  return sendEmail({
+    to: args.to,
+    subject,
+    html,
+    text,
+    type: "event_created",
+    userId: args.userId ?? null,
+    metadata: { eventTitle: args.eventTitle },
+  })
+}
+
+interface SendAbandonedCartArgs {
+  to: string
+  buyerName: string
+  eventTitle: string
+  eventDate: string
+  checkoutUrl: string
+  userId?: string | null
+}
+
+export async function sendAbandonedCart(args: SendAbandonedCartArgs) {
+  const { subject, html, text } = abandonedCartEmail(args)
+  return sendEmail({
+    to: args.to,
+    subject,
+    html,
+    text,
+    type: "abandoned_cart",
+    userId: args.userId ?? null,
+    metadata: { eventTitle: args.eventTitle },
+  })
+}
+
+interface SendEventReminderArgs {
+  to: string
+  buyerName: string
+  eventTitle: string
+  eventDate: string
+  eventLocation: string
+  ticketsUrl: string
+  userId?: string | null
+}
+
+export async function sendEventReminder(args: SendEventReminderArgs) {
+  const { subject, html, text } = eventReminderEmail(args)
+  return sendEmail({
+    to: args.to,
+    subject,
+    html,
+    text,
+    type: "event_reminder",
+    userId: args.userId ?? null,
+    metadata: { eventTitle: args.eventTitle },
+  })
+}
+
+interface SendEventFeedbackArgs {
+  to: string
+  buyerName: string
+  eventTitle: string
+  feedbackUrl: string
+  userId?: string | null
+}
+
+export async function sendEventFeedback(args: SendEventFeedbackArgs) {
+  const { subject, html, text } = eventFeedbackEmail(args)
+  return sendEmail({
+    to: args.to,
+    subject,
+    html,
+    text,
+    type: "event_feedback",
+    userId: args.userId ?? null,
+    metadata: { eventTitle: args.eventTitle },
   })
 }

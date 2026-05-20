@@ -679,3 +679,226 @@ export function affiliateCommissionEmail({
     text: `Olá, ${affiliateName}.\n\nSua venda em ${eventTitle} gerou ${commissionRatePct}% em créditos AXON.\n\nCrédito recebido: ${centsToBRL(amountCents)}\nSaldo total: ${centsToBRL(balanceCents)}\n\n— AXON`,
   }
 }
+
+/**
+ * Email de evento criado com sucesso (para o organizador)
+ */
+export function eventCreatedEmail({
+  organizerName,
+  eventTitle,
+  eventDate,
+  eventLocation,
+  eventUrl,
+}: {
+  organizerName: string
+  eventTitle: string
+  eventDate: string
+  eventLocation: string
+  eventUrl: string
+}): { subject: string; html: string; text: string } {
+  const t = TOKENS
+  const subject = `Seu evento "${eventTitle}" foi criado com sucesso!`
+  const body = `
+          <tr>
+            <td style="padding:36px 28px 8px;">
+              <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${t.pulse};">
+                Organização
+              </p>
+              <h1 style="margin:8px 0 0;font-size:26px;line-height:1.18;letter-spacing:-0.03em;font-weight:800;color:${t.text};">
+                Evento criado!
+              </h1>
+              <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                Olá, ${escapeHtml(organizerName)}. Seu evento <strong style="color:${t.text};">${escapeHtml(eventTitle)}</strong> foi cadastrado e já está ativo na AXON.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 28px 8px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:${t.bgDarker};border-radius:16px;border:1px solid ${t.rule};">
+                <tr>
+                  <td style="padding:20px;">
+                    <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:${t.textMute};">Data</p>
+                    <p style="margin:6px 0 0;font-size:14px;font-weight:700;color:${t.text};">${escapeHtml(eventDate)}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 20px 20px;">
+                    <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:${t.textMute};">Local</p>
+                    <p style="margin:6px 0 0;font-size:14px;font-weight:700;color:${t.text};">${escapeHtml(eventLocation)}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 28px 28px;" align="center">
+              <a href="${eventUrl}" style="display:inline-block;padding:14px 32px;background-color:${t.pulse};color:#000000;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:-0.01em;border-radius:12px;">
+                Visualizar evento →
+              </a>
+            </td>
+          </tr>`
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Evento Criado", children: body }),
+    text: `Olá, ${organizerName}.\n\nSeu evento "${eventTitle}" foi criado com sucesso!\n\nData: ${eventDate}\nLocal: ${eventLocation}\n\nLink: ${eventUrl}\n\n— AXON`,
+  }
+}
+
+/**
+ * Email de lembrete de carrinho abandonado (para pedidos pendentes)
+ */
+export function abandonedCartEmail({
+  buyerName,
+  eventTitle,
+  eventDate,
+  checkoutUrl,
+}: {
+  buyerName: string
+  eventTitle: string
+  eventDate: string
+  checkoutUrl: string
+}): { subject: string; html: string; text: string } {
+  const t = TOKENS
+  const subject = `Não perca sua vaga para ${eventTitle}`
+  const body = `
+          <tr>
+            <td style="padding:36px 28px 8px;">
+              <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${t.pulse};">
+                Reserva pendente
+              </p>
+              <h1 style="margin:8px 0 0;font-size:26px;line-height:1.18;letter-spacing:-0.03em;font-weight:800;color:${t.text};">
+                Seu ingresso te espera.
+              </h1>
+              <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                Olá, ${escapeHtml(buyerName)}. Notamos que você iniciou o processo de compra para o evento <strong style="color:${t.text};">${escapeHtml(eventTitle)}</strong> (${escapeHtml(eventDate)}), mas não concluiu o pagamento.
+              </p>
+              <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                Seus ingressos ficam reservados por pouco tempo. Finalize sua compra agora para garantir seu lugar.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 28px 28px;" align="center">
+              <a href="${checkoutUrl}" style="display:inline-block;padding:14px 32px;background-color:${t.pulse};color:#000000;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:-0.01em;border-radius:12px;">
+                Concluir pagamento →
+              </a>
+            </td>
+          </tr>`
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Carrinho Pendente", children: body }),
+    text: `Olá, ${buyerName}.\n\nFinalize a compra dos seus ingressos para ${eventTitle} (${eventDate}) antes que expirem!\n\nLink: ${checkoutUrl}\n\n— AXON`,
+  }
+}
+
+/**
+ * Email de lembrete 24h antes do evento
+ */
+export function eventReminderEmail({
+  buyerName,
+  eventTitle,
+  eventDate,
+  eventLocation,
+  ticketsUrl,
+}: {
+  buyerName: string
+  eventTitle: string
+  eventDate: string
+  eventLocation: string
+  ticketsUrl: string
+}): { subject: string; html: string; text: string } {
+  const t = TOKENS
+  const subject = `Lembrete: Seu evento "${eventTitle}" é amanhã!`
+  const body = `
+          <tr>
+            <td style="padding:36px 28px 8px;">
+              <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${t.pulse};">
+                Lembrete
+              </p>
+              <h1 style="margin:8px 0 0;font-size:26px;line-height:1.18;letter-spacing:-0.03em;font-weight:800;color:${t.text};">
+                Está chegando.
+              </h1>
+              <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                Olá, ${escapeHtml(buyerName)}. Amanhã acontece o evento <strong style="color:${t.pulse};">${escapeHtml(eventTitle)}</strong>. Prepare seu ingresso!
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 28px 8px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:${t.bgDarker};border-radius:16px;border:1px solid ${t.rule};">
+                <tr>
+                  <td style="padding:20px;">
+                    <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:${t.textMute};">Data e Hora</p>
+                    <p style="margin:6px 0 0;font-size:14px;font-weight:700;color:${t.text};">${escapeHtml(eventDate)}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 20px 20px;">
+                    <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:${t.textMute};">Local</p>
+                    <p style="margin:6px 0 0;font-size:14px;font-weight:700;color:${t.text};">${escapeHtml(eventLocation)}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 28px 28px;" align="center">
+              <a href="${ticketsUrl}" style="display:inline-block;padding:14px 32px;background-color:${t.pulse};color:#000000;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:-0.01em;border-radius:12px;">
+                Ver meus ingressos →
+              </a>
+              <p style="margin:14px 0 0;font-size:12px;color:${t.textMute};">
+                Apresente o QR Code na tela do celular na entrada do evento.
+              </p>
+            </td>
+          </tr>`
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Lembrete Evento", children: body }),
+    text: `Olá, ${buyerName}.\n\nSeu evento "${eventTitle}" é amanhã!\n\nData: ${eventDate}\nLocal: ${eventLocation}\n\nAcesse seus ingressos: ${ticketsUrl}\n\n— AXON`,
+  }
+}
+
+/**
+ * Email de feedback pós-evento
+ */
+export function eventFeedbackEmail({
+  buyerName,
+  eventTitle,
+  feedbackUrl,
+}: {
+  buyerName: string
+  eventTitle: string
+  feedbackUrl: string
+}): { subject: string; html: string; text: string } {
+  const t = TOKENS
+  const subject = `Como foi sua experiência no ${eventTitle}?`
+  const body = `
+          <tr>
+            <td style="padding:36px 28px 8px;">
+              <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${t.pulse};">
+                Feedback
+              </p>
+              <h1 style="margin:8px 0 0;font-size:26px;line-height:1.18;letter-spacing:-0.03em;font-weight:800;color:${t.text};">
+                O que você achou?
+              </h1>
+              <p style="margin:14px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                Olá, ${escapeHtml(buyerName)}. O evento <strong style="color:${t.text};">${escapeHtml(eventTitle)}</strong> chegou ao fim e gostaríamos muito de saber como foi sua experiência.
+              </p>
+              <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:${t.textMute};">
+                Sua opinião ajuda o organizador a criar eventos ainda melhores. Leva menos de 2 minutos.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 28px 28px;" align="center">
+              <a href="${feedbackUrl}" style="display:inline-block;padding:14px 32px;background-color:${t.pulse};color:#000000;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:-0.01em;border-radius:12px;">
+                Avaliar evento →
+              </a>
+            </td>
+          </tr>`
+  return {
+    subject,
+    html: emailShell({ subject, eyebrow: "Agradecimento", children: body }),
+    text: `Olá, ${buyerName}.\n\nO que você achou do evento ${eventTitle}?\n\nDeixe seu feedback: ${feedbackUrl}\n\n— AXON`,
+  }
+}
