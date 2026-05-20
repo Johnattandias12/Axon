@@ -68,10 +68,12 @@ export default async function AdminPage() {
   const supabase = await createClient()
 
   // Obter configurações do sistema
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: settingsRows } = await (supabase as any)
     .from("system_settings")
     .select("key, value")
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const settingsMap = new Map((settingsRows ?? []).map((r: any) => [r.key, r.value as string]))
   const currentMode = (settingsMap.get("payment_mode") ?? "real") as "real" | "test"
   const defaultAffiliateCommission = (settingsMap.get("default_affiliate_commission") ?? "5.0") as string

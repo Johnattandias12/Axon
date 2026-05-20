@@ -105,6 +105,7 @@ export async function updateSystemSetting(key: string, value: string) {
     return { ok: false, error: "Acesso restrito para administradores." }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
     .from("system_settings")
     .upsert({ key, value })

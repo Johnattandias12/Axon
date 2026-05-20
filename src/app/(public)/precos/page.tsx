@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Wallet, Receipt, Sparkles, ShieldCheck, CheckCircle2, ArrowRight } from "lucide-react"
+import { Wallet, Receipt, Sparkles, ShieldCheck, CheckCircle2, ArrowRight, Banknote } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Preços e taxas",
   description:
-    "Você cria. A AXON transmite. Do evento criado ao ingresso vendido em minutos. Dashboard em tempo real, repasse D+2 via Pix ou 17 dias via Cartão, e validação de QR na portaria. Taxa base competitiva de 8,99%.",
+    "Transparência total: taxa de serviço de 8,99% + R$ 1,00 por ingresso emitido. Repasse D+2 via Pix ou D+17 via Cartão. Sem mensalidade, sem surpresa.",
 }
 
 export default function PrecosPage() {
@@ -38,8 +38,8 @@ export default function PrecosPage() {
             className="mt-5 max-w-xl text-base leading-relaxed sm:text-lg"
             style={{ color: "var(--mute)" }}
           >
-            Venda ingressos em minutos com a menor taxa do mercado. Dashboard inteligente, repasse
-            ágil em D+2 via Pix e aplicativo de portaria com validação offline incluso.
+            Taxa transparente, repasse ágil e zero mensalidade. Venda ingressos em minutos com dashboard em
+            tempo real e app de portaria incluso.
           </p>
         </header>
 
@@ -49,22 +49,33 @@ export default function PrecosPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <PriceCard
               big="8,99%"
-              title="Taxa de serviço AXON"
-              desc="Cobrada do comprador, calculada sobre o valor do ingresso. Cobre processamento Pix/cartão, antifraude, validação na portaria e suporte."
+              title="Taxa de serviço"
+              desc="Calculada sobre o valor do ingresso. Cobre processamento Pix/cartão, antifraude, validação na portaria e suporte 24/7."
               accent
             />
             <PriceCard
-              big="0%"
-              title="Sem taxas escondidas"
-              desc="Sem boleto escondido. Sem mensalidade. Sem juros embutidos pra parcelar no Pix. O que você vê no carrinho é o que paga."
+              big="+ R$ 1,00"
+              title="Por ingresso emitido"
+              desc="Taxa fixa por ingresso gerado, referente à emissão e assinatura criptográfica do QR Code de entrada."
+              accent
             />
           </div>
           <Example
-            label="Conta na ponta do lápis"
+            label="Conta na ponta do lápis — 1 ingresso de R$ 100"
             rows={[
               { k: "Ingresso (definido pelo organizador)", v: "R$ 100,00" },
-              { k: "Taxa AXON (8,99%)", v: "R$ 8,99" },
-              { k: "Total no Pix", v: "R$ 108,99", strong: true },
+              { k: "Taxa de serviço (8,99%)", v: "R$ 8,99" },
+              { k: "Taxa de emissão (R$ 1,00 × 1)", v: "R$ 1,00" },
+              { k: "Total no Pix", v: "R$ 109,99", strong: true },
+            ]}
+          />
+          <Example
+            label="Comprando 3 ingressos de R$ 50 cada"
+            rows={[
+              { k: "Subtotal (3 × R$ 50)", v: "R$ 150,00" },
+              { k: "Taxa de serviço (8,99%)", v: "R$ 13,49" },
+              { k: "Taxa de emissão (R$ 1,00 × 3)", v: "R$ 3,00" },
+              { k: "Total no Pix", v: "R$ 166,49", strong: true },
             ]}
           />
         </section>
@@ -76,32 +87,98 @@ export default function PrecosPage() {
             <PriceCard
               big="R$ 0"
               title="Cadastro e mensalidade"
-              desc="Cria conta, evento, lotes. Sem cartão, sem fidelidade, sem taxa de adesão."
+              desc="Cria conta, evento e lotes sem cartão de crédito, sem fidelidade e sem taxa de adesão."
             />
             <PriceCard
               big="100%"
               title="Seu lucro é 100% seu"
-              desc="A taxa de 8,99% é paga pelo comprador. Nada sai do teu repasse."
+              desc="A taxa de serviço é paga pelo comprador. Nada é descontado do seu repasse."
               accent
             />
             <PriceCard
-              big="D+2"
+              big="D+2 / D+17"
               title="Repasse rápido"
-              desc="Seu dinheiro na conta em D+2 via Pix ou 17 dias via Cartão."
+              desc="Dinheiro na conta em D+2 via Pix ou em 17 dias corridos para vendas no Cartão."
             />
           </div>
           <Example
-            label="Você definiu R$ 100, vendeu 50 ingressos"
+            label="Você definiu R$ 100, vendeu 50 ingressos via Pix"
             rows={[
               { k: "Vendido (50 × R$ 100)", v: "R$ 5.000,00" },
-              { k: "Taxa AXON (paga pelos compradores)", v: "+ R$ 449,50" },
+              { k: "Taxa de serviço (paga pelos compradores)", v: "+ R$ 449,50" },
+              { k: "Taxa de emissão (paga pelos compradores)", v: "+ R$ 50,00" },
               { k: "Repasse pra você", v: "R$ 5.000,00", strong: true },
             ]}
           />
 
-          {/* Diferenciais — tudo incluso */}
+          {/* Saques */}
           <div
             className="mt-8 rounded-2xl border p-6 sm:p-7"
+            style={{
+              borderColor: "var(--rule)",
+              backgroundColor: "var(--paper-pure)",
+            }}
+          >
+            <p
+              className="text-[10px] font-semibold tracking-[0.14em] uppercase"
+              style={{ color: "var(--mute)" }}
+            >
+              Regras de saque
+            </p>
+            <p
+              className="mt-2 text-xl font-bold tracking-tight"
+              style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
+            >
+              Saque simples, sem surpresa.
+            </p>
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              <InfoBlock
+                label="Saque mínimo"
+                value="R$ 50,00"
+                desc="Valor mínimo disponível para solicitar transferência."
+              />
+              <InfoBlock
+                label="Taxa por saque"
+                value="R$ 6,50"
+                desc="Taxa fixa cobrada pelo processamento da transferência bancária."
+              />
+              <InfoBlock
+                label="Antecipação de saldo"
+                value="Em breve"
+                desc="Solicite antecipação do saldo antes do prazo padrão D+2/D+17."
+              />
+            </div>
+          </div>
+
+          {/* VIP e cortesias */}
+          <div
+            className="mt-4 rounded-2xl border p-6 sm:p-7"
+            style={{
+              borderColor: "var(--rule)",
+              backgroundColor: "var(--paper-pure)",
+            }}
+          >
+            <p
+              className="text-[10px] font-semibold tracking-[0.14em] uppercase"
+              style={{ color: "var(--mute)" }}
+            >
+              Listas VIP e Cortesias
+            </p>
+            <p
+              className="mt-2 text-xl font-bold tracking-tight"
+              style={{ color: "var(--ink)", letterSpacing: "-0.02em" }}
+            >
+              R$ 1,00 por ingresso emitido.
+            </p>
+            <p className="mt-1.5 text-sm" style={{ color: "var(--mute)" }}>
+              Listas VIP e cortesias têm custo de R$ 1,00 por ingresso gerado. Não há taxa percentual
+              — só a emissão do QR Code de entrada. Lotes pagos por Pix ou Cartão seguem a tabela normal acima.
+            </p>
+          </div>
+
+          {/* Diferenciais */}
+          <div
+            className="mt-4 rounded-2xl border p-6 sm:p-7"
             style={{
               borderColor: "var(--pulse)",
               backgroundColor: "var(--paper-pure)",
@@ -128,9 +205,11 @@ export default function PrecosPage() {
               <Bullet>Criação de evento em menos de 5 minutos</Bullet>
               <Bullet>Lotes com preços e datas configuráveis</Bullet>
               <Bullet>Meia-entrada automática (Lei 12.933/2013)</Bullet>
-              <Bullet>Repasse D+2 (Pix) e 17 dias (Cartão) na conta</Bullet>
+              <Bullet>Repasse D+2 (Pix) e D+17 (Cartão)</Bullet>
               <Bullet>App de validação offline para a portaria</Bullet>
               <Bullet>Dashboard em tempo real de vendas</Bullet>
+              <Bullet>QR Code assinado criptograficamente</Bullet>
+              <Bullet>Suporte via email e WhatsApp</Bullet>
             </ul>
           </div>
         </section>
@@ -153,7 +232,7 @@ export default function PrecosPage() {
               wallet AXON, liberado pelo time da AXON.
             </p>
             <ul className="mt-5 space-y-2 text-sm" style={{ color: "var(--mute)" }}>
-              <Bullet>Comissão padrão: 5% sobre o ingresso (negociável por parceiro)</Bullet>
+              <Bullet>Comissão configurável por parceiro (padrão 5% sobre o ingresso)</Bullet>
               <Bullet>Sai do bolso da AXON, não do organizador</Bullet>
               <Bullet>Saldo vira crédito pra comprar ingresso na plataforma</Bullet>
               <Bullet>Quer entrar? Manda email pra contato@axon.app</Bullet>
@@ -167,15 +246,19 @@ export default function PrecosPage() {
           <div className="space-y-4">
             <Faq
               q="Posso embutir a taxa no preço do ingresso?"
-              a="Pode. Quem define o preço é você. Se o ingresso custa R$ 100, o comprador pagará R$ 108,99 (R$ 100 + R$ 8,99 de taxa base). A AXON repassa os R$ 100 integralmente para você."
+              a="Pode. Quem define o preço é você. Se o ingresso custa R$ 100, o comprador pagará R$ 109,99 (R$ 100 + R$ 8,99 de taxa de serviço + R$ 1,00 de emissão). A AXON repassa os R$ 100 integralmente para você."
             />
             <Faq
               q="Quanto tempo leva pra cair o dinheiro?"
-              a="O repasse das vendas por Pix é feito em D+2 (2 dias corridos) diretamente na sua conta. Para vendas em Cartão de Crédito, o prazo é de 17 dias."
+              a="O repasse das vendas por Pix é feito em D+2 (2 dias corridos) diretamente na sua conta. Para vendas em Cartão de Crédito, o prazo é de 17 dias corridos."
+            />
+            <Faq
+              q="Qual o valor mínimo para sacar?"
+              a="O saque mínimo é de R$ 50,00. Cada saque tem uma taxa fixa de R$ 6,50 para cobrir o custo da transferência bancária. O dinheiro cai na conta em instantes via Pix."
             />
             <Faq
               q="Lista de convidados e cortesias custam?"
-              a="Não. Você gera cortesia ilimitada, manda email manual pra convidados, e usa o app de validação na portaria sem nenhum custo adicional. Tudo já está dentro da taxa base de 8,99%."
+              a="Cortesias e listas VIP têm custo de R$ 1,00 por ingresso emitido — apenas a taxa de emissão do QR Code. Não há percentual sobre o valor, já que o ingresso é gratuito para o convidado."
             />
             <Faq
               q="Tem multa pra cancelar evento?"
@@ -183,11 +266,11 @@ export default function PrecosPage() {
             />
             <Faq
               q="Como funciona meia-entrada?"
-              a="A AXON aplica automaticamente o limite legal de 40% por evento. Comprador apresenta documento na porta junto com o QR."
+              a="A AXON aplica automaticamente o limite legal de 40% por evento. Comprador apresenta documento na porta junto com o QR. A taxa de emissão (R$ 1,00) também se aplica à meia."
             />
             <Faq
               q="A AXON cobra pra emitir nota fiscal?"
-              a="Não. A nota é emitida pelo organizador. A AXON envia a parte que cabe ao comprador como comprovante."
+              a="Não. A nota é emitida pelo organizador. A AXON envia ao comprador um comprovante com os dados da compra."
             />
           </div>
         </section>
@@ -276,6 +359,28 @@ function PriceCard({
   )
 }
 
+function InfoBlock({ label, value, desc }: { label: string; value: string; desc: string }) {
+  return (
+    <div
+      className="rounded-xl border p-4"
+      style={{ borderColor: "var(--rule)", backgroundColor: "var(--paper-soft)" }}
+    >
+      <p className="text-[10px] font-semibold tracking-wider uppercase" style={{ color: "var(--mute)" }}>
+        {label}
+      </p>
+      <p
+        className="mt-1 font-mono text-xl font-black tabular-nums"
+        style={{ color: "var(--ink)", letterSpacing: "-0.03em" }}
+      >
+        {value}
+      </p>
+      <p className="mt-1 text-[11px] leading-snug" style={{ color: "var(--mute)" }}>
+        {desc}
+      </p>
+    </div>
+  )
+}
+
 function Example({
   label,
   rows,
@@ -303,7 +408,7 @@ function Example({
             <span
               className="font-mono tabular-nums"
               style={{
-                color: r.strong ? "var(--ink)" : "var(--ink-4)",
+                color: r.strong ? "var(--pulse-deep)" : "var(--ink-4)",
                 fontWeight: r.strong ? 700 : 500,
               }}
             >
