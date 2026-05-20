@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
@@ -8,7 +9,7 @@ import { SiteHeader } from "@/components/shared/SiteHeader"
 import { CartItemRow } from "@/components/cart/CartItemRow"
 import { CheckoutForm } from "@/components/cart/CheckoutForm"
 import { PageBackLink } from "@/components/shared/PageHeader"
-import { ShoppingBag, Calendar, MapPin, Sparkles, ArrowRight } from "lucide-react"
+import { ShoppingBag, Calendar, MapPin, Sparkles, ArrowRight, ShieldCheck } from "lucide-react"
 
 export const metadata: Metadata = { title: "Carrinho · AXON" }
 
@@ -19,7 +20,7 @@ export default async function CarrinhoPage() {
   } = await supabase.auth.getUser()
   if (!user) redirect("/entrar?redirectTo=/carrinho")
 
-  const [{ data: items }, { data: profile }] = await Promise.all([
+  const [{ data: items }, { data: profile }, paymentModeRes] = await Promise.all([
     supabase
       .from("cart_items")
       .select(
@@ -31,7 +32,13 @@ export default async function CarrinhoPage() {
       .eq("user_id", user.id)
       .order("added_at", { ascending: false }),
     supabase.from("profiles").select("full_name, cpf").eq("id", user.id).single(),
+    (supabase as any)
+      .from("system_settings")
+      .select("value")
+      .eq("key", "payment_mode")
+      .maybeSingle(),
   ])
+  const isDemo = ((paymentModeRes.data as any)?.value ?? "real") === "test"
 
   const list = items ?? []
 
@@ -165,8 +172,17 @@ export default async function CarrinhoPage() {
                   className="flex items-center justify-center gap-1.5 border-t bg-[var(--paper-soft)] p-3 text-[10px]"
                   style={{ borderColor: "var(--rule)", color: "var(--mute)" }}
                 >
-                  <Sparkles size={10} />
-                  Modo demonstração — sem cobrança real
+                  {isDemo ? (
+                    <>
+                      <Sparkles size={10} className="text-yellow-400" />
+                      Modo demonstração — sem cobrança real
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck size={11} className="text-green-500" />
+                      Compra 100% Segura · Ambiente criptografado
+                    </>
+                  )}
                 </div>
               </div>
             </aside>

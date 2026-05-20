@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Download, Loader2 } from "lucide-react"
+import { Download, Loader2, Share2 } from "lucide-react"
 
 interface TicketForPdf {
   id: string
@@ -38,7 +38,7 @@ const RULE = [32, 32, 38] as const
 export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId, tickets }: Props) {
   const [pending, setPending] = useState(false)
 
-  async function generate() {
+  async function generate(action: "download" | "share" = "download") {
     setPending(true)
     try {
       const [{ default: jsPDF }, QRCode] = await Promise.all([import("jspdf"), import("qrcode")])
@@ -286,34 +286,78 @@ export function TicketPdfButton({ eventTitle, eventDate, eventLocation, orderId,
         )
       }
 
-      doc.save(`ingresso-axon-${orderId.slice(0, 8)}.pdf`)
+      const fileName = `ingresso-axon-${orderId.slice(0, 8)}.pdf`
+      if (action === "download") {
+        doc.save(fileName)
+      } else {
+        const pdfBlob = doc.output("blob")
+        const file = new File([pdfBlob], fileName, { type: "application/pdf" })
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: `Ingressos AXON · ${eventTitle}`,
+            text: `Aqui estão meus ingressos para o evento ${eventTitle}!`,
+          })
+        } else {
+          doc.save(fileName)
+        }
+      }
+    } catch (err) {
+      console.error("[TicketPdfButton] error:", err)
     } finally {
       setPending(false)
     }
   }
 
+  const canShare = typeof navigator !== "undefined" && !!navigator.share
+
   return (
-    <button
-      type="button"
-      onClick={generate}
-      disabled={pending}
-      className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold backdrop-blur-md transition-all hover:scale-[1.02] hover:shadow-[0_8px_24px_-8px_rgba(200,255,0,0.6)] disabled:opacity-60"
-      style={{
-        backgroundColor: "var(--pulse)",
-        color: "#000000",
-      }}
-    >
-      {pending ? (
-        <>
-          <Loader2 size={12} className="animate-spin" />
-          Gerando Ingresso VIP…
-        </>
-      ) : (
-        <>
-          <Download size={12} />
-          Baixar Ingresso
-        </>
+    <div className="flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        onClick={() => generate("download")}
+        disabled={pending}
+        className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold backdrop-blur-md transition-all hover:scale-[1.02] hover:shadow-[0_8px_24px_-8px_rgba(200,255,0,0.6)] disabled:opacity-60"
+        style={{
+          backgroundColor: "var(--pulse)",
+          color: "#000000",
+        }}
+      >
+        {pending ? (
+          <>
+            <Loader2 size={12} className="animate-spin" />
+            Gerando Ingresso VIP…
+          </>
+        ) : (
+          <>
+            <Download size={12} />
+            Baixar Ingresso
+          </>
+        )}
+      </button>
+
+      {canShare && (
+        <button
+          type="button"
+          onClick={() => generate("share")}
+          disabled={pending}
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold transition-all hover:scale-[1.02] disabled:opacity-60"
+          style={{
+            borderColor: "var(--rule)",
+            backgroundColor: "var(--paper-soft)",
+            color: "var(--ink)",
+          }}
+        >
+          {pending ? (
+            <Loader2 size={12} className="animate-spin" />
+          ) : (
+            <>
+              <Share2 size={12} />
+              Compartilhar
+            </>
+          )}
+        </button>
       )}
-    </button>
+    </div>
   )
 }

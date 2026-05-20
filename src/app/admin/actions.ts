@@ -38,3 +38,49 @@ export async function setPaymentMode(mode: "real" | "test") {
   revalidatePath("/admin")
   return { ok: true }
 }
+
+export async function resolveRefund(ticketId: string, action: "approve" | "reject") {
+  const supabase = await createClient()
+
+  // Verify auth
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return { ok: false, error: "Não autorizado." }
+  }
+
+  // Check admin role
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  if (profile?.role !== "admin") {
+    return { ok: false, error: "Acesso restrito para administradores." }
+  }
+
+  if (action === "approve") {
+    const { error } = await supabase
+      .from("tickets")
+      .update({ status: "refunded" })
+      .eq("id", ticketId)
+
+    if (error) return { ok: false, error: error.message }
+  } else {
+    const { error } = await supabase
+      .from("tickets")
+      .update({
+        status: "valid",
+        refund_requested_at: null,
+        refund_reason: null,
+      })
+      .eq("id", ticketId)
+
+    if (error) return { ok: false, error: error.message }
+  }
+
+  revalidatePath("/admin/suporte")
+  return { ok: true }
+}

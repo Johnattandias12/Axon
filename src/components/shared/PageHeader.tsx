@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { ReactNode } from "react"
 
@@ -21,6 +21,79 @@ interface Props {
  */
 export function PageHeader({ eyebrow, title, description, actions, className = "" }: Props) {
   const router = useRouter()
+  const pathname = usePathname()
+
+  function handleGo(direction: "back" | "forward") {
+    if (!pathname) {
+      if (direction === "back") {
+        router.back()
+      } else {
+        router.forward()
+      }
+      return
+    }
+
+    const organizerTabs = [
+      "/organizador",
+      "/organizador/eventos",
+      "/organizador/check-ins",
+      "/organizador/financeiro",
+    ]
+    const adminTabs = [
+      "/admin",
+      "/admin/eventos",
+      "/admin/organizadores",
+      "/admin/usuarios",
+      "/admin/suporte",
+      "/admin/afiliados",
+      "/admin/check-ins",
+    ]
+    const accountTabs = ["/minha-conta", "/minha-conta/ingressos", "/minha-conta/seguranca"]
+
+    let tabs: string[] = []
+    if (pathname.startsWith("/organizador")) {
+      tabs = organizerTabs
+    } else if (pathname.startsWith("/admin")) {
+      tabs = adminTabs
+    } else if (pathname.startsWith("/minha-conta")) {
+      tabs = accountTabs
+    }
+
+    if (tabs.length > 0) {
+      let currentIndex = tabs.findIndex((tab) => pathname === tab)
+      if (currentIndex === -1) {
+        currentIndex = tabs.findIndex(
+          (tab) =>
+            tab !== "/organizador" &&
+            tab !== "/admin" &&
+            tab !== "/minha-conta" &&
+            pathname.startsWith(tab)
+        )
+      }
+
+      if (currentIndex !== -1) {
+        if (direction === "back") {
+          const prevIndex = currentIndex - 1
+          if (prevIndex >= 0) {
+            router.push(tabs[prevIndex]!)
+            return
+          }
+        } else {
+          const nextIndex = currentIndex + 1
+          if (nextIndex < tabs.length) {
+            router.push(tabs[nextIndex]!)
+            return
+          }
+        }
+      }
+    }
+
+    if (direction === "back") {
+      router.back()
+    } else {
+      router.forward()
+    }
+  }
 
   return (
     <div className={`mb-6 space-y-3 ${className}`}>
@@ -64,7 +137,7 @@ export function PageHeader({ eyebrow, title, description, actions, className = "
       >
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => handleGo("back")}
           className="group flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-bold transition-all hover:scale-[1.02] hover:border-white/20 active:scale-[0.98]"
           style={{
             borderColor: "var(--rule)",
@@ -82,7 +155,7 @@ export function PageHeader({ eyebrow, title, description, actions, className = "
 
         <button
           type="button"
-          onClick={() => router.forward()}
+          onClick={() => handleGo("forward")}
           className="group flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-bold transition-all hover:scale-[1.02] hover:border-white/20 active:scale-[0.98]"
           style={{
             borderColor: "var(--rule)",

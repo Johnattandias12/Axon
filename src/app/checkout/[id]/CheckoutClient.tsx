@@ -175,10 +175,16 @@ export function CheckoutClient({
               {method === "pix" && (
                 <div className="p-6 sm:p-8">
                   <div className="mx-auto max-w-sm text-center">
-                    <div className="mb-6 rounded-lg border border-green-500/20 bg-green-500/10 p-3 text-sm font-medium text-green-400">
+                    <div
+                      className={`mb-6 rounded-lg border p-3 text-sm font-medium ${
+                        isDemo
+                          ? "border-yellow-500/20 bg-yellow-500/10 text-yellow-400"
+                          : "border-green-500/20 bg-green-500/10 text-green-400"
+                      }`}
+                    >
                       {isDemo
                         ? "Modo demonstração — QR ilustrativo, sem cobrança real."
-                        : "Aprovação instantânea. Seu ingresso é liberado na hora!"}
+                        : "🔒 Compra 100% Segura · Seu ingresso é liberado e enviado na hora!"}
                     </div>
 
                     {secondsLeft !== null && secondsLeft > 0 && (
@@ -273,8 +279,10 @@ export function CheckoutClient({
                       className="mt-4 flex items-center justify-center gap-1.5 text-xs"
                       style={{ color: "var(--mute)" }}
                     >
-                      <ShieldCheck size={14} />
-                      Pagamento 100% seguro processado pelo Pagar.me
+                      <ShieldCheck size={14} className={isDemo ? "" : "text-green-500"} />
+                      {isDemo
+                        ? "Pagamento simulado seguro para fins de demonstração"
+                        : "Pagamento 100% seguro processado pelo Pagar.me com criptografia SSL"}
                     </p>
                   </div>
                 </div>

@@ -3,13 +3,22 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
-import { LayoutDashboard, Calendar, Building2, Users, Sparkles, ScanLine } from "lucide-react"
+import {
+  LayoutDashboard,
+  Calendar,
+  Building2,
+  Users,
+  Sparkles,
+  ScanLine,
+  Activity,
+} from "lucide-react"
 
 const items: Array<{ href: string; icon: ReactNode; label: string }> = [
   { href: "/admin", icon: <LayoutDashboard size={15} />, label: "Dashboard" },
   { href: "/admin/eventos", icon: <Calendar size={15} />, label: "Eventos" },
   { href: "/admin/organizadores", icon: <Building2 size={15} />, label: "Organizadores" },
   { href: "/admin/usuarios", icon: <Users size={15} />, label: "Usuários" },
+  { href: "/admin/suporte", icon: <Activity size={15} />, label: "Suporte & Infra" },
   { href: "/admin/afiliados", icon: <Sparkles size={15} />, label: "Afiliados" },
   { href: "/admin/check-ins", icon: <ScanLine size={15} />, label: "Check-ins" },
 ]
