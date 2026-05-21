@@ -414,7 +414,7 @@ export default async function HomePage() {
                 </Link>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                 {[
                   { v: "R$ 0", l: "Adesão Gratuita", a: "var(--pulse)" },
                   { v: "8,99%", l: "Apenas taxa base", a: "var(--info)" },
@@ -423,24 +423,26 @@ export default async function HomePage() {
                 ].map(({ v, l, a }) => (
                   <div
                     key={l}
-                    className="group relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-6 transition-all hover:-translate-y-1"
+                    className="group relative flex min-w-0 flex-col gap-2 overflow-hidden rounded-2xl border p-4 transition-all hover:-translate-y-1 active:scale-[0.98] sm:gap-3 sm:p-6"
                     style={{
                       borderColor: "rgba(255,255,255,0.1)",
                       backgroundColor: "rgba(255,255,255,0.03)",
                     }}
                   >
                     <div
-                      className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full opacity-15 blur-2xl transition-opacity group-hover:opacity-30"
+                      className="pointer-events-none absolute -top-10 -right-10 h-24 w-24 animate-pulse rounded-full opacity-20 blur-2xl transition-opacity group-hover:opacity-40 sm:-top-12 sm:-right-12 sm:h-32 sm:w-32"
                       style={{ backgroundColor: a }}
                       aria-hidden="true"
                     />
                     <span
-                      className="relative font-mono text-[30px] font-black tracking-tight"
+                      className="relative block min-w-0 truncate font-mono text-[clamp(18px,5.5vw,30px)] leading-none font-black tracking-tight"
                       style={{ color: a }}
                     >
                       {v}
                     </span>
-                    <span className="text-[13px] leading-snug text-white/50">{l}</span>
+                    <span className="text-[12px] leading-snug text-white/50 sm:text-[13px]">
+                      {l}
+                    </span>
                   </div>
                 ))}
               </div>
