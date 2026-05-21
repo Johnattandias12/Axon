@@ -1,8 +1,14 @@
 import Link from "next/link"
 import { EventsCarousel } from "@/components/shared/EventsCarousel"
 import { CategoriesCarousel } from "@/components/shared/CategoriesCarousel"
+import { createClient } from "@/lib/supabase/server"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const isLoggedIn = !!user
   return (
     <div
       className="min-h-screen w-full"
@@ -86,13 +92,24 @@ export default function HomePage() {
                 <div className="absolute inset-0 translate-y-full bg-white/20 transition-transform duration-300 ease-out group-hover:translate-y-0" />
                 <span className="relative z-10">Ver eventos</span>
               </Link>
-              <Link
-                href="/entrar"
-                className="inline-flex items-center gap-2 rounded-xl border px-8 py-4 text-[16px] font-semibold text-white transition-all hover:border-white/30 hover:bg-white/10"
-                style={{ borderColor: "rgba(255,255,255,0.15)" }}
-              >
-                Criar conta
-              </Link>
+              {!isLoggedIn && (
+                <Link
+                  href="/entrar"
+                  className="inline-flex items-center gap-2 rounded-xl border px-8 py-4 text-[16px] font-semibold text-white transition-all hover:border-white/30 hover:bg-white/10"
+                  style={{ borderColor: "rgba(255,255,255,0.15)" }}
+                >
+                  Criar conta
+                </Link>
+              )}
+              {isLoggedIn && (
+                <Link
+                  href="/minha-conta"
+                  className="inline-flex items-center gap-2 rounded-xl border px-8 py-4 text-[16px] font-semibold text-white transition-all hover:border-white/30 hover:bg-white/10"
+                  style={{ borderColor: "rgba(255,255,255,0.15)" }}
+                >
+                  Minha conta
+                </Link>
+              )}
             </div>
 
             {/* Stats */}

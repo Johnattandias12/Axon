@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    apple: "/apple-touch-icon.png?v=2",
+    apple: "/apple-touch-icon.png?v=3",
   },
 }
 
@@ -74,7 +74,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="AXON" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
