@@ -42,7 +42,7 @@ export default async function HomePage() {
             aria-hidden="true"
           />
 
-          <div className="animate-in fade-in slide-in-from-bottom-8 relative mx-auto max-w-[1200px] duration-1000">
+          <div className="relative mx-auto max-w-[1200px]">
             {/* Eyebrow */}
             <div
               className="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 backdrop-blur-md transition-colors hover:bg-white/10"
@@ -83,7 +83,7 @@ export default async function HomePage() {
               <br />O impulso é o que te move.
             </p>
 
-            <div className="animate-in fade-in slide-in-from-bottom-8 fill-mode-both flex flex-wrap gap-4 delay-300 duration-1000">
+            <div className="flex flex-wrap gap-4">
               <Link
                 href="/eventos"
                 className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-8 py-4 text-[16px] font-bold transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(200,255,0,0.5)]"
