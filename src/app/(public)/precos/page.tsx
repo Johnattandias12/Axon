@@ -43,6 +43,80 @@ export default function PrecosPage() {
           </p>
         </header>
 
+        {/* A origem do nome — manifesto AIDA */}
+        <section className="mb-16 sm:mb-20">
+          <div
+            className="relative overflow-hidden rounded-3xl border p-7 sm:p-12"
+            style={{
+              borderColor: "var(--rule)",
+              backgroundColor: "var(--paper-pure)",
+              backgroundImage:
+                "linear-gradient(135deg, var(--paper-pure) 0%, color-mix(in srgb, var(--pulse) 7%, var(--paper-pure)) 100%)",
+            }}
+          >
+            <div
+              className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 animate-pulse rounded-full opacity-25 blur-3xl"
+              style={{ backgroundColor: "var(--pulse)" }}
+              aria-hidden="true"
+            />
+
+            <p
+              className="relative inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.16em] uppercase"
+              style={{ color: "var(--pulse-deep)" }}
+            >
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: "var(--pulse)" }}
+              />
+              A origem do nome
+            </p>
+
+            <h2
+              className="relative mt-5 text-[clamp(36px,8vw,72px)] leading-[0.92] font-black tracking-[-0.045em]"
+              style={{ color: "var(--ink)", letterSpacing: "-0.045em" }}
+            >
+              Axônio.
+              <span className="mt-1 block" style={{ color: "var(--pulse-deep)" }}>
+                O fio onde o impulso vira ato.
+              </span>
+            </h2>
+
+            <div className="relative mt-8 grid gap-8 sm:mt-10 sm:grid-cols-5 sm:gap-12">
+              <div
+                className="space-y-4 text-[15px] leading-[1.75] sm:col-span-3 sm:text-base"
+                style={{ color: "var(--ink-4)" }}
+              >
+                <p>
+                  No cérebro humano, o <strong style={{ color: "var(--ink)" }}>axônio</strong> é o
+                  filamento que carrega a faísca elétrica entre dois neurônios. É nele que vontade
+                  vira gesto, ideia vira voz, decisão vira movimento. Sem axônio, sinapse não
+                  acontece — e nenhuma sensação humana também.
+                </p>
+                <p>
+                  A <strong style={{ color: "var(--ink)" }}>AXON</strong> é isso, em forma de
+                  plataforma. Cada ingresso vendido aqui é uma sinapse: o caminho mais curto entre o{" "}
+                  <em>queria muito ir</em> e o <em>estive lá</em>. A gente é o filamento. Você é o
+                  impulso. O show, o jogo, o culto, a despedida — é a memória que sobra.
+                </p>
+              </div>
+
+              <blockquote
+                className="relative border-l-2 pl-5 text-[clamp(18px,2.4vw,24px)] leading-[1.3] font-bold tracking-tight sm:col-span-2 sm:self-center"
+                style={{
+                  borderColor: "var(--pulse)",
+                  color: "var(--ink)",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                Você sente a vontade.
+                <span className="block" style={{ color: "var(--pulse-deep)" }}>
+                  A AXON entrega o trajeto.
+                </span>
+              </blockquote>
+            </div>
+          </div>
+        </section>
+
         {/* Comprador */}
         <section className="mb-16">
           <SectionHeading icon={<Wallet size={14} />} label="Pra quem compra" />
