@@ -118,9 +118,9 @@ export default async function HomePage() {
               style={{ borderColor: "rgba(255,255,255,0.08)" }}
             >
               {[
-                { v: "Pix", d: "Cai na hora" },
-                { v: "QR Code", d: "Ingresso no celular" },
-                { v: "D+1", d: "Repasse pro organizador" },
+                { v: "Pix · Cartão", d: "Pague como preferir" },
+                { v: "QR Code", d: "Assinado, no celular" },
+                { v: "D+2 / D+17", d: "Repasse Pix / Cartão" },
                 { v: "Offline", d: "Valida sem 4G" },
               ].map(({ v, d }) => (
                 <div key={v} className="group flex flex-col items-start gap-1">
