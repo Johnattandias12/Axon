@@ -165,7 +165,7 @@ export default function PrecosPage() {
             <PriceCard
               big="100%"
               title="Seu lucro é 100% seu"
-              desc="A taxa de serviço é paga pelo comprador. Nada é descontado do seu repasse."
+              desc="A taxa de serviço é paga pelo comprador. Você recebe o valor cheio do ingresso. Se ativar afiliados no evento, a comissão sai do repasse."
               accent
             />
             <PriceCard
@@ -302,12 +302,12 @@ export default function PrecosPage() {
           >
             <p className="text-sm leading-relaxed" style={{ color: "var(--ink-4)" }}>
               Programa por convite. Influencers, casas e parceiros recebem um link único{" "}
-              <code>?via=SEUCODIGO</code>. Cada compra fechada pelo seu link vira crédito na tua
-              wallet AXON, liberado pelo time da AXON.
+              <code>?via=SEUCODIGO</code>. Cada compra fechada pelo link vira crédito na wallet AXON
+              do divulgador, liberado pelo time da AXON.
             </p>
             <ul className="mt-5 space-y-2 text-sm" style={{ color: "var(--mute)" }}>
-              <Bullet>Comissão configurável por parceiro (padrão 5% sobre o ingresso)</Bullet>
-              <Bullet>Sai do bolso da AXON, não do organizador</Bullet>
+              <Bullet>Comissão configurável por evento (padrão 5% sobre o ingresso)</Bullet>
+              <Bullet>Sai do repasse do organizador, que escolhe ativar afiliados no evento</Bullet>
               <Bullet>Saldo vira crédito pra comprar ingresso na plataforma</Bullet>
               <Bullet>Quer entrar? Manda email pra contato@axon.app</Bullet>
             </ul>
@@ -336,7 +336,7 @@ export default function PrecosPage() {
             />
             <Faq
               q="Tem multa pra cancelar evento?"
-              a="Não. Você cancela quando quiser. Compradores recebem reembolso automático do que pagaram (incluindo a taxa AXON)."
+              a="Não. Você cancela quando quiser e o comprador recebe de volta o valor do ingresso. A taxa de serviço (8,99% + R$ 1,00) fica retida, porque cobre custos operacionais que já aconteceram antes do cancelamento."
             />
             <Faq
               q="Como funciona meia-entrada?"
