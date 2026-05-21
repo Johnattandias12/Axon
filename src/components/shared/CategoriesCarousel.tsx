@@ -33,6 +33,17 @@ const categories: { label: string; href: string; icon: React.ReactNode; tagline:
     ),
   },
   {
+    label: "Vaquejada",
+    href: "/eventos?categoria=outro&busca=vaquejada",
+    tagline: "Tradição do sertão",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M3 18h18M6 18V8l3-4h6l3 4v10M10 22v-4h4v4" />
+        <circle cx="9" cy="13" r="0.5" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
     label: "Esportes",
     href: "/eventos?categoria=esporte",
     tagline: "Da arena ao estádio",
@@ -116,17 +127,6 @@ const categories: { label: string; href: string; icon: React.ReactNode; tagline:
         <path d="M7 9c0-1.7 1-3 3-3h5l3.5 3v5l-2 3h-7c-1.5 0-2.5-1-2.5-2.5z" />
         <path d="M11 14h3.5" />
         <path d="M7 10.5H5c-.8 0-1.5.7-1.5 1.5v2c0 .8.7 1.5 1.5 1.5h2" />
-      </svg>
-    ),
-  },
-  {
-    label: "Vaquejada",
-    href: "/eventos?categoria=esporte&q=vaquejada",
-    tagline: "Tradição do sertão",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M3 18h18M6 18V8l3-4h6l3 4v10M10 22v-4h4v4" />
-        <circle cx="9" cy="13" r="0.5" fill="currentColor" />
       </svg>
     ),
   },

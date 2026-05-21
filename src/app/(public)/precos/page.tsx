@@ -87,16 +87,15 @@ export default function PrecosPage() {
                 style={{ color: "var(--ink-4)" }}
               >
                 <p>
-                  No cérebro humano, o <strong style={{ color: "var(--ink)" }}>axônio</strong> é o
-                  filamento que carrega a faísca elétrica entre dois neurônios. É nele que vontade
-                  vira gesto, ideia vira voz, decisão vira movimento. Sem axônio, sinapse não
-                  acontece — e nenhuma sensação humana também.
+                  No cérebro humano, o axônio é o filamento que leva a faísca elétrica de um
+                  neurônio até o outro. É por ele que a vontade vira gesto, a ideia vira voz, a
+                  decisão vira movimento. Sem axônio não tem sinapse, sem sinapse não tem sensação
+                  nenhuma.
                 </p>
                 <p>
-                  A <strong style={{ color: "var(--ink)" }}>AXON</strong> é isso, em forma de
-                  plataforma. Cada ingresso vendido aqui é uma sinapse: o caminho mais curto entre o{" "}
-                  <em>queria muito ir</em> e o <em>estive lá</em>. A gente é o filamento. Você é o
-                  impulso. O show, o jogo, o culto, a despedida — é a memória que sobra.
+                  A AXON é isso em forma de plataforma. Cada ingresso vendido aqui é uma sinapse, o
+                  caminho mais curto entre o queria muito ir e o estive lá. A gente é o filamento.
+                  Você é o impulso. O show, o jogo, o culto, a despedida, é o que fica de memória.
                 </p>
               </div>
 
