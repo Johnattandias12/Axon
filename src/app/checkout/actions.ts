@@ -95,19 +95,16 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
     return { ok: false, error: "Evento indisponível para compra." }
   }
 
-  const available = lot.quantity_total - lot.quantity_sold - lot.quantity_reserved
-  if (available < parsed.data.quantity) {
-    return { ok: false, error: `Apenas ${available} ingressos disponíveis neste lote.` }
-  }
-
-  // Reserva atômica: condicional na disponibilidade atual no banco.
-  // Se outra compra concorrente esgotou, .select() volta vazio e abortamos.
   const newSold = lot.quantity_sold + parsed.data.quantity
+  const neededTotal = Math.max(lot.quantity_total, newSold + lot.quantity_reserved)
+
   const { data: lockedLot, error: lockErr } = await admin
     .from("ticket_lots")
-    .update({ quantity_sold: newSold })
+    .update({
+      quantity_sold: newSold,
+      quantity_total: neededTotal,
+    })
     .eq("id", lot.id)
-    .lte("quantity_sold", lot.quantity_total - lot.quantity_reserved - parsed.data.quantity)
     .select("id, quantity_sold")
     .maybeSingle()
 
@@ -117,7 +114,7 @@ async function buyDemoInner(formData: FormData): Promise<BuyDemoState> {
   }
 
   const subtotal = lot.price_cents * parsed.data.quantity
-  const fee = Math.round(subtotal * 0.0899) + (parsed.data.quantity * 100)
+  const fee = Math.round(subtotal * 0.0899) + parsed.data.quantity * 100
   const baseTotal = subtotal + fee
 
   // Aplica créditos AXON se o user pediu (não pode exceder o total)

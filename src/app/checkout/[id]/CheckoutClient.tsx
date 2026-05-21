@@ -192,7 +192,7 @@ export function CheckoutClient({
                     >
                       {isDemo
                         ? "Modo demonstração — QR ilustrativo, sem cobrança real."
-                        : "🔒 Pagamento Seguro · Seus ingressos são liberados imediatamente após a confirmação!"}
+                        : "Pagamento Seguro · Seus ingressos são liberados imediatamente após a confirmação!"}
                     </div>
 
                     {secondsLeft !== null && secondsLeft > 0 && (

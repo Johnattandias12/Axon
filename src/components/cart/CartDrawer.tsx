@@ -195,7 +195,7 @@ export function CartDrawer() {
               {data?.paymentMode === "real" ? (
                 <>
                   <Shield size={10} className="text-[#c8ff00]" />
-                  🔒 Pagamento 100% Seguro
+                  Pagamento 100% Seguro
                 </>
               ) : (
                 <>

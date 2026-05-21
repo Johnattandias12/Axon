@@ -125,7 +125,7 @@ export function CheckoutForm({ defaultName = "", defaultCpf = "" }: Props) {
         ) : (
           <>
             <ShieldCheck size={14} />
-            🔒 Confirmar dados e pagar
+            Confirmar dados e pagar
           </>
         )}
       </button>

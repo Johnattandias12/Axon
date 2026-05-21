@@ -64,8 +64,11 @@ export async function addToCart(
     return { ok: false, error: "Lote indisponível para compra." }
   }
 
+  const { getPaymentMode } = await import("@/lib/payments/settings")
+  const isRealPayment = (await getPaymentMode()) === "real"
+
   const avail = lot.quantity_total - lot.quantity_sold - lot.quantity_reserved
-  if (avail < parsed.data.quantity) {
+  if (isRealPayment && avail < parsed.data.quantity) {
     return { ok: false, error: `Apenas ${avail} ingressos disponíveis.` }
   }
 
@@ -176,6 +179,9 @@ export async function checkoutDemo(
   if (holderName.length < 2) return { ok: false, error: "Informe o nome do titular." }
   if (!validateCPF(holderCpf)) return { ok: false, error: "CPF inválido." }
 
+  const { getPaymentMode } = await import("@/lib/payments/settings")
+  const isRealPayment = (await getPaymentMode()) === "real"
+
   const admin = createAdminClient()
 
   // Salva dados no perfil pra próxima compra ser mais rápida
@@ -278,7 +284,7 @@ export async function checkoutDemo(
     const lot = Array.isArray(item.ticket_lots) ? item.ticket_lots[0] : item.ticket_lots
     if (!lot) continue
     const avail = lot.quantity_total - lot.quantity_sold - lot.quantity_reserved
-    if (avail < item.quantity) {
+    if (isRealPayment && avail < item.quantity) {
       return {
         ok: false,
         error: `Lote "${lot.name}" tem só ${avail} ingressos disponíveis.`,
@@ -295,7 +301,7 @@ export async function checkoutDemo(
   }
 
   const ticketCount = ticketsToCreate.reduce((s, t) => s + t.qty, 0)
-  const fee = Math.round(subtotal * 0.0899) + (ticketCount * 100)
+  const fee = Math.round(subtotal * 0.0899) + ticketCount * 100
   const total = subtotal + fee
 
   // Reserva atômica de estoque por lote. Se algum lote esgotar entre o read e
@@ -304,13 +310,23 @@ export async function checkoutDemo(
   const stockRollback: Array<{ lotId: string; previousSold: number }> = []
   for (const t of ticketsToCreate) {
     const newSold = t.lot.quantity_sold + t.qty
-    const { data: locked, error: lockErr } = await admin
+    const neededTotal = isRealPayment
+      ? t.lot.quantity_total
+      : Math.max(t.lot.quantity_total, newSold + t.lot.quantity_reserved)
+
+    let query = admin
       .from("ticket_lots")
-      .update({ quantity_sold: newSold })
+      .update({
+        quantity_sold: newSold,
+        ...(isRealPayment ? {} : { quantity_total: neededTotal }),
+      })
       .eq("id", t.lotId)
-      .lte("quantity_sold", t.lot.quantity_total - t.lot.quantity_reserved - t.qty)
-      .select("id")
-      .maybeSingle()
+
+    if (isRealPayment) {
+      query = query.lte("quantity_sold", t.lot.quantity_total - t.lot.quantity_reserved - t.qty)
+    }
+
+    const { data: locked, error: lockErr } = await query.select("id").maybeSingle()
 
     if (lockErr || !locked) {
       // Reverte os lotes que já tinham sido incrementados antes desse
@@ -336,8 +352,6 @@ export async function checkoutDemo(
     }
   }
 
-  const { getPaymentMode } = await import("@/lib/payments/settings")
-  const isRealPayment = (await getPaymentMode()) === "real"
   const initialStatus = isRealPayment ? "pending" : "paid"
   const reservedUntil = isRealPayment ? new Date(Date.now() + 15 * 60 * 1000).toISOString() : null
 
