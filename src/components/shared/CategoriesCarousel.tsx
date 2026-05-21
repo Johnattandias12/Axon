@@ -44,6 +44,82 @@ const categories: { label: string; href: string; icon: React.ReactNode; tagline:
     ),
   },
   {
+    label: "Corrida de Rua",
+    href: "/eventos?categoria=esporte&busca=corrida",
+    tagline: "5k, 10k, meia e maratona",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="14" cy="4.5" r="1.5" />
+        <path d="M9 21l3-6 3 2.5 1.5 3.5" />
+        <path d="M12 15l-2-4 3.5-2 2.5 2.5 3 1" />
+        <path d="M7 10l3-1" />
+      </svg>
+    ),
+  },
+  {
+    label: "Futebol",
+    href: "/eventos?categoria=esporte&busca=futebol",
+    tagline: "Da várzea ao profissional",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 7l4 3-1.5 4.5h-5L8 10z" />
+        <path d="M12 7V3M16 10l3.5-1.8M14.5 14.5l2.7 2.9M9.5 14.5l-2.7 2.9M8 10L4.5 8.2" />
+      </svg>
+    ),
+  },
+  {
+    label: "Futsal",
+    href: "/eventos?categoria=esporte&busca=futsal",
+    tagline: "Quadra, raça e gol",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      >
+        <rect x="2.5" y="6" width="19" height="12" rx="1.5" />
+        <line x1="12" y1="6" x2="12" y2="18" />
+        <circle cx="12" cy="12" r="2.2" />
+        <path d="M2.5 9.5h2.5v5H2.5M21.5 9.5H19v5h2.5" />
+      </svg>
+    ),
+  },
+  {
+    label: "Lutas e MMA",
+    href: "/eventos?categoria=esporte&busca=luta",
+    tagline: "Boxe, jiu-jitsu, octógono",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M7 9c0-1.7 1-3 3-3h5l3.5 3v5l-2 3h-7c-1.5 0-2.5-1-2.5-2.5z" />
+        <path d="M11 14h3.5" />
+        <path d="M7 10.5H5c-.8 0-1.5.7-1.5 1.5v2c0 .8.7 1.5 1.5 1.5h2" />
+      </svg>
+    ),
+  },
+  {
     label: "Vaquejada",
     href: "/eventos?categoria=esporte&q=vaquejada",
     tagline: "Tradição do sertão",
